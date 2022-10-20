@@ -1,0 +1,37 @@
+Options Indexes
+IndexOrderDefault Ascending Description
+IndexOptions FancyIndexing NameWidth=* DescriptionWidth=* SuppressHTMLPreamble HTMLTable
+IndexStyleSheet /css/PDP-8.css
+IndexIgnore . .htaccess .htaccess.pl
+
+AddIcon /icons/text.gif *.lst *.pal *.ini *.log
+AddIcon /icons/binary.gif *.bin *.rim
+
+AddDescription "&#1;&#1;Diagnostics SIMH control file, RIM format" diagnostics_rim.ini
+AddDescription "&#1;&#2;Diagnostics SIMH log file, RIM format" diagnostics_rim.log
+AddDescription "&#1;&#3;Diagnostics SIMH control file, BIN format" diagnostics_bin.ini
+AddDescription "&#1;&#4;Diagnostics SIMH log file, BIN format" diagnostics_bin.log
+
+AddDescription "&#2;&#1;&#1;<FONT COLOR=#008800>KE-8E (EAE) Instruction Test 1 (rev A) - DEC documentation (acrobat)</FONT>" *D0LA*pdf
+AddDescription "&#2;&#1;&#2;<FONT COLOR=#008800>KE-8E (EAE) Instruction Test 1 (rev A) - program loader tape (BIN format)</FONT>" *D0LA*bin
+AddDescription "&#2;&#1;&#3;<FONT COLOR=#008800>KE-8E (EAE) Instruction Test 1 (rev A) - program loader tape (RIM format)</FONT>" *D0LA*rim
+AddDescription "&#2;&#1;&#4;<FONT COLOR=#008800>KE-8E (EAE) Instruction Test 1 (rev A) - disassembled PAL source (text)</FONT>" *D0LA*pal
+AddDescription "&#2;&#1;&#5;<FONT COLOR=#008800>KE-8E (EAE) Instruction Test 1 (rev A) - assembled PAL listing (text)</FONT>" *D0LA*lst
+
+AddDescription "&#2;&#2;&#1;<FONT COLOR=#880000>KE-8E (EAE) Instruction Test 1 (rev B) - DEC documentation (acrobat)</FONT>" *D0LB*pdf
+AddDescription "&#2;&#2;&#2;<FONT COLOR=#880000>KE-8E (EAE) Instruction Test 1 (rev B) - program loader tape (BIN format)</FONT>" *D0LB*bin
+AddDescription "&#2;&#2;&#3;<FONT COLOR=#880000>KE-8E (EAE) Instruction Test 1 (rev B) - program loader tape (RIM format)</FONT>" *D0LB*rim
+AddDescription "&#2;&#2;&#4;<FONT COLOR=#880000>KE-8E (EAE) Instruction Test 1 (rev B) - disassembled PAL source (text)</FONT>" *D0LB*pal
+AddDescription "&#2;&#2;&#5;<FONT COLOR=#880000>KE-8E (EAE) Instruction Test 1 (rev B) - assembled PAL listing (text)</FONT>" *D0LB*lst
+
+AddDescription "&#2;&#3;&#1;<FONT COLOR=#008800>KE-8E (EAE) Instruction Test 2 - DEC documentation (acrobat)</FONT>" *D0MB*pdf
+AddDescription "&#2;&#3;&#2;<FONT COLOR=#008800>KE-8E (EAE) Instruction Test 2 - program loader tape (BIN format)</FONT>" *D0MB*bin
+AddDescription "&#2;&#3;&#3;<FONT COLOR=#008800>KE-8E (EAE) Instruction Test 2 - program loader tape (RIM format)</FONT>" *D0MB*rim
+AddDescription "&#2;&#3;&#4;<FONT COLOR=#008800>KE-8E (EAE) Instruction Test 2 - disassembled PAL source (text)</FONT>" *D0MB*pal
+AddDescription "&#2;&#3;&#5;<FONT COLOR=#008800>KE-8E (EAE) Instruction Test 2 - assembled PAL listing (text)</FONT>" *D0MB*lst
+
+AddDescription "&#2;&#4;&#1;<FONT COLOR=#880000>KE-8E (EAE) Extended Memory Exerciser - DEC documentation (acrobat)</FONT>" *DHKEA*pdf
+AddDescription "&#2;&#4;&#2;<FONT COLOR=#880000>KE-8E (EAE) Extended Memory Exerciser - program loader tape (BIN format)</FONT>" *DHKEA*bin
+AddDescription "&#2;&#4;&#3;<FONT COLOR=#880000>KE-8E (EAE) Extended Memory Exerciser - program loader tape (RIM format)</FONT>" *DHKEA*rim
+AddDescription "&#2;&#4;&#4;<FONT COLOR=#880000>KE-8E (EAE) Extended Memory Exerciser - disassembled PAL source (text)</FONT>" *DHKEA*pal
+AddDescription "&#2;&#4;&#5;<FONT COLOR=#880000>KE-8E (EAE) Extended Memory Exerciser - assembled PAL listing (text)</FONT>" *DHKEA*lst

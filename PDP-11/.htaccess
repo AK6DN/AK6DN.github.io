@@ -1,0 +1,12 @@
+Options Indexes
+IndexOrderDefault Ascending Description
+IndexOptions FancyIndexing NameWidth=* DescriptionWidth=* SuppressHTMLPreamble HTMLTable
+IndexStyleSheet /css/PDP-11.css
+IndexIgnore . .htaccess header.html trailer.html
+
+AddDescription "2.11BSD sample files" 2.11BSD
+AddDescription "M9312 boot prom files" M9312
+AddDescription "TU58 diagnostic image files" TU58
+AddDescription "RX02 diagnostic image files" RX02
+AddDescription "diagnostic listings" DIAGNOSTICS
+

@@ -1,0 +1,268 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>TU-58 Emulator</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=ISO-8859-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+<STYLE TYPE="text/css">
+ .HEADER { FONT-SIZE:250%; COLOR:BLACK; FONT-WEIGHT:BOLD; BACKGROUND-COLOR:#EE66AA; }
+ .SUBHEAD { FONT-FAMILY:SANS-SERIF; FONT-SIZE:200%; COLOR:WHITE; FONT-WEIGHT:NORMAL; 
+            BACKGROUND-COLOR:#880044; TEXT-DECORATION:NONE; }
+ .BOX { FONT-SIZE:85%; COLOR:BLACK; FONT-WEIGHT:NORMAL; BACKGROUND-COLOR:#EEEEEE; }
+ .BODY { FONT-SIZE:100%; FONT-WEIGHT:NORMAL; FONT-STYLE:NORMAL; COLOR:BLACK; }
+ .SW { FONT-SIZE:85%; FONT-WEIGHT:BOLD; FONT-STYLE:NORMAL; COLOR:BLACK; }
+</STYLE>
+</HEAD>
+<BODY>
+
+<TABLE WIDTH="100%" BORDER="2" CELLPADDING="1" CELLSPACING="1">
+  <TR>
+    <TH WIDTH="10%">
+      <TABLE WIDTH="100%" BORDER="0" CELLPADDING="1" CELLSPACING="1"><TR>
+      <TD><A HREF="/PDP-11/" CLASS="SUBHEAD">a</A></TD>
+      <TD><A HREF="/PDP-11/" CLASS="SUBHEAD">k</A></TD>
+      <TD><A HREF="/PDP-11/" CLASS="SUBHEAD">6</A></TD>
+      <TD><A HREF="/PDP-11/" CLASS="SUBHEAD">d</A></TD>
+      <TD><A HREF="/PDP-11/" CLASS="SUBHEAD">n</A></TD>
+      </TR></TABLE>
+    </TH>
+    <TH CLASS="HEADER">TU-58 Emulator</TH>
+    <TH WIDTH="10%">
+      <TABLE WIDTH="100%" BORDER="0" CELLPADDING="1" CELLSPACING="1"><TR>
+      <TD><A HREF="/PDP-11/" CLASS="SUBHEAD">a</A></TD>
+      <TD><A HREF="/PDP-11/" CLASS="SUBHEAD">k</A></TD>
+      <TD><A HREF="/PDP-11/" CLASS="SUBHEAD">6</A></TD>
+      <TD><A HREF="/PDP-11/" CLASS="SUBHEAD">d</A></TD>
+      <TD><A HREF="/PDP-11/" CLASS="SUBHEAD">n</A></TD>
+      </TR></TABLE>
+    </TH>
+  </TR>
+</TABLE>
+
+<P CLASS="BODY">
+<STRONG>tu58em</STRONG> is a software emulation of a DECtapeII TU-58 block
+addressable cartridge tape drive. It requires only a standard Windows PC as a
+host with an RS232 serial port to connect to the target system.
+<BR><BR>
+<STRONG>tu58em</STRONG> was originally based on the 1984 Dan Ts'o
+<STRONG>tu58</STRONG> program, but has been almost completely rewritten to make
+it compile error free, improve the program flow, and add new functionality.
+It has been compiled within the <A HREF="http://www.cygwin.com">CYGWIN</A>
+environment, and will run either within a CYGWIN window or an MSDOS command
+window with the associated cygwin1.dll helper file.
+<BR><BR>
+Each emulated .DSK image file is exactly 256KB (512 blocks of 512 bytes)
+of data and is a byte-for-byte image of the data on a TU-58 cartridge tape.
+As currently configured <STRONG>tu58em</STRONG> will support up to 8 drives
+per controller as DD0: to DD7: (altho this is easily changed in the source).
+<BR><BR>
+<STRONG>tu58em</STRONG> has been tested using both native RS232 serial COM ports and
+serial ports emulated thru USB serial adapters.
+<BR><BR>
+If the emulator is run with no options, it prints a usage screen:
+</P>
+
+<TABLE WIDTH="600" BORDER="1" CELLPADDING="10" CELLSPACING="1" ALIGN="CENTER">
+<TR><TD CLASS="BOX"><PRE>
+
+E:&#92;DEC&#62; tu58em
+ERROR: no units were specified
+FATAL: illegal command line
+  tu58 tape emulator v1.4j
+  Usage: ./tu58em [-options] -[rwci] file1 ... -[rwci] file7
+  Options: -V | --version            output version string
+           -v | --verbose            enable verbose output to terminal
+           -d | --debug              enable debug output to terminal
+           -m | --mrsp               enable standard MRSP mode (byte-level handshake)
+           -n | --nosync             disable sending INIT at initial startup
+           -t | --timing 1           add timing delays to spoof diagnostic into passing
+           -T | --timing 2           add timing delays to mimic a real TU58
+           -s | --speed BAUD         set line speed [1200..230400; default 9600]
+           -p | --port PORT          set port to PORT [1..N or /dev/comN; default 1]
+           -r | --read|rd FILENAME   readonly drive
+           -w | --write FILENAME     read/write drive
+           -c | --create FILENAME    create new r/w drive, zero tape
+           -i | --initrt11 FILENAME  create new r/w drive, initialize RT11 directory
+           -z | --initxxdp FILENAME  create new r/w drive, initialize XXDP directory
+E:&#92;DEC&#62;
+</PRE></TD></TR>
+</TABLE>
+
+<P CLASS="BODY">
+Most of the switches should be pretty obvious:
+<BR><BR>
+<TABLE BORDER="1" CELLPADDING="2" CELLSPACING="1" ALIGN="CENTER">
+<TR><TD CLASS="SW" ALIGN="CENTER">-V</TD>
+<TD>prints the program version and exits</TD></TR>
+<TR><TD CLASS="SW" ALIGN="CENTER">-v</TD>
+<TD>sets verbose mode, which outputs status as the emulator runs</TD></TR>
+<TR><TD CLASS="SW" ALIGN="CENTER">-d</TD>
+<TD>sets debug mode, which dumps out all packets sent/received</TD></TR>
+<TR><TD CLASS="SW" ALIGN="CENTER">-m</TD>
+<TD>enables MRSP mode (VERY MUCH UNTESTED) instead of the default original RSP mode</TD></TR>
+<TR><TD CLASS="SW" ALIGN="CENTER">-n</TD>
+<TD>disables the sending of INIT characters at startup</TD></TR>
+<TR><TD CLASS="SW" ALIGN="CENTER">-t</TD>
+<TD>adds time delays to allow the emulator to pass the DEC ZTUUF0 TU-58 Performance Exerciser diagnostic</TD></TR>
+<TR><TD CLASS="SW" ALIGN="CENTER">-T</TD>
+<TD>adds time delays to make the emulator nearly as slow as a real TU-58 (just for fun)</TD></TR>
+<TR><TD CLASS="SW" ALIGN="CENTER">-s BAUD</TD>
+<TD>sets the baud rate (115200, 57600, 38400, 19200, 9600, 4800, 2400, 1200 are supported)</TD></TR>
+<TR><TD CLASS="SW" ALIGN="CENTER">-p PORT</TD>
+<TD>sets the com port as a number (1,2,3,...) or if not numeric the full path (/dev/com1)</TD></TR>
+<TR><TD CLASS="SW" ALIGN="CENTER">-r FILENAME</TD>
+<TD>set the next unit as a read only drive using file FILENAME</TD></TR>
+<TR><TD CLASS="SW" ALIGN="CENTER">-w FILENAME</TD>
+<TD>set the next unit as a read/write drive using file FILENAME</TD></TR>
+<TR><TD CLASS="SW" ALIGN="CENTER">-c FILENAME</TD>
+<TD>set the next unit as a read/write drive using file FILENAME, zero the file before use</TD></TR>
+<TR><TD CLASS="SW" ALIGN="CENTER">-i FILENAME</TD>
+<TD>set the next unit as a read/write drive using file FILENAME, initialize RT-11 filesystem before use</TD></TR>
+<TR><TD CLASS="SW" ALIGN="CENTER">-z FILENAME</TD>
+<TD>set the next unit as a read/write drive using file FILENAME, initialize XXDP filesystem before use</TD></TR>
+</TABLE>
+<BR>
+A sample run of <STRONG>tu58em</STRONG>, using COM4 at 115.2Kb, and two read-only XXDP tape images mounted
+on units DD0 and DD1.
+</P>
+
+<TABLE WIDTH="600" BORDER="1" CELLPADDING="10" CELLSPACING="1" ALIGN="CENTER">
+<TR><TD CLASS="BOX"><PRE>
+E:&#92;DEC&#62; tu58em -p 4 -s 115200 -v -r 11XXDP.DSK -r 1134_1.DSK
+info: unit 0 r    file '11XXDP.DSK'
+info: unit 1 r    file '1134_1.DSK'
+info: serial port 4 at 115200 baud
+info: TU58 emulation start
+info: R restart, S toggle send init, V toggle verbose, D toggle debug, Q quit
+info: emulator started
+info: &#60;INIT&#62;&#60;INIT&#62; seen, sending &#60;CONT&#62;
+info: boot     unit=0 blk=0x0000 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0009 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x000A cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x000B cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x000C cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x000D cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x000E cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x000F cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0010 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0011 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0012 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0013 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0014 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0015 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0016 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0017 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0018 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0019 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x001A cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x001B cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x001C cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x001D cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x001E cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x001F cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0020 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0021 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0022 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0023 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0024 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0025 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0026 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0027 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x000E cnt=0x0400
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0018 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0003 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0004 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0005 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0006 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x000E cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0014 cnt=0x0400
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0019 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0003 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x001A cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0044 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0045 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0046 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0047 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0048 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0049 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x004A cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x004B cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x004C cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x004D cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x004E cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x004F cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0050 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0051 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0052 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0053 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0054 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0055 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0056 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0057 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0058 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0059 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x005A cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x005B cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x005C cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x005D cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x005E cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x005F cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0060 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0061 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0062 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0063 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0064 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0065 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0066 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0067 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0068 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x0069 cnt=0x0200
+info: read     unit=0 sw=0x00 mod=0x00 blk=0x006A cnt=0x0200
+  [ Q typed ]
+info: TU58 emulation end
+E:&#92;DEC&#62;
+</PRE></TD></TR>
+</TABLE>
+
+<P CLASS="BODY">
+Here is the console output from an 11/34 (with an M9312 and DL11-W) that is booting:
+</P>
+
+<TABLE WIDTH="600" BORDER="1" CELLPADDING="10" CELLSPACING="1" ALIGN="CENTER">
+<TR><TD CLASS="BOX"><PRE>
+014260 125320 053060 114360
+@DD0
+
+BOOTING UP XXDP-XM EXTENDED MONITOR
+
+XXDP-XM EXTENDED MONITOR - XXDP V2.5
+REVISION: F0
+BOOTED FROM DD0
+124KW OF MEMORY
+UNIBUS SYSTEM
+
+RESTART ADDRESS: 152000
+TYPE "H" FOR HELP !
+
+.
+</PRE></TD></TR>
+</TABLE>
+
+<P CLASS="BODY">
+<STRONG>tu58em</STRONG> is now available <A HREF="https://github.com/AK6DN/tu58em">here</A> on github.
+Included are a compiled native windows executable, a cygwin executable, and full source code. The
+latest version of <STRONG>tu58em</STRONG> compiles and has been tested on Windows XPsp3 and Windows 7sp1 32b
+using the CYGWIN environment, on Ubuntu linux 12.04.5 LTS, and on Mac OSX 10.10.
+</P>
+
+<HR>
+<TABLE WIDTH="100%" STYLE="FONT-SIZE:80%; FONT-WEIGHT:NORMAL; FONT-STYLE:ITALIC">
+<TR>
+<TD ALIGN="LEFT">Last updated:  2016-11-27 12:15pm PST</TD>
+<TD ALIGN="RIGHT">By:&nbsp;&nbsp;ak6dn&nbsp;_at_&nbsp;mindspring&nbsp;_dot_&nbsp;com</TD>
+</TR>
+</TABLE>
+<HR>
+
+</BODY>
+</HTML>

@@ -1,0 +1,105 @@
+       1                                	.title	M9312 'XE' BOOT prom for NETWORK BOOT on a DEUNA/DELUA controller
+       2                                
+       3                                	; This source code is an exact copy of the DEC M9312 23-E33A9 boot PROM.
+       4                                	;
+       5                                	; This boot PROM is for network booting on a DEUNA/DELUA ethernet interface.
+       6                                	; 
+       7                                	; This is ROM #2 of a two ROM set.
+       8                                	;
+       9                                	; Multiple units and/or CSR addresses are supported via different entry points.
+      10                                	;
+      11                                	; Standard devices are 82S131, Am27S13, 74S571 or other compatible bipolar
+      12                                	; PROMs with a 512x4 TriState 16pin DIP architecture. This code resides in
+      13                                	; the low half of the device; the top half is blank and unused.
+      14                                	;
+      15                                	; Alternatively, 82S129 compatible 256x4 TriState 16pin DIP devices can be
+      16                                	; used, as the uppermost address line (hardwired low) is an active low chip
+      17                                	; select (and will be correctly asserted low).
+      18                                
+      19        177564                  prtsts	=177564				; tty console printer status register
+      20        177566                  prtdat	=177566				; tty console printer data register
+      21                                
+      22 000000                         	.asect
+      23        173000                  	.=173000
+      24                                	
+      25                                	; --------------------------------------------------
+      26                                	
+      27 173000 177776                  start:	.word	<-2>			; signal this is a continuation ROM
+      28                                
+      29                                	; --------------------------------------------------
+      30                                	
+      31 173002 112337  177566          rom2:	movb	(r3)+,@#prtdat		; print character from buffer
+      32                                
+      33 173006 105737  177564          1$:	tstb	@#prtsts		; wait until done printing
+      34 173012 100375                  	bpl	1$			; 
+      35                                
+      36 173014 005304                  	dec	r4			; decrement buffer count
+      37 173016 001371                  	bne	rom2			; loop if more to print
+      38 173020 000406                  	br	4$			; done printing
+      39                                
+      40 173022 112737  000055  177566  2$:	movb	#<'->,@#prtdat		; print a dash
+      41                                
+      42 173030 105737  177564          3$:	tstb	@#prtsts		; wait until done printing
+      43 173034 100375                  	bpl	3$			; 
+      44                                	
+      45 173036 112503                  4$:	movb	(r5)+,r3		; get next byte, extend to word
+      46 173040 042703  177400          	bic	#^c377,r3		; clear upper half
+      47 173044 010300                  	mov	r3,r0			; save a copy
+      48 173046 142703  000360          	bicb	#360,r3			; clear upper nibble of byte
+      49 173052 072027  177774          	ash	#-4,r0			; shift right four bits
+      50                                
+      51 173056 122700  000011          	cmpb	#9.,r0			; compare digit 9.
+      52 173062 002003                  	bge	5$			; br if 9. or more
+      53 173064 062700  000067          	add	#<'7>,r0		; offset by ascii '7'
+      54 173070 000402                  	br	6$			; continue
+      55 173072 062700  000060          5$:	add	#<'0>,r0		; offset by ascii '0'
+      56 173076 110037  177566          6$:	movb	r0,@#prtdat		; print character
+      57                                
+      58 173102 105737  177564          7$:	tstb	@#prtsts		; wait until done printing
+      59 173106 100375                  	bpl	7$			;
+      60                                
+      61 173110 122703  000011          	cmpb	#9.,r3			; compare digit 9.
+      62 173114 002003                  	bge	8$			; br if 9. or more
+      63 173116 062703  000067          	add	#<'7>,r3		; offset by ascii '7'
+      64 173122 000402                  	br	9$			; continue
+      65 173124 062703  000060          8$:	add	#<'0>,r3		; offset by ascii '0'
+      66 173130 110337  177566          9$:	movb	r3,@#prtdat		; print character
+      67                                
+      68 173134 105737  177564          10$:	tstb	@#prtsts		; wait until done printing
+      69 173140 100375                  	bpl	10$			;
+      70                                
+      71 173142 022705  000710          	cmp	#710,r5			; hit end of data structure?
+      72 173146 001325                  	bne	2$			; loop if not yet
+      73                                
+      74 173150 012711  004005          	mov	#4005,(r1)		; CLR.DONE + CMD=BOOT into device register
+      75 173154 012700  000002          	mov	#2,r0			; address [2] into r0
+      76 173160 012720                  	mov	(pc)+,(r0)+		; next word into memory [2]; bump ptr
+      77 173162 000777                  	 br	.			; ..this instruction word
+      78 173164 010110                  	mov	r1,(r0)			; device register address into memory [4]
+      79 173166 000140                  	jmp	-(r0)			; jump to location [2] 
+      80                                
+      81                                	; --------------------------------------------------
+      82                                	
+      83 173170 000000  000000  000000  	.word	0,0,0			; unused
+      84                                
+      85                                	; --------------------------------------------------
+      86                                	
+      87        173176                  	.=start+176
+      88 173176 051553                  crc16:	.word	<051553>		; CRC-16 will go here (computed=160327)
+      89                                
+      90                                	.end
+      90                                
+
+
+Symbol table
+
+.     =******           3$0   =173030   L       7$0   =173102   L       PRTDAT=177566           
+1$0   =173006   L       4$0   =173036   L       8$0   =173124   L       PRTSTS=177564           
+10$0  =173134   L       5$0   =173072   L       9$0   =173130   L       ROM2  =173002           
+2$0   =173022   L       6$0   =173076   L       CRC16 =173176           START =173000           
+
+
+Program sections:
+
+. ABS.  173200    000   (RW,I,GBL,ABS,OVR,NOSAV)
+        000000    001   (RW,I,LCL,REL,CON,NOSAV)

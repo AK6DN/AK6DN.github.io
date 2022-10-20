@@ -1,0 +1,286 @@
+       1                                .title	DL11 Tester - interrupt I/O
+       2                                
+       3                                .sbttl	DL11 definitions
+       4                                
+       5        177560                  ttbase	=177560
+       6        176500                  dlbase	=176500
+       7                                
+       8        000060                  ttvect	=60
+       9        000300                  dlvect	=300
+      10                                
+      11        000000                  rcsr	=0
+      12        000002                  rbuf	=2
+      13        000004                  tcsr	=4
+      14        000006                  tbuf	=6
+      15                                
+      16                                .sbttl	low memory
+      17                                
+      18                                	.enabl	ama			; change all mode 67 references to 37
+      19 000000                         	.asect				; absolute load image
+      20                                
+      21        000060                  	.=ttvect
+      22 000060 002500                  	ttrint				; tt rx interrupt
+      23 000062 000240                  	<5>*40				; ipl<5>
+      24 000064 002650                  	tttint				; tt tx interrupt
+      25 000066 000240                  	<5>*40				; ipl<5>
+      26                                	
+      27        000300                  	.=dlvect
+      28 000300 002564                  	dlrint				; dl rx interrupt
+      29 000302 000240                  	<5>*40				; ipl<5>
+      30 000304 002722                  	dltint				; dl tx interrupt
+      31 000306 000240                  	<5>*40				; ipl<5>
+      32                                
+      33        000200                  	.=200
+      34 000200 000137  002010          	jmp	@#start			; standard diagnostic entry
+      35                                
+      36                                .sbttl	global variables
+      37                                
+      38        000100                  datlen	=64.				; size of buffers to use
+      39                                
+      40        000400                  	.=400
+      41 000400 177560                  ttrcsr:	.word	ttbase+rcsr		; tt rx csr
+      42 000402 177562                  ttrbuf:	.word	ttbase+rbuf		; tt rx buf
+      43 000404 177564                  tttcsr:	.word	ttbase+tcsr		; tt tx csr
+      44 000406 177566                  tttbuf:	.word	ttbase+tbuf		; tt tx buf
+      45                                
+      46 000410 004000                  ttript:	.word	ttrdat			; tt rx input ptr
+      47 000412 004000                  ttropt:	.word	ttrdat			; tt rx output ptr
+      48 000414 004000                  ttrmin:	.word	ttrdat			; tt rx buffer start
+      49 000416 004077                  ttrmax:	.word	ttrdat+datlen-1		; tt rx buffer end
+      50                                
+      51 000420 004100                  tttipt:	.word	tttdat			; tt tx input ptr
+      52 000422 004100                  tttopt:	.word	tttdat			; tt tx output ptr
+      53 000424 004100                  tttmin:	.word	tttdat			; tt tx buffer start
+      54 000426 004177                  tttmax:	.word	tttdat+datlen-1		; tt tx buffer end
+      55                                
+      56        000500                  	.=500
+      57 000500 176500                  dlrcsr:	.word	dlbase+rcsr		; dl rx csr
+      58 000502 176502                  dlrbuf:	.word	dlbase+rbuf		; dl rx buf
+      59 000504 176504                  dltcsr:	.word	dlbase+tcsr		; dl tx csr
+      60 000506 176506                  dltbuf:	.word	dlbase+tbuf		; dl tx buf
+      61                                
+      62 000510 004200                  dlript:	.word	dlrdat			; dl rx input ptr
+      63 000512 004200                  dlropt:	.word	dlrdat			; dl rx output ptr
+      64 000514 004200                  dlrmin:	.word	dlrdat			; dl rx buffer start
+      65 000516 004277                  dlrmax:	.word	dlrdat+datlen-1		; dl rx buffer end
+      66                                
+      67 000520 004300                  dltipt:	.word	dltdat			; dl tx input ptr
+      68 000522 004300                  dltopt:	.word	dltdat			; dl tx output ptr
+      69 000524 004300                  dltmin:	.word	dltdat			; dl tx buffer start
+      70 000526 004377                  dltmax:	.word	dltdat+datlen-1		; dl tx buffer end
+      71                                	
+      72        002000                  	.=2000
+      73        002000                  stack:	.blkw	3			; top of stack plus some space
+      74 002006 000000                  option:	.word	000000			; 0=straight thru, 4=loopback in TU58 interface
+      75                                
+      76                                .sbttl	program start
+      77                                
+      78                                	; initialization
+      79                                
+      80 002010 012706  002000          start:	mov	#stack,sp		; setup a stack
+      81 002014 000005                  	reset				; reset the world
+      82 002016 012746  000340          	mov	#<7>*40,-(sp)		; ipl 7
+      83 002022 012746  002030          	mov	#1$,-(sp)		; address
+      84 002026 000002                  	rti				; go there
+      85 002030 000240                  1$:	nop				; placeholder
+      86                                
+      87                                	; setup tt rx
+      88                                
+      89 002032 013700  000414          	mov	ttrmin,r0		; start of buffer
+      90 002036 012701  000100          	mov	#datlen,r1		; length of buffer
+      91 002042 105020                  2$:	clrb	(r0)+			; zap
+      92 002044 005301                  	dec	r1			; 
+      93 002046 001375                  	bne	2$			; loop
+      94 002050 013737  000414  000410  	mov	ttrmin,ttript		; setup tt rx in/out pointers
+      95 002056 013737  000414  000412  	mov	ttrmin,ttropt		;
+      96 002064 105777  176312          	tstb	@ttrbuf			; discard anything there
+      97 002070 012777  000100  176302  	mov	#100,@ttrcsr		; set interrupt enable
+      98                                
+      99                                	; setup dl rx
+     100                                
+     101 002076 013700  000514          	mov	dlrmin,r0		; start of buffer
+     102 002102 012701  000100          	mov	#datlen,r1		; length of buffer
+     103 002106 105020                  3$:	clrb	(r0)+			; zap
+     104 002110 005301                  	dec	r1			; 
+     105 002112 001375                  	bne	3$			; loop
+     106 002114 013737  000514  000510  	mov	dlrmin,dlript		; setup dl rx in/out pointers
+     107 002122 013737  000514  000512  	mov	dlrmin,dlropt		;
+     108 002130 105777  176346          	tstb	@dlrbuf			; discard anything there
+     109 002134 012777  000100  176336  	mov	#100,@dlrcsr		; set interrupt enable
+     110                                
+     111                                	; setup tt tx
+     112                                
+     113 002142 013700  000424          	mov	tttmin,r0		; start of buffer
+     114 002146 012701  000100          	mov	#datlen,r1		; length of buffer
+     115 002152 105020                  4$:	clrb	(r0)+			; zap
+     116 002154 005301                  	dec	r1			; 
+     117 002156 001375                  	bne	4$			; loop
+     118 002160 013737  000424  000420  	mov	tttmin,tttipt		; setup tt tx in/out pointers
+     119 002166 013737  000424  000422  	mov	tttmin,tttopt		;
+     120 002174 012777  000100  176202  	mov	#100,@tttcsr		; set interrupt enable
+     121 002202 005077  176200          	clr	@tttbuf			; kick transmit
+     122                                	
+     123                                	; setup dl tx
+     124                                
+     125 002206 013700  000524          	mov	dltmin,r0		; start of buffer
+     126 002212 012701  000100          	mov	#datlen,r1		; length of buffer
+     127 002216 105020                  5$:	clrb	(r0)+			; zap
+     128 002220 005301                  	dec	r1			; 
+     129 002222 001375                  	bne	5$			; loop
+     130 002224 013737  000524  000520  	mov	dltmin,dltipt		; setup dl tx in/out pointers
+     131 002232 013737  000524  000522  	mov	dltmin,dltopt		;
+     132 002240 012777  000100  176236  	mov	#100,@dltcsr		; set interrupt enable
+     133 002246 005077  176234          	clr	@dltbuf			; kick transmit
+     134                                	
+     135                                	; finish initialization
+     136                                
+     137 002252 053777  002006  176224  	bis	option,@dltcsr		; TU58 interface option(s) [MAINT mode]
+     138                                
+     139 002260 012746  000000          	mov	#<0>*40,-(sp)		; ipl 0
+     140 002264 012746  002272          	mov	#loop,-(sp)		; start of loop
+     141 002270 000002                  	rti				; go there
+     142                                
+     143                                	; process characters
+     144                                
+     145 002272 000240                  loop:	nop				; check TTY rcv char done
+     146                                	
+     147                                	; check tt rx char available
+     148                                
+     149 002274 023737  000412  000410  10$:	cmp	ttropt,ttript		; compare char ptrs
+     150 002302 001434                  	beq	20$			; br if equal, no chars avail
+     151 002304 117700  176102          	movb	@ttropt,r0		; get character
+     152 002310 023737  000412  000416  	cmp	ttropt,ttrmax		; at maximum ?
+     153 002316 103003                  	bhis	11$			; br if yes
+     154 002320 005237  000412          	inc	ttropt			; no, bump ptr
+     155 002324 000403                  	br	12$			; 
+     156 002326 013737  000414  000412  11$:	mov	ttrmin,ttropt		; wrap to start
+     157 002334 000240                  12$:	nop				; placeholder
+     158                                
+     159                                	; send tt rx char to dl tx char
+     160                                
+     161 002336 110077  176156          	movb	r0,@dltipt		; store char to buffer
+     162 002342 023737  000520  000526  	cmp	dltipt,dltmax		; at maximum ?
+     163 002350 103003                  	bhis	13$			; br if yes
+     164 002352 005237  000520          	inc	dltipt			; no, bump ptr
+     165 002356 000403                  	br	14$			;
+     166 002360 013737  000524  000520  13$:	mov	dltmin,dltipt		; wrap to start
+     167 002366 052777  000100  176110  14$:	bis	#100,@dltcsr		; enable tx intr
+     168                                	
+     169                                	; check dl rx char available
+     170                                
+     171 002374 023737  000512  000510  20$:	cmp	dlropt,dlript		; compare char ptrs
+     172 002402 001434                  	beq	30$			; br if equal, no chars avail
+     173 002404 117701  176102          	movb	@dlropt,r1		; get character
+     174 002410 023737  000512  000516  	cmp	dlropt,dlrmax		; at maximum ?
+     175 002416 103003                  	bhis	21$			; br if yes
+     176 002420 005237  000512          	inc	dlropt			; no, bump ptr
+     177 002424 000403                  	br	22$			; 
+     178 002426 013737  000514  000512  21$:	mov	dlrmin,dlropt		; wrap to start
+     179 002434 000240                  22$:	nop				; placeholder
+     180                                
+     181                                	; send dl rx char to tt tx char
+     182                                
+     183 002436 110177  175756          	movb	r1,@tttipt		; store char to buffer
+     184 002442 023737  000420  000426  	cmp	tttipt,tttmax		; at maximum ?
+     185 002450 103003                  	bhis	23$			; br if yes
+     186 002452 005237  000420          	inc	tttipt			; no, bump ptr
+     187 002456 000403                  	br	24$			;
+     188 002460 013737  000424  000420  23$:	mov	tttmin,tttipt		; wrap to start
+     189 002466 052777  000100  175710  24$:	bis	#100,@tttcsr		; enable tx intr
+     190                                	
+     191                                	; loop
+     192                                	
+     193 002474 000137  002272          30$:	jmp	loop			; back to top	
+     194                                
+     195                                .sbttl	tt rx interrupt
+     196                                
+     197 002500 117777  175676  175702  ttrint:	movb	@ttrbuf,@ttript		; store char in buffer
+     198 002506 005237  000410          	inc	ttript			; bump pointer
+     199 002512 023737  000410  000416  	cmp	ttript,ttrmax		; above maximum ?
+     200 002520 101403                  	blos	1$			; br if ok
+     201 002522 013737  000414  000410  	mov	ttrmin,ttript		; yes, wrap to start
+     202 002530 023737  000410  000412  1$:	cmp	ttript,ttropt		; ptr collision?
+     203 002536 001011                  	bne	2$			; br if not
+     204 002540 005337  000410          	dec	ttript			; yes, backoff ptr
+     205 002544 023737  000410  000414  	cmp	ttript,ttrmin		; below minimum ?
+     206 002552 103003                  	bhis	2$			; br if ok
+     207 002554 013737  000416  000410  	mov	ttrmax,ttript		; yes, wrap to end
+     208 002562 000002                  2$:	rti				; return
+     209                                
+     210                                .sbttl	dl rx interrupt
+     211                                
+     212 002564 117777  175712  175716  dlrint:	movb	@dlrbuf,@dlript		; store char in buffer
+     213 002572 005237  000510          	inc	dlript			; bump pointer
+     214 002576 023737  000510  000516  	cmp	dlript,dlrmax		; above maximum ?
+     215 002604 101403                  	blos	1$			; br if ok
+     216 002606 013737  000514  000510  	mov	dlrmin,dlript		; yes, wrap to start
+     217 002614 023737  000510  000512  1$:	cmp	dlript,dlropt		; ptr collision?
+     218 002622 001011                  	bne	2$			; br if not
+     219 002624 005337  000510          	dec	dlript			; yes, backoff ptr
+     220 002630 023737  000510  000514  	cmp	dlript,dlrmin		; below minimum ?
+     221 002636 103003                  	bhis	2$			; br if ok
+     222 002640 013737  000516  000510  	mov	dlrmax,dlript		; yes, wrap to end
+     223 002646 000002                  2$:	rti				; return
+     224                                
+     225                                .sbttl	tt tx interrupt
+     226                                
+     227 002650 023737  000422  000420  tttint:	cmp	tttopt,tttipt		; ptr collision
+     228 002656 001415                  	beq	1$			; br if yes, nothing in buffer
+     229 002660 117777  175536  175520  	movb	@tttopt,@tttbuf		; output char from buffer
+     230 002666 005237  000422          	inc	tttopt			; bump ptr
+     231 002672 023737  000422  000426  	cmp	tttopt,tttmax		; above maximum ?
+     232 002700 101407                  	blos	2$			; br if ok
+     233 002702 013737  000424  000422  	mov	tttmin,tttopt		; yes, wrap to start
+     234 002710 000403                  	br	2$			; done
+     235 002712 042777  000100  175464  1$:	bic	#100,@tttcsr		; turn off intr enable
+     236 002720 000002                  2$:	rti				; return
+     237                                
+     238                                .sbttl	dl tx interrupt
+     239                                
+     240 002722 023737  000522  000520  dltint:	cmp	dltopt,dltipt		; ptr collision
+     241 002730 001415                  	beq	1$			; br if yes, nothing in buffer
+     242 002732 117777  175564  175546  	movb	@dltopt,@dltbuf		; output char from buffer
+     243 002740 005237  000522          	inc	dltopt			; bump ptr
+     244 002744 023737  000522  000526  	cmp	dltopt,dltmax		; above maximum ?
+     245 002752 101407                  	blos	2$			; br if ok
+     246 002754 013737  000524  000522  	mov	dltmin,dltopt		; yes, wrap to start
+     247 002762 000403                  	br	2$			; done
+     248 002764 042777  000100  175512  1$:	bic	#100,@dltcsr		; turn off intr enable
+     249 002772 000002                  2$:	rti				; return
+     250                                
+     251                                .sbttl	data buffers
+     252                                
+     253        004000                  	.=4000
+     254                                	
+     255        004000                  ttrdat:	.blkb	datlen			; tt rx buffer
+     256        004100                  tttdat:	.blkb	datlen			; tt tx buffer
+     257                                
+     258        004200                  dlrdat:	.blkb	datlen			; dl rx buffer
+     259        004300                  dltdat:	.blkb	datlen			; dl tx buffer
+     260                                
+     261                                .end
+     261                                
+
+
+Symbol table
+
+.     =******           2$4   =002720   L       DLRCSR=000500           DLTOPT=000522           TTRINT=002500           
+1$0   =002030   L       2$5   =002772   L       DLRDAT=004200           DLVECT=000300           TTRIPT=000410           
+1$2   =002530   L       20$1  =002374   L       DLRINT=002564           LOOP  =002272           TTRMAX=000416           
+1$3   =002614   L       21$1  =002426   L       DLRIPT=000510           OPTION=002006           TTRMIN=000414           
+1$4   =002712   L       22$1  =002434   L       DLRMAX=000516           RBUF  =000002           TTROPT=000412           
+1$5   =002764   L       23$1  =002460   L       DLRMIN=000514           RCSR  =000000           TTTBUF=000406           
+10$1  =002274   L       24$1  =002466   L       DLROPT=000512           STACK =002000           TTTCSR=000404           
+11$1  =002326   L       3$0   =002106   L       DLTBUF=000506           START =002010           TTTDAT=004100           
+12$1  =002334   L       30$1  =002474   L       DLTCSR=000504           TBUF  =000006           TTTINT=002650           
+13$1  =002360   L       4$0   =002152   L       DLTDAT=004300           TCSR  =000004           TTTIPT=000420           
+14$1  =002366   L       5$0   =002216   L       DLTINT=002722           TTBASE=177560           TTTMAX=000426           
+2$0   =002042   L       DATLEN=000100           DLTIPT=000520           TTRBUF=000402           TTTMIN=000424           
+2$2   =002562   L       DLBASE=176500           DLTMAX=000526           TTRCSR=000400           TTTOPT=000422           
+2$3   =002646   L       DLRBUF=000502           DLTMIN=000524           TTRDAT=004000           TTVECT=000060           
+
+
+Program sections:
+
+. ABS.  004400    000   (RW,I,GBL,ABS,OVR,NOSAV)
+        000000    001   (RW,I,LCL,REL,CON,NOSAV)

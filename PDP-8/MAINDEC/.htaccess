@@ -1,0 +1,16 @@
+Options Indexes
+IndexOrderDefault Ascending Name
+IndexOptions FancyIndexing NameWidth=* DescriptionWidth=* SuppressHTMLPreamble HTMLTable
+IndexStyleSheet /css/PDP-8.css
+IndexIgnore . .htaccess
+
+AddIcon /icons/text.gif *.lst *.pal *.ini *.log
+AddIcon /icons/binary.gif *.bin *.rim
+
+AddDescription "PDP-8e EAE Diagnostics" KE8-E*
+AddDescription "PDP-8e CPU Diagnostics" KK8-E*
+AddDescription "PDP-8e Memory Extension Diagnositcs" KM8-E*
+AddDescription "PDP-8e Memory Diagnostics" MM8-EJ*
+
+AddDescription "PDP-8 Binary Loaders (BIN,RIM)" Binary*
+

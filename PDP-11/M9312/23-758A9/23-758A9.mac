@@ -1,0 +1,105 @@
+	.title	M9312 'MT' BOOT prom for TM11 controller
+
+	; This source code is an exact copy of the DEC M9312 23-758A9 boot PROM.
+	;
+	; This boot PROM is for the TM11 controller with TS03/TU10/TE10 drives.
+	;
+	; Multiple units and/or CSR addresses are supported via different entry points.
+	;
+	; Standard devices are 82S131, Am27S13, 74S571 or other compatible bipolar
+	; PROMs with a 512x4 TriState 16pin DIP architecture. This code resides in
+	; the low half of the device; the top half is blank and unused.
+	;
+	; Alternatively, 82S129 compatible 256x4 TriState 16pin DIP devices can be
+	; used, as the uppermost address line (hardwired low) is an active low chip
+	; select (and will be correctly asserted low).
+
+tmcsr	=172520				; std TM11 csrbase
+
+tmcs	=+0-2				; status
+tmwc	=+4-2				; word count
+
+diags	=165564				; console diags phase2 entry
+
+	.asect
+	.=173000
+
+	; --------------------------------------------------
+
+start:	.ascii	"TM"			; device code (reversed)
+
+	.word	last-.			; offset to next boot header
+
+mt0n:	sec				; boot std csr, unit zero, no diags
+mt0d:	mov	#0,r0			; boot std csr, unit zero, with diags
+mtNr:	mov	#tmcsr+2,r1		; boot std csr, unit <R0>
+mtNb:	mov	pc,r4			; boot csr <R1>, unit <R0>
+	bcc	diag			; br if diags requested
+	br	go			; return to (R4)+2 from diags
+					; then skip over pseudo reboot vector
+
+	; --------------------------------------------------
+
+	.word	173000			; prom start addess @ 24
+	.word	340			; and priority level @ 26
+
+	; --------------------------------------------------
+
+mt1d:	mov	#1,r0			; boot std csr, unit one, with diags
+	br	mtNr			; continue
+
+mt1n:	mov	#1,r0			; boot std csr, unit one, no diags
+	sec				; no diag flag
+	br	mtNr			; continue
+
+	; --------------------------------------------------
+
+go:	mov	r0,r3			; copy unit number
+	swab	r3			; to upper byte
+	mov	r3,(r1)			; to command register
+2$:	ror	tmcs(r1)		; check tape unit ready bit<0>
+	bcc	2$			; br if not yet ready
+
+	bis	#060017,(r1)		; 800BPI/9ch, REWIND+GO
+3$:	tstb	(r1)			; test ready
+	bpl	3$			; br if not yet
+
+	mov	#-1,tmwc(r1)		; set tape byte count
+	movb	#011,(r1)		; SPACEFORWARD+GO
+4$:	tstb	(r1)			; test ready
+	bpl	4$			; br if not yet
+
+	tst	(r1)			; test error bit<15>
+	bmi	6$			; br if ERROR; die and try again
+
+	mov	#-512.,tmwc(r1)		; set word count
+	mov	(r1),r3			; get current unit in high byte
+	bic	#377,r3			; clear low byte
+	bisb	#003,r3			; READ+GO command
+	mov	r3,(r1)			; execute
+5$:	tstb	(r1)			; test ready
+	bpl	5$			; br if not yet
+
+	tst	(r1)			; test error bit<15>
+	bpl	exit			; br if OK
+
+6$:	reset				; FAILed; reset the world
+	br	mtNr			; back up to top and restart
+
+diag:	jmp	@#diags			; jump to console diags
+
+exit:	bic	#377,(r1)		; NOP+GO command, execute
+	clr	pc			; jmp to bootstrap location zero
+
+	; --------------------------------------------------
+
+	.word	0,0,0,0,0		; unused words
+
+	; --------------------------------------------------
+
+	.=start+176
+crc16:	.word	<021526>		; CRC-16 will go here
+
+last:	; next boot prom starts here
+
+	.end

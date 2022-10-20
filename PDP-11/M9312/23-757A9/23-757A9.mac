@@ -1,0 +1,102 @@
+	.title	M9312 'MM' BOOT prom for TU45/TU77/TE16 controllers
+
+	; This source code is an exact copy of the DEC M9312 23-757A9 boot PROM.
+	;
+	; This boot PROM is for the TU45/TU77/TE16 MASSBUS tape controllers.
+	;
+	; Multiple units and/or CSR addresses are supported via different entry points.
+	;
+	; Standard devices are 82S131, Am27S13, 74S571 or other compatible bipolar
+	; PROMs with a 512x4 TriState 16pin DIP architecture. This code resides in
+	; the low half of the device; the top half is blank and unused.
+	;
+	; Alternatively, 82S129 compatible 256x4 TriState 16pin DIP devices can be
+	; used, as the uppermost address line (hardwired low) is an active low chip
+	; select (and will be correctly asserted low).
+
+tucsr	=172440				; std TU45 csrbase
+
+tucs	=+0				; control/status
+tuwc	=+2				; word count
+tuba	=+4				; bus address
+tufc	=+6				; frame count
+tuds	=+12				; drive status
+tuer	=+14				; error register
+tuas	=+16				; attention summary
+tutc	=+32				; tape control
+
+diags	=165564				; console diags phase2 entry
+
+	.asect
+	.=173000
+
+	; --------------------------------------------------
+
+start:	.ascii	"MM"			; device code (reversed)
+
+	.word	last-.			; offset to next boot header
+
+mm0n:	sec				; boot std csr, unit zero, no diags
+mm0d:	mov	#0,r0			; boot std csr, unit zero, with diags
+mmNr:	mov	#tucsr,r1		; boot std csr, unit <R0>
+mmNb:	mov	pc,r4			; boot csr <R1>, unit <R0>
+	bcc	diag			; br if diags requested
+	br	go			; return to (R4)+2 from diags
+					; then skip over pseudo reboot vector
+
+	; --------------------------------------------------
+
+	.word	173000			; prom start addess @ 24
+	.word	340			; and priority level @ 26
+
+	; --------------------------------------------------
+
+go:	reset				; reset the world
+
+	mov	r0,r3			; copy unit number
+	bis	#001300,r3		; set density 800NRZ, format 14
+	mov	r3,tutc(r1)		; execute
+2$:	bit	#010000,tuds(r1)	; check medium is online
+	beq	2$			; br if not yet
+
+	movb	#007,(r1)		; REWIND+GO command
+3$:	tstb	tuds(r1)		; check drive is ready
+	bpl	3$			; br if not yet
+
+	movb	#011,(r1)		; DRIVE_CLEAR+GO command
+4$:	tstb	tuds(r1)		; check drive is ready
+	bpl	4$			; br if not yet
+
+	mov	#-1,tufc(r1)		; set frame count
+	movb	#031,(r1)		; SPACE_FORWARD+GO command
+5$:	tstb	tuds(r1)		; check drive is ready
+	bpl	5$			; br if not yet
+
+	mov	tuas(r1),tuas(r1)	; clear all attn summary bits
+	mov	#-512.,tuwc(r1)		; set word count
+	mov	(r1),r3			; get current csr
+	bic	#377,r3			; clear function code
+	bisb	#071,r3			; READ_FORWARD+GO command
+	mov	r3,(r1)			; execute
+6$:	tstb	(r1)			; test ready
+	bpl	6$			; loop until complete
+
+	tst	(r1)			; test error
+	bpl	7$			; br if OK
+	cmp	#1000,tuer(r1)		; check only error bit is frame count
+	bne	go			; nope, failed, back to start
+
+7$:	clr	pc			; jmp to bootstrap location zero
+
+	; --------------------------------------------------
+
+diag:	jmp	@#diags			; jump to console diags
+
+	; --------------------------------------------------
+
+	.=start+176
+crc16:	.word	<162556>		; CRC-16 will go here
+
+last:	; next boot prom starts here
+
+	.end

@@ -1,0 +1,38 @@
+DOS11 format, assume monitor starts at block 23
+Image supports 988 blocks
+16 directory blocks, block 3 thru 18
+4 bitmap blocks, block 19 thru 22
+467 device blocks in use according to the bitmap
+
+ENTRY# FILNAM.EXT        DATE          LENGTH  START   VERSION
+
+    1  XXDPSM.SYS       1-MAR-89          29     55     E.0
+    2  XXDPXM.SYS       1-MAR-89          39     84     F.0
+    3  DRSSM .SYS       1-MAR-89          24    123     G.2
+    4  DRSXM .SYS       1-MAR-89          48    147     C.0
+    5  DATE  .SYS       1-MAR-89           2    195     B.0
+    6  DB    .SYS       1-MAR-89           2    197     C.0
+    7  DD    .SYS       1-MAR-89           3    199     D.0
+    8  DIR   .SYS       1-MAR-89           7    202     D.0
+    9  DL    .SYS       1-MAR-89           4    209     D.0
+   10  DM    .SYS       1-MAR-89           4    213     C.0
+   11  DR    .SYS       1-MAR-89           3    217     C.0
+   12  DU    .SYS       1-MAR-89           4    220     E.0
+   13  DUSZ  .SYS       1-MAR-89           2    224     C.0
+   14  DY    .SYS       1-MAR-89           3    226     D.0
+   15  LP    .SYS       1-MAR-89           1    229     B.0
+   16  MM    .SYS       1-MAR-89           3    230     C.0
+   17  MS    .SYS       1-MAR-89           4    233     C.0
+   18  MU    .SYS       1-MAR-89           4    237     E.0
+   19  FFPAA1.BIN       1-MAR-89          60    241
+   20  FFPBA0.BIN       1-MAR-89          59    301
+   21  FFPCB0.BIC       1-MAR-89          59    360
+   22  ZQMCH0.BIC       1-MAR-89          26    419
+   23  ZM9AE0.BIC       1-MAR-89           7    445
+   24  ZM9BE0.BIN       1-MAR-89          11    452
+   25  FFPCB0.CCC      31-DEC-99           1    463
+   26  ZQMCH0.CCC      31-DEC-99           1    464
+   27  ZM9AE0.CCC      31-DEC-99           1    465
+   28  TEST  .CCC      31-DEC-99           1    466
+
+FREE BLOCKS:   521

@@ -1,0 +1,29 @@
+TITLE	"DEC STD RIM loader"
+
+*7756	/ standard starting address
+
+BEGIN,	KCC			/ clear AC and flag
+
+MORE,	KSF			/ skip if character available
+	 JMP .-1		/ wait for character
+
+	KRB			/ read buffer and clear flag
+	CLL RTL			/ ch<8:1> in AC<2:9>
+	RTL			/ ch<8:1> in AC<0:7>
+	SPA			/ skip if not leader
+	 JMP MORE		/ jmp if leader seen
+	RTL			/ ch<7> L, ch<6:1> in AC<0:5>
+
+	KSF			/ skip if character available
+	 JMP .-1		/ wait for character
+
+	KRS			/ IOR buffer into AC<6:11>
+	SNL			/ check for address (L=1)
+	 DCA I ADDR		/ store data
+	DCA ADDR		/ store address
+
+	JMP BEGIN		/ loop
+
+ADDR,	0			/ address saved here
+
+$ / the end

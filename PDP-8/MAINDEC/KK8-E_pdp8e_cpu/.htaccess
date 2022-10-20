@@ -1,0 +1,79 @@
+Options Indexes
+IndexOrderDefault Ascending Description
+IndexOptions FancyIndexing NameWidth=* DescriptionWidth=* SuppressHTMLPreamble HTMLTable
+IndexStyleSheet /css/PDP-8.css
+IndexIgnore . .htaccess .htaccess.pl
+
+AddIcon /icons/text.gif *.lst *.pal *.ini *.log
+AddIcon /icons/binary.gif *.bin *.rim
+
+AddDescription "&#1;&#1;Diagnostics SIMH control file, RIM format" diagnostics_rim.ini
+AddDescription "&#1;&#2;Diagnostics SIMH log file, RIM format" diagnostics_rim.log
+AddDescription "&#1;&#3;Diagnostics SIMH control file, BIN format" diagnostics_bin.ini
+AddDescription "&#1;&#4;Diagnostics SIMH log file, BIN format" diagnostics_bin.log
+
+AddDescription "&#2;&#1;&#1;<FONT COLOR=#008800>PDP-8e Instruction Test 1 - DEC documentation (acrobat)</FONT>" *D0AB*pdf
+AddDescription "&#2;&#1;&#2;<FONT COLOR=#008800>PDP-8e Instruction Test 1 - program loader tape (BIN format)</FONT>" *D0AB*bin
+AddDescription "&#2;&#1;&#3;<FONT COLOR=#008800>PDP-8e Instruction Test 1 - program loader tape (RIM format)</FONT>" *D0AB*rim
+AddDescription "&#2;&#1;&#4;<FONT COLOR=#008800>PDP-8e Instruction Test 1 - disassembled PAL source (text)</FONT>" *D0AB*pal
+AddDescription "&#2;&#1;&#5;<FONT COLOR=#008800>PDP-8e Instruction Test 1 - assembled PAL listing (text)</FONT>" *D0AB*lst
+
+AddDescription "&#2;&#2;&#1;<FONT COLOR=#880000>PDP-8e Instruction Test 2 - DEC documentation (acrobat)</FONT>" *D0BB*pdf
+AddDescription "&#2;&#2;&#2;<FONT COLOR=#880000>PDP-8e Instruction Test 2 - program loader tape (BIN format)</FONT>" *D0BB*bin
+AddDescription "&#2;&#2;&#3;<FONT COLOR=#880000>PDP-8e Instruction Test 2 - program loader tape (RIM format)</FONT>" *D0BB*rim
+AddDescription "&#2;&#2;&#4;<FONT COLOR=#880000>PDP-8e Instruction Test 2 - disassembled PAL source (text)</FONT>" *D0BB*pal
+AddDescription "&#2;&#2;&#5;<FONT COLOR=#880000>PDP-8e Instruction Test 2 - assembled PAL listing (text)</FONT>" *D0BB*lst
+
+AddDescription "&#2;&#3;&#1;<FONT COLOR=#008800>PDP-8e Adder Tests - DEC documentation (acrobat)</FONT>" *D0CC*pdf
+AddDescription "&#2;&#3;&#2;<FONT COLOR=#008800>PDP-8e Adder Tests - program loader tape (BIN format)</FONT>" *D0CC*bin
+AddDescription "&#2;&#3;&#3;<FONT COLOR=#008800>PDP-8e Adder Tests - program loader tape (RIM format)</FONT>" *D0CC*rim
+AddDescription "&#2;&#3;&#4;<FONT COLOR=#008800>PDP-8e Adder Tests - disassembled PAL source (text)</FONT>" *D0CC*pal
+AddDescription "&#2;&#3;&#5;<FONT COLOR=#008800>PDP-8e Adder Tests - assembled PAL listing (text)</FONT>" *D0CC*lst
+
+AddDescription "&#2;&#4;&#1;<FONT COLOR=#880000>PDP-8e Random AND Test - DEC documentation (acrobat)</FONT>" *D0DB*pdf
+AddDescription "&#2;&#4;&#2;<FONT COLOR=#880000>PDP-8e Random AND Test - program loader tape (BIN format)</FONT>" *D0DB*bin
+AddDescription "&#2;&#4;&#3;<FONT COLOR=#880000>PDP-8e Random AND Test - program loader tape (RIM format)</FONT>" *D0DB*rim
+AddDescription "&#2;&#4;&#4;<FONT COLOR=#880000>PDP-8e Random AND Test - disassembled PAL source (text)</FONT>" *D0DB*pal
+AddDescription "&#2;&#4;&#5;<FONT COLOR=#880000>PDP-8e Random AND Test - assembled PAL listing (text)</FONT>" *D0DB*lst
+
+AddDescription "&#2;&#5;&#1;<FONT COLOR=#008800>PDP-8e Random TAD Test - DEC documentation (acrobat)</FONT>" *D0EB*pdf
+AddDescription "&#2;&#5;&#2;<FONT COLOR=#008800>PDP-8e Random TAD Test - program loader tape (BIN format)</FONT>" *D0EB*bin
+AddDescription "&#2;&#5;&#3;<FONT COLOR=#008800>PDP-8e Random TAD Test - program loader tape (RIM format)</FONT>" *D0EB*rim
+AddDescription "&#2;&#5;&#4;<FONT COLOR=#008800>PDP-8e Random TAD Test - disassembled PAL source (text)</FONT>" *D0EB*pal
+AddDescription "&#2;&#5;&#5;<FONT COLOR=#008800>PDP-8e Random TAD Test - assembled PAL listing (text)</FONT>" *D0EB*lst
+
+AddDescription "&#3;&#1;&#1;<FONT COLOR=#880000>PDP-8e Random ISZ Test - DEC documentation (acrobat)</FONT>" *D0FC*pdf
+AddDescription "&#3;&#1;&#2;<FONT COLOR=#880000>PDP-8e Random ISZ Test - program loader tape (BIN format)</FONT>" *D0FC*bin
+AddDescription "&#3;&#1;&#3;<FONT COLOR=#880000>PDP-8e Random ISZ Test - program loader tape (RIM format)</FONT>" *D0FC*rim
+AddDescription "&#3;&#1;&#4;<FONT COLOR=#880000>PDP-8e Random ISZ Test - disassembled PAL source (text)</FONT>" *D0FC*pal
+AddDescription "&#3;&#1;&#5;<FONT COLOR=#880000>PDP-8e Random ISZ Test - assembled PAL listing (text)</FONT>" *D0FC*lst
+
+AddDescription "&#3;&#2;&#1;<FONT COLOR=#008800>PDP-8e Random DCA Test - DEC documentation (acrobat)</FONT>" *D0GC*pdf
+AddDescription "&#3;&#2;&#2;<FONT COLOR=#008800>PDP-8e Random DCA Test - program loader tape (BIN format)</FONT>" *D0GC*bin
+AddDescription "&#3;&#2;&#3;<FONT COLOR=#008800>PDP-8e Random DCA Test - program loader tape (RIM format)</FONT>" *D0GC*rim
+AddDescription "&#3;&#2;&#4;<FONT COLOR=#008800>PDP-8e Random DCA Test - disassembled PAL source (text)</FONT>" *D0GC*pal
+AddDescription "&#3;&#2;&#5;<FONT COLOR=#008800>PDP-8e Random DCA Test - assembled PAL listing (text)</FONT>" *D0GC*lst
+
+AddDescription "&#3;&#3;&#1;<FONT COLOR=#880000>PDP-8e Random JMP Test - DEC documentation (acrobat)</FONT>" *D0HC*pdf
+AddDescription "&#3;&#3;&#2;<FONT COLOR=#880000>PDP-8e Random JMP Test - program loader tape (BIN format)</FONT>" *D0HC*bin
+AddDescription "&#3;&#3;&#3;<FONT COLOR=#880000>PDP-8e Random JMP Test - program loader tape (RIM format)</FONT>" *D0HC*rim
+AddDescription "&#3;&#3;&#4;<FONT COLOR=#880000>PDP-8e Random JMP Test - disassembled PAL source (text)</FONT>" *D0HC*pal
+AddDescription "&#3;&#3;&#5;<FONT COLOR=#880000>PDP-8e Random JMP Test - assembled PAL listing (text)</FONT>" *D0HC*lst
+
+AddDescription "&#3;&#4;&#1;<FONT COLOR=#008800>PDP-8e Basic JMP-JMS Test - DEC documentation (acrobat)</FONT>" *D0IB*pdf
+AddDescription "&#3;&#4;&#2;<FONT COLOR=#008800>PDP-8e Basic JMP-JMS Test - program loader tape (BIN format)</FONT>" *D0IB*bin
+AddDescription "&#3;&#4;&#3;<FONT COLOR=#008800>PDP-8e Basic JMP-JMS Test - program loader tape (RIM format)</FONT>" *D0IB*rim
+AddDescription "&#3;&#4;&#4;<FONT COLOR=#008800>PDP-8e Basic JMP-JMS Test - disassembled PAL source (text)</FONT>" *D0IB*pal
+AddDescription "&#3;&#4;&#5;<FONT COLOR=#008800>PDP-8e Basic JMP-JMS Test - assembled PAL listing (text)</FONT>" *D0IB*lst
+
+AddDescription "&#3;&#5;&#1;<FONT COLOR=#880000>PDP-8e Random JMP-JMS Test - DEC documentation (acrobat)</FONT>" *D0JC*pdf
+AddDescription "&#3;&#5;&#2;<FONT COLOR=#880000>PDP-8e Random JMP-JMS Test - program loader tape (BIN format)</FONT>" *D0JC*bin
+AddDescription "&#3;&#5;&#3;<FONT COLOR=#880000>PDP-8e Random JMP-JMS Test - program loader tape (RIM format)</FONT>" *D0JC*rim
+AddDescription "&#3;&#5;&#4;<FONT COLOR=#880000>PDP-8e Random JMP-JMS Test - disassembled PAL source (text)</FONT>" *D0JC*pal
+AddDescription "&#3;&#5;&#5;<FONT COLOR=#880000>PDP-8e Random JMP-JMS Test - assembled PAL listing (text)</FONT>" *D0JC*lst
+
+AddDescription "&#4;&#1;&#1;<FONT COLOR=#008800>PDP-8e Memory Power On/Off Test - DEC documentation (acrobat)</FONT>" *D1GB*pdf
+AddDescription "&#4;&#1;&#2;<FONT COLOR=#008800>PDP-8e Memory Power On/Off Test - program loader tape (BIN format)</FONT>" *D1GB*bin
+AddDescription "&#4;&#1;&#3;<FONT COLOR=#008800>PDP-8e Memory Power On/Off Test - program loader tape (RIM format)</FONT>" *D1GB*rim
+AddDescription "&#4;&#1;&#4;<FONT COLOR=#008800>PDP-8e Memory Power On/Off Test - disassembled PAL source (text)</FONT>" *D1GB*pal
+AddDescription "&#4;&#1;&#5;<FONT COLOR=#008800>PDP-8e Memory Power On/Off Test - assembled PAL listing (text)</FONT>" *D1GB*lst

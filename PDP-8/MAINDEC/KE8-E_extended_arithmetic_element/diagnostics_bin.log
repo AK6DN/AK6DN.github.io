@@ -1,0 +1,53 @@
+KE8-E_extended_arithmetic_element[711] pdp8 diagnostics_bin.ini
+
+PDP-8 simulator V4.0-0 Current        git commit id: d40268d1
+============================================================
+MAINDEC-8E-D0LB-D-PB.bin
+
+Breakpoint, PC: 00200 (CAF)
+
+
+KE8 1
+
+KE8 1
+
+KE8 1
+
+KE8 1
+
+KE8 1
+
+Step expired, PC: 06550 (ISZ 6555)
+============================================================
+MAINDEC-8E-D0MB-D-PB.bin
+
+Breakpoint, PC: 00200 (CAF)
+
+KE8 2
+KE8 2
+KE8 2
+KE8 2
+Step expired, PC: 02446 (RAR)
+============================================================
+MAINDEC-08-DHKEA-A-PB.bin
+
+Breakpoint, PC: 00200 (CAF)
+
+
+HIGHEST FIELD (0-7)?  7
+
+KE8 EME
+KE8 EME
+KE8 EME
+KE8 EME
+KE8 EME
+KE8 EME
+KE8 EME
+KE8 EME
+KE8 EME
+KE8 EME
+KE8 EME
+KE8 EME
+Step expired, PC: 22503 (RAR)
+============================================================
+Goodbye

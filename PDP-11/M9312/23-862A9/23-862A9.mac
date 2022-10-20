@@ -1,0 +1,126 @@
+	.title	M9312 'XM' BOOT prom for DECNET on a DMC11 controller
+
+	; This source code is an exact copy of the DEC M9312 23-862A9 boot PROM.
+	;
+	; This boot PROM is for booting DECNET on a DMC11 sync line interface.
+	; 
+	; This is ROM #1 of a three ROM set.
+	;
+	; Multiple units and/or CSR addresses are supported via different entry points.
+	;
+	; Standard devices are 82S131, Am27S13, 74S571 or other compatible bipolar
+	; PROMs with a 512x4 TriState 16pin DIP architecture. This code resides in
+	; the low half of the device; the top half is blank and unused.
+	;
+	; Alternatively, 82S129 compatible 256x4 TriState 16pin DIP devices can be
+	; used, as the uppermost address line (hardwired low) is an active low chip
+	; select (and will be correctly asserted low).
+
+fltbas	=160010				; floating csr base address
+
+diags	=165564				; console diags phase2 entry
+	
+	.asect
+	.=173000
+
+	; --------------------------------------------------
+
+start:	.ascii	"MX"			; device code (reversed)
+
+	.word	last-.			; offset to next boot header
+
+xm0n:	sec				; boot std csr, unit zero, no diags
+xm0d:	mov	#0,r0			; boot std csr, unit zero, with diags
+xmNr:	mov	#fltbas,r1		; boot std csr, unit <R0>
+xmNb:	mov	pc,r4			; boot csr <R1>, unit <R0>
+	bcc	bdiag			; br if diags requested
+	br	setstk			; return to (R4)+2 from diags
+					; then skip over the pseudo reboot vector
+	
+	; --------------------------------------------------
+
+	.word	173000			; prom start addess @ 24
+	.word	340			; and priority level @ 26
+
+	; --------------------------------------------------
+
+xm1n:	sec				; entry for unit 1, no diags
+xm1d:	mov	#1,r0			; entry for unit 1, with diags
+	br	xmNr			;
+
+	; --------------------------------------------------
+
+	;  floating device interrupt routine
+
+nodev:	inc	r2			; update R2 to piunt to next dev modulo
+	dec	r3			; 
+	bpl	1$			; if can't find device, halt
+2$:	halt				; die because of system config error
+	br	2$			; review floating address assignments
+1$:	rti				; return
+
+	; --------------------------------------------------
+
+	;  run diagnostics
+
+bdiag:	jmp	@#diags			; jump to console diags
+
+	; --------------------------------------------------
+
+setstk:	mov	#17776,sp		; setup stack
+	mov	#1,(sp)			; set high order word of message
+	mov	#6010,-(sp)		; set low order word of message
+					; note boot msg = 10,14,1,0
+					; stack ptr is at 17774
+	
+2$:	mov	pc,r2			; setup R2 with ptr to devtab
+	add	#devtab-2$-2,r2		; 
+3$:	mov	pc,r4			; setup R4 with ptr to trap routine
+	add	#nodev-3$-2,r4		;
+	
+	; the next four instructions verify that the
+	; extension ROMs are propery installed
+	; if not, the boot will halt
+	
+	mov	(r2),-(sp)		; push the #7407 from ROM#3
+	sub	200(r4),(sp)		; subtract the #2400 from ROM#2
+	cmp	#5007,(sp)+		; this should match the result
+	beq	4$			; br if matches
+5$:	halt				; check positions of ROMs #3 and #3
+	br	5$			; they do not appear to be in the correct slots
+	
+4$:	mov	#4,r3			; set R3 to DMC pos in float -2
+	mov	r4,(r3)+		; set trap routine address in loc 4
+	clr	(r3)			; clear new PSW. R3 now contains DMC pos 6
+float:	tst	(r1)			; test for device, maybe trap to nodev
+	movb	(r2),r4			; modulo increment
+	add	r4,r1			; update address
+	inc	r1			; by modulo
+	bic	r4,r1			; in table
+	tst	r3			; is this a DMC?
+	bne	float			; not yet...
+	
+	; add unit displacement to unit 0 csr addr
+	
+	bic	#177760,r0		; prevent trying to boot unit # > 15
+	mov	r0,-(sp)		; save unit # for secondary boot
+	asl	r0			; unit # times 2
+	asl	r0			; unit # times 4
+	asl	r0			; unit # times 8
+	add	r0,r1			; csr addr + unit*8
+	br	rom2			; go to mainline code
+
+	; --------------------------------------------------
+
+	.=start+176
+crc16:	.word	<161040>		; CRC-16 will go here
+
+	; --------------------------------------------------
+
+	; link to locations in ROMs 2 and 3
+
+rom2	=.+2	; code continuation
+devtab	=.+320	; device table
+last	=.+400	; end of last ROM
+
+	.end

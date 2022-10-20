@@ -1,0 +1,117 @@
+	.title	M9312 'XM' BOOT prom for DECNET on a DMC11 controller
+
+	; This source code is an exact copy of the DEC M9312 23-862A9 boot PROM.
+	;
+	; This boot PROM is for booting DECNET on a DMC11 sync line interface.
+	; 
+	; This is ROM #2 of a three ROM set.
+	;
+	; Multiple units and/or CSR addresses are supported via different entry points.
+	;
+	; Standard devices are 82S131, Am27S13, 74S571 or other compatible bipolar
+	; PROMs with a 512x4 TriState 16pin DIP architecture. This code resides in
+	; the low half of the device; the top half is blank and unused.
+	;
+	; Alternatively, 82S129 compatible 256x4 TriState 16pin DIP devices can be
+	; used, as the uppermost address line (hardwired low) is an active low chip
+	; select (and will be correctly asserted low).
+
+	.asect
+	.=173000
+	
+	; --------------------------------------------------
+	
+start:	.word	<-2>			; signal this is a continuation ROM
+
+	; --------------------------------------------------
+	
+rom2:					; entry from rom1
+dmc:	mov	#8.,r4			; set retry count
+	reset				; master clear DMC
+	
+	mov	pc,r2			; return address
+	br	dmcin			; input to DMC
+	.word	43			; ..RQI + base request
+	.word	17370			; ..base address
+	.word	0			; ..no resume
+	
+	br	1$			; skip over vector
+
+	; --------------------------------------------------
+
+	.word	173000			; prom start addess @ 24
+	.word	340			; and priority level @ 26
+
+	; --------------------------------------------------
+
+1$:	mov	pc,r2			; set return address
+	br	dmcin			; input to DMC
+	.word	41			; ..RQI + CNTLI
+	.word	0			; ..filler
+	.word	2400			; ..maint mode + HDX
+	
+dmcrcv:	mov	pc,r2			; set return address
+	br	dmcin			; input to DMC
+	.word	44			; ..RQI + BA/CC + RCV
+	.word	0			; ..buffer address
+	.word	4092.			; ..set size to max for crc16
+	
+	mov	pc,r5			; set non-zero as R5 flag
+	
+dmcxmt:	mov	pc,r2			; set return address
+	br	dmcin			; input to DMC
+	.word	40			; ..RQI + BA/CC + XMT
+	.word	17774			; ..message address
+	.word	4			; ..message length
+	
+	mov	#15.,r2			; large loop counter
+1$:	tstb	2(r1)			; test rdy0 set
+	bpl	2$			; not yet
+	mov	pc,r3			; set return addr
+	br	dmcout			; check DMC request
+2$:	tst	r5			; is receive still outstanding?
+	beq	dmcrcv			; no, reissue one
+	dec	r0			; decrement short loop
+	bne	1$			; again
+	dec	r2			; decrement long loop
+	bne	1$			; again
+	dec	r4			; decrement retry count
+	bne	dmcxmt			; send again
+	
+	mov	pc,r2			; set return address
+	br	dmcin			; input to DMC
+	.word	43			; ..RQI + base request
+	.word	17370			; ..base address
+	.word	0			; ..no resume
+	
+hnglop:	mov	#10.,r3			; long loop counter, hold dtr down
+1$:	dec	r0			; decrement short loop
+	bne	1$			; again
+	dec	r3			; decrement long loop
+	bne	1$			; again
+	br	dmc			; hung up long enough, answer again
+
+	; --------------------------------------------------
+
+dmcin:	tst	(r2)+			; point to first parameter word
+	movb	(r2)+,(r1)		; command to DMC
+	inc	r2			; to next parameter word
+dmctst:	tstb	(r1)			; is rdyi set?
+	bmi	rdyiok			; yes, ok
+	tstb	2(r1)			; is rdyo set?
+	br	rom3			; continue in next ROM
+
+	; --------------------------------------------------
+	
+	.=start+176
+crc16:	.word	<114076>		; CRC-16 will go here
+
+	; --------------------------------------------------
+	
+	;  link to locations in ROMs 1 and 3
+	
+rom3	=.+2	;  code continuation
+rdyiok	=.+12	;  DMC load input routine
+dmcout	=.+42	;  DMC output routine
+	
+	.end

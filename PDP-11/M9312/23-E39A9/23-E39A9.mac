@@ -1,0 +1,123 @@
+	.title	M9312 'MU' BOOT prom for TMSCP compatible controller
+
+	; This source code is an exact copy of the DEC M9312 23-E39A9 boot PROM.
+	;
+	; This boot PROM is for any TMSCP compatible controller (DEC TK50, EMULEX UC17/UC18).
+	;
+	; Multiple units and/or CSR addresses are supported via different entry points.
+	;
+	; Standard devices are 82S131, Am27S13, 74S571 or other compatible bipolar
+	; PROMs with a 512x4 TriState 16pin DIP architecture. This code resides in
+	; the low half of the device; the top half is blank and unused.
+	;
+	; Alternatively, 82S129 compatible 256x4 TriState 16pin DIP devices can be
+	; used, as the uppermost address line (hardwired low) is an active low chip
+	; select (and will be correctly asserted low).
+
+mucsr	=174500				; std TMSCP csrbase
+
+muip	=+0				; IP register
+musa	=+2				; SA register
+
+diags	=165564				; console diags phase2 entry
+
+	.asect
+	.=173000
+
+	; --------------------------------------------------
+
+start:	.ascii	"UM"			; device code (reversed)
+
+	.word	last-.			; offset to next boot header
+
+mu0n:	sec				; boot std csr, unit zero, no diags
+mu0d:	mov	#0,r0			; boot std csr, unit zero, with diags
+muNr:	mov	#mucsr,r1		; boot std csr, unit <R0>
+muNb:	mov	pc,r4			; boot csr <R1>, unit <R0>
+	bcc	diag			; br if diags requested
+	br	init			; return to (R4)+2 from diags
+					; then skip over pseudo reboot vector
+
+	; --------------------------------------------------
+
+	.word	173000			; prom start addess @ 24
+	.word	340			; and priority level @ 26
+
+	; --------------------------------------------------
+
+diag:	jmp	@#diags			; jump to console diags
+
+rpkt	=100000	; rpkt structure
+cpkt	=100100 ; cpkt structure
+comm	=100200	; comm structure
+
+	; command byte.cnt.hi/opc.hi table
+	
+	.byte	002,041			; #3 bch(002), opc(041)=read
+	.byte	076,041			; #2 bch(076), opc(041)=read
+	.byte	000,011			; #1 bch(000), opc(011)=online
+
+	; init sequence table
+
+	.word	000001			; S4: go bit
+	.word	000000			; S3: no purge/poll, ringbase hi addr
+	.word	comm			; S2: ringbase lo addr
+	.word	100000			; S1: no intr, ring size 1, no vector
+
+init:	mov	pc,r3			; point to next word
+	mov	r1,r2			; a(IP) in R1
+	mov	-(r3),(r2)+		; decr data ptr, a(SA) in R2
+	mov	#4000,r5		; S1 state bitmask
+
+	; init loop
+
+3$:	tst	(r2)			; error bit set ?
+	bmi	init			; yes, fall back to begin to retry
+	bit	(r2),r5			; step bit set ?
+	beq	3$			; not yet, wait loop
+	mov	-(r3),(r2)		; yes, send next init data
+	asl	r5			; next mask
+	bpl	3$			; s4 done? br if not yet
+					; exit with r5 = 100000
+	; command loop
+
+4$:	mov	r5,r2			; set bufptr to rpkt=100000
+5$:	clr	(r2)+			; clear buffer [0..comm-1]
+	tstb	r2			; check for end of buffer
+	bpl	5$			; loop if not done
+
+	incb	@#cpkt-1.		; set cmd len = 400
+	incb	@#cpkt-3.		; set cmd VCID = 1
+	movb	-(r3),@#cpkt+8.		; set cmd opcode from table
+	movb	-(r3),@#cpkt+13.	; set cmd bytecnt hi from table
+	mov	r0,@#cpkt+4.		; set cmd unit
+	
+	mov	r5,(r2)+		; rq desc addr = rpkt
+	mov	r5,(r2)+		; rq own bit15
+	mov	#cpkt,(r2)+		; cp desc addr = cpkt
+	mov	r5,(r2)			; cp own bit15
+
+	tst	(r1)			; wake controller (read IP)
+	cmp	-(r2),-(r2)		; r2 -= 4
+
+	; wait loop
+
+6$:	tst	(r2)			; rq own controller ?
+	bmi	6$			; loop if not done
+
+	tstb	@#rpkt+10.		; check for error ?
+	bne	init			; yup, fall back to begin to retry
+
+	tstb	-1(r3)			; check end of table ?
+	bpl	4$			; br if not yet
+
+	clr	pc			; jmp to bootstrap at zero
+
+	; --------------------------------------------------
+
+	.=start+176
+crc16:	.word	<011426>		; CRC-16 will go here
+
+last:	; next boot prom starts here
+
+	.end

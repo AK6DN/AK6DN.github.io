@@ -1,0 +1,53 @@
+KE8-E_extended_arithmetic_element[712] pdp8 diagnostics_rim.ini
+
+PDP-8 simulator V4.0-0 Current        git commit id: d40268d1
+============================================================
+MAINDEC-8E-D0LB-D-PB.rim
+
+Breakpoint, PC: 00200 (CAF)
+
+
+KE8 1
+
+KE8 1
+
+KE8 1
+
+KE8 1
+
+KE8 1
+
+Step expired, PC: 06550 (ISZ 6555)
+============================================================
+MAINDEC-8E-D0MB-D-PB.rim
+
+Breakpoint, PC: 00200 (CAF)
+
+KE8 2
+KE8 2
+KE8 2
+KE8 2
+Step expired, PC: 02446 (RAR)
+============================================================
+MAINDEC-08-DHKEA-A-PB.rim
+
+Breakpoint, PC: 00200 (CAF)
+
+
+HIGHEST FIELD (0-7)?  7
+
+KE8 EME
+KE8 EME
+KE8 EME
+KE8 EME
+KE8 EME
+KE8 EME
+KE8 EME
+KE8 EME
+KE8 EME
+KE8 EME
+KE8 EME
+KE8 EME
+Step expired, PC: 21761 (DCA 22)
+============================================================
+Goodbye

@@ -1,0 +1,114 @@
+TITLE	"DEC STD BIN loader"
+
+*7612
+SWITCH,	0			/
+MEMTEM,	0			/
+CHAR,	0			/
+CHKSUM,	0			/
+ORIGIN,	0			/
+
+*7626
+BEGG,	0			/
+	DCA SWITCH		/ get switch
+	JMS READ		/ get a character
+	TAD M376		/ test for 377
+	SPA SNA CLA		/
+	JMP L1			/ no
+	ISZ SWITCH		/ yes, complement switch
+	CMA			/
+	JMP BEGG+1		/
+L1,	TAD SWITCH		/ not 377
+	SZA CLA			/ is switch set?
+	JMP BEGG+2		/ yes; ignore
+	TAD CHAR		/ no; test for code
+	AND MASK		/ types
+	TAD M200		/ 
+	SPA			/
+	ISZ BEGG		/ data or origin
+	SPA SNA CLA		/
+	JMP I BEGG		/ data, origin, or L/T
+	TAD CHAR		/ field setting
+	AND FMASK		/
+	TAD CHANGE		/
+	DCA MEMTEM		/
+	JMP BEGG+2		/ continue input
+
+FMASK,	70			/
+CHANGE,	CDF			/
+
+READ,	0			/ return address
+	0			/ jmp to HIRI/LORI put here
+LOR,	KSF			/ wait for flag
+	JMP .-1			/ loop
+	KRB			/ read char
+	DCA CHAR		/ save
+	TAD CHAR		/ get
+	JMP I READ		/ return
+HIR,	RSF			/ wait for flag
+	JMP .-1			/ loop
+	RRB RFC			/ read char
+	JMP LOR+3		/ merge
+
+MASK,	300			/
+
+BEND,	JMS ASSEMB		/ trailer code seen
+	CIA			/
+	TAD CHKSUM		/
+M376,	HLT			/
+BEGIN,	KCC			/
+	RFC			/
+	RDF			/
+	TAD CHANGE		/
+	DCA MEMTEM		/ save field instruction
+	CLA OSR			/ get switches, AC<0> selects
+	SMA CLA			/
+	TAD HIRI		/ AC<0>=0 hispeed reader
+	TAD LORI		/ AC<0>=1 lospeed reader
+	DCA READ+1		/
+	JMS BEGG		/
+	JMP .-1			/ ignore leader
+
+GO,	DCA CHKSUM		/ init checksum
+	TAD MEMTEM		/
+	DCA MEMFLD		/
+	TAD CHAR		/
+	DCA WORD1		/
+	JMS READ		/
+	DCA WORD2		/
+	JMS BEGG		/ look ahead
+	JMP BEND		/ trailer, end
+	JMS ASSEMB		/
+	SNL			/
+	JMP MEMFLD		/
+	DCA ORIGIN		/
+CHEX,	TAD WORD1		/
+	TAD WORD2		/
+	TAD CHKSUM		/
+	JMP GO			/
+
+MEMFLD,	CDF			/
+	DCA I ORIGIN		/
+	ISZ ORIGIN		/
+M200,	-200			/
+	JMP CHEX		/
+
+ASSEMB,	0			/ return address
+	TAD WORD1		/
+	CLL RTL			/
+	RTL			/
+	RTL			/
+	TAD WORD2		/
+	JMP I ASSEMB		/ return
+
+LORI,	JMP LOR			/
+HIRI,	HIR-LOR			/
+	0			/
+WORD1=7776			/
+WORD2,	0			/
+/
+/ loc 7756-7776 is RIMLDR space
+/
+*7777
+	JMP BEGIN		/ jump to start address
+
+$ / the end

@@ -1,0 +1,187 @@
+] pdp11 cpu1144.ini
+
+PDP-11 simulator V3.9-0
+Disabling XQ
+Listening on port 4000 (socket 5)
+Modem control activated
+Auto disconnect activated
+WinPcap version 4.1.3 (packet.dll version 4.1.0.2980), based on libpcap version 1.0 branch 1_0_rel0b (20091008)
+Eth: opened OS device \Device\NPF_{F839CF60-FCED-4EBF-8EDF-2693BFC6B51D}
+RY: creating new file
+RY: buffering file in memory
+RY: creating new file
+RY: buffering file in memory
+Listening on port 4010 (socket 8)
+PDP-11 simulator configuration
+
+CPU, 11/44, FPP, NOCIS, idle disabled, autoconfiguration disabled
+SYSTEM
+RHA, disabled
+RHB, disabled
+CLK, 60Hz, address=17777546-17777547, vector=100
+PCLK, disabled
+PTR, disabled
+PTP, disabled
+TTI, address=17777560-17777563, vector=60
+TTO, address=17777564-17777567, vector=64
+CR, disabled
+LPT, disabled
+DLI, address=17776500-17776507*, vector=300-304, lines=1
+DLO
+DCI, disabled
+DCO, disabled
+DZ, address=17760100-17760107, vector=310-314, lines=8
+VH, disabled
+RC, disabled
+RF, disabled
+RK, disabled
+RL, disabled
+HK, disabled
+RX, disabled
+RY, address=17777170-17777173*, vector=264, 2 units
+RP, disabled
+RQ, address=17772150-17772153*, no vector, 4 units
+RQB, disabled
+RQC, disabled
+RQD, disabled
+TC, disabled
+TM, disabled
+TS, disabled
+TQ, TK50 (94MB), address=17774500-17774503, no vector, 4 units
+TU, disabled
+TA, disabled
+XQ, disabled
+XQB, disabled
+XU, address=17774510-17774517*, vector=120, MAC=08:00:2B:CC:DD:EE, type=DEUNA
+XUB, disabled
+KE, disabled
+KG, disabled
+17760100 - 17760107     DZ
+17770200 - 17770377     CPU
+17772150 - 17772153*    RQ
+17772200 - 17772277     CPU
+17772300 - 17772317     CPU
+17772320 - 17772337     CPU
+17772340 - 17772357     CPU
+17772360 - 17772377     CPU
+17772516 - 17772517     CPU
+17774500 - 17774503     TQ
+17774510 - 17774517*    XU
+17776500 - 17776507*    DLI
+17777170 - 17777173*    RY
+17777546 - 17777547     CLK
+17777560 - 17777563     TTI
+17777564 - 17777567     TTO
+17777570 - 17777571     CPU
+17777572 - 17777577     CPU
+17777600 - 17777617     CPU
+17777620 - 17777637     CPU
+17777640 - 17777657     CPU
+17777660 - 17777677     CPU
+17777740 - 17777775     CPU
+17777776 - 17777777     CPU
+
+Type this command to boot the disk:
+
+boot rq0
+
+sim> boot rq0
+
+44Boot from ra(0,0,0) at 0172150
+:
+: ra(0,0,0)unix
+Boot: bootdev=02400 bootcsr=0172150
+
+2.11 BSD UNIX #19: Sun Jun 17 16:44:43 PDT 2012
+    root@pdp11:/usr/src/sys/ZEKE
+
+ra0: Ver 3 mod 6
+ra0: RA82  size=1954000
+attaching de0 csr 174510
+attaching lo0
+
+phys mem  = 3932160
+avail mem = 3553344
+user mem  = 307200
+
+March 19 00:15:12 init: configure system
+
+dz 0 csr 160100 vector 310 attached
+ra 0 csr 172150 vector 154 vectorset attached
+rx 0 csr 177170 vector 264 attached
+tms 0 csr 174500 vector 260 vectorset attached
+cn 1 csr 176500 vector 300 attached
+erase, kill ^U, intr ^C
+# Fast boot ... skipping disk checks
+checking quotas: done.
+Assuming NETWORKING system ...
+add host pdp11.home.lan: gateway 127.0.0.1
+add net default: gateway 192.168.1.1
+starting system logger
+Mar 19 00:15:20 pdp11 vmunix: ra0: Ver 3 mod 6
+Mar 19 00:15:20 pdp11 vmunix: ra0: RA82  size=1954000
+checking for core dump...
+preserving editor files
+clearing /tmp
+standard daemons: update cron accounting.
+starting network daemons: inetd rwhod printer.
+starting local daemons: sendmail.
+Thu Mar 19 00:15:20 PST 2015
+Mar 19 00:15:20 pdp11 March 19 00:15:20 init: kernel security level changed from 0 to 1
+
+
+2.11 BSD UNIX (pdp11) (console)
+
+login: root
+erase, kill ^U, intr ^C
+#
+# netstat -r
+Routing tables
+Destination      Gateway            Flags     Refs     Use  Interface
+localhost        localhost          UH          0        0  lo0
+pdp11.home.lan   localhost          UH          0        0  lo0
+default          router.home.lan    UG          0        0  de0
+192.168.1        pdp11.home.lan     U           2       15  de0
+#
+# ps axl
+  F S   UID   PID  PPID CPU PRI NICE  ADDR  SZ WCHAN    TTY TIME COMMAND
+  3 S     0     0     0   1   0   0   4602   8 runout   ?   0:00 swapper
+201 S     0     1     0   0  30   0  13437  37 proc     ?   0:00  (init)
+201 S     0    55     1   0  40   0  22503  11 u        ?   0:00 update
+201 S     0    58     1   0  26   0  23336  51 selwait  ?   0:00 cron
+201 S     0    62     1   0  26  -1  31710  26 msgbuf   ?   0:00 acctd
+201 S     0    70     1   0  26   0  21642  39 selwait  ?   0:00 /usr/sbin/inet
+201 S     0    74     1   0  26   0  24745  27 dk_unit  ?   0:00 rwhod
+201 S     0    78     1   0  26   0  31600  47 selwait  ?   0:00 /usr/sbin/lpd
+201 S     0    96     1   0  26   0  45053  71 pt_tty   ?   0:00 /usr/sbin/send
+201 S     0   102     1   0  26 -10  36460  47 selwait  ?   0:00 ntpd
+201 S     0   105     1   0  28   0  32006  27 dz_tty   ?   0:00 - std.9600 tty
+201 S     0   106     1   0  28   0  34556  27 dz_tty   ?   0:00 - std.9600 tty
+201 S     0   107     1   0  28   0  36666  27 dz_tty   ?   0:00 - std.9600 tty
+201 S     0   108     1   0  28   0  37476  27 dz_tty   ?   0:00 - std.9600 tty
+201 S     0   109     1   0  28   0  42017  27 dz_tty   ?   0:00 - std.9600 tty
+201 S     0   110     1   0  28   0  47145  27 dz_tty   ?   0:00 - std.9600 tty
+201 S     0   111     1   0  28   0  53153  27 dz_tty   ?   0:00 - std.9600 tty
+201 S     0   112     1   0  28   0  53511  27 dz_tty   ?   0:00 - std.9600 tty
+201 S     0    45     1   0  26   0  14344  58 selwait  co  0:00 syslogd
+201 S     0   104     1   0  30   0  15124  19 proc     co  0:00 -sh
+  1 R     0   117   104   0  50   0  34460  79          co  0:00 ps axl
+#
+# ping www.apple.com
+PING e3191.dscc.akamaiedge.net (104.68.105.78): 56 data bytes
+64 bytes from 104.68.105.78: icmp_seq=0 ttl=57 time=33.334 ms
+64 bytes from 104.68.105.78: icmp_seq=1 ttl=57 time=33.334 ms
+64 bytes from 104.68.105.78: icmp_seq=2 ttl=57 time=33.334 ms
+64 bytes from 104.68.105.78: icmp_seq=3 ttl=57 time=33.334 ms
+64 bytes from 104.68.105.78: icmp_seq=4 ttl=57 time=33.334 ms
+^C
+--- e3191.dscc.akamaiedge.net ping statistics ---
+5 packets transmitted, 5 packets received, 0% packet loss
+round-trip min/avg/max = 33.334/0/33.334 ms
+#
+# ^D
+
+
+2.11 BSD UNIX (pdp11) (console)
+
+login:

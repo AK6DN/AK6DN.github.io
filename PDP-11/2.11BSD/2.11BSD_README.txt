@@ -1,0 +1,210 @@
+ABSTRACT
+
+This file describes how to setup and run a network capable version
+of 2.11BSD for the PDP-11 using the SIMH simulation environment.
+
+SETUP
+
+Download the following files from this site:
+
+  o 2.11BSD_README.txt - this file
+
+  o 2.11BSD_Setup.pdf - Steven Schultz's 1995 2.11BSD setup guide
+
+  o 2.11BSD_rq.dsk.zip - a zip'ed 1GB 2.11BSD .dsk image of an MSCP disk
+
+  o cpu1144.ini - a SIMH config file for the simulated 11/44 environment
+
+Unzip the 2.11BSD_rq.dsk.zip file to access the 1GB MSCP disk image.
+If not installed already, download and install the etherNet capable
+version of the SIMH simulator from http://simh.trailing-edge.com/ .
+
+To run the simulated PDP-11, use the following command:
+
+   pdp11 cpu1144.ini
+   
+SIMH should start and boot the disk image. The console output will look like this:
+
+    PDP-11 simulator V3.9-0
+    Disabling XQ
+    Listening on port 4000 (socket 5)
+    Modem control activated
+    Auto disconnect activated
+    WinPcap version 4.1.3 (packet.dll version 4.1.0.2980), based on libpcap version 1.0 branch 1_0_rel0b (20091008)
+    Eth: opened OS device \Device\NPF_{F839CF60-FCED-4EBF-8EDF-2693BFC6B51D}
+    RY: buffering file in memory
+    RY: buffering file in memory
+    Listening on port 4010 (socket 8)
+    PDP-11 simulator configuration
+    CPU, 11/44, FPP, NOCIS, idle disabled, autoconfiguration disabled
+    SYSTEM
+    RHA, disabled
+    RHB, disabled
+    CLK, 60Hz, address=17777546-17777547, vector=100
+    PCLK, disabled
+    PTR, disabled
+    PTP, disabled
+    TTI, address=17777560-17777563, vector=60
+    TTO, address=17777564-17777567, vector=64
+    CR, disabled
+    LPT, disabled
+    DLI, address=17776500-17776507*, vector=300-304, lines=1
+    DLO
+    DCI, disabled
+    DCO, disabled
+    DZ, address=17760100-17760107, vector=310-314, lines=8
+    VH, disabled
+    RC, disabled
+    RF, disabled
+    RK, disabled
+    RL, disabled
+    HK, disabled
+    RX, disabled
+    RY, address=17777170-17777173*, vector=264, 2 units
+    RP, disabled
+    RQ, address=17772150-17772153*, no vector, 4 units
+    RQB, disabled
+    RQC, disabled
+    RQD, disabled
+    TC, disabled
+    TM, disabled
+    TS, disabled
+    TQ, TK50 (94MB), address=17774500-17774503, no vector, 4 units
+    TU, disabled
+    TA, disabled
+    XQ, disabled
+    XQB, disabled
+    XU, address=17774510-17774517*, vector=120, MAC=08:00:2B:CC:DD:EE, type=DEUNA
+    XUB, disabled
+    KE, disabled
+    KG, disabled
+    17760100 - 17760107     DZ
+    17770200 - 17770377     CPU
+    17772150 - 17772153*    RQ
+    17772200 - 17772277     CPU
+    17772300 - 17772317     CPU
+    17772320 - 17772337     CPU
+    17772340 - 17772357     CPU
+    17772360 - 17772377     CPU
+    17772516 - 17772517     CPU
+    17774500 - 17774503     TQ
+    17774510 - 17774517*    XU
+    17776500 - 17776507*    DLI
+    17777170 - 17777173*    RY
+    17777546 - 17777547     CLK
+    17777560 - 17777563     TTI
+    17777564 - 17777567     TTO
+    17777570 - 17777571     CPU
+    17777572 - 17777577     CPU
+    17777600 - 17777617     CPU
+    17777620 - 17777637     CPU
+    17777640 - 17777657     CPU
+    17777660 - 17777677     CPU
+    17777740 - 17777775     CPU
+    17777776 - 17777777     CPU
+
+    Type this command to boot the disk:
+
+    boot rq0
+
+    sim>
+
+Then enter the command 'boot rq0' at the sim> prompt:
+
+    sim> boot rq0
+
+And you should see:
+
+    44Boot from ra(0,0,0) at 0172150
+    :
+
+At the colon prompt, just hit return to boot the default unix kernel:
+
+    : ra(0,0,0)unix
+    Boot: bootdev=02400 bootcsr=0172150
+
+    2.11 BSD UNIX #19: Sun Jun 17 16:44:43 PDT 2012
+        root@pdp11:/usr/src/sys/ZEKE
+
+    ra0: Ver 3 mod 6
+    ra0: RA82  size=1954000
+    attaching de0 csr 174510
+    attaching lo0
+
+    phys mem  = 3932160
+    avail mem = 3553344
+    user mem  = 307200
+
+    March 18 23:29:47 init: configure system
+
+    dz 0 csr 160100 vector 310 attached
+    ra 0 csr 172150 vector 154 vectorset attached
+    rx 0 csr 177170 vector 264 attached
+    tms 0 csr 174500 vector 260 vectorset attached
+    cn 1 csr 176500 vector 300 attached
+    erase, kill ^U, intr ^C
+    #
+
+At this point you are now running 2.11BSD in single user mode.
+To enter multiuser mode, type ^D and the following is seen:
+
+    # ^D
+    Fast boot ... skipping disk checks
+    checking quotas: done.
+    Assuming NETWORKING system ...
+    add host pdp11.home.lan: gateway 127.0.0.1
+    add net default: gateway 192.168.1.1
+    starting system logger
+    Mar 18 23:31:03 pdp11 vmunix: ra0: Ver 3 mod 6
+    Mar 18 23:31:03 pdp11 vmunix: ra0: RA82  size=1954000
+    checking for core dump...
+    preserving editor files
+    clearing /tmp
+    standard daemons: update cron accounting.
+    starting network daemons: inetd rwhod printer.
+    starting local daemons: sendmail.
+    Wed Mar 18 23:31:03 PST 2015
+    Mar 18 23:31:03 pdp11 March 18 23:31:03 init: kernel security level changed from 0 to 1
+
+    2.11 BSD UNIX (pdp11) (console)
+
+    login:
+
+You can login as 'root', there is no password:
+
+    login: root
+
+    erase, kill ^U, intr ^C
+    # df
+    Filesystem  1K-blocks     Used    Avail Capacity  Mounted on
+    /dev/ra0a        7816     3016     4800    39%    /
+    /dev/ra0g      405505   112976   292529    28%    /usr
+    /dev/ra0h      546653        5   546648     0%    /home
+    #
+
+For additional login sessions "telnet 127.0.0.1 4000" to access the
+eight DZ11 ports.
+
+Files you may want to configure to your own liking:
+
+    /etc/passwd - to define a root password (via vipw)
+    /etc/dtab - device configuration
+    /etc/hosts - hostname IPADDR database
+    /etc/netstart - current host IPADDR and network configuration
+    /etc/resolv.conf - network name resolver configuration
+    /etc/rc.local - any local startup commands desired
+    
+The default network setup is for 192.168.1.0/24 with the router at
+192.168.1.1, the pdp11 at 192.168.1.11, and nameserver 192.168.1.21.
+The default DNS is setup for 192.168.1.21, 8.8.8.8, and 8.8.4.4.
+
+The kernel booted was generated using the ZEKE configuration file
+in the directory /usr/src/sys/conf . See the README file in that
+directory for further information, or refer to the 2.11BSD-Setup.pdf
+document for all the gory details on system configuration.
+
+The source tree in this image has had all known patches thru PL448
+applied to both the source files and the runnable binary files. The
+patch files are archived within the /usr/src tree.
+
+END

@@ -1,0 +1,29 @@
+MM8-EJ_memory[1] pdp8 diagnostics_bin.ini
+
+PDP-8 simulator V4.0-0 Beta        git commit id: fc417114
+============================================================
+MAINDEC-08-DHKMA-A-PB.bin
+
+
+PDP-8E EXT MEM DATA & CHKBD
+
+SETUP SR & CONT
+HALT instruction, PC: 04315 (JMP I 4301)
+
+8 FIELDS IN THIS SYSTEM
+FIELDS SEL'D ARE 7 6 5 4 3 2 1 0
+PROG WILL RELOCATE
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+5
+Step expired, PC: 51534 (TAD I 43)
+============================================================
+Goodbye

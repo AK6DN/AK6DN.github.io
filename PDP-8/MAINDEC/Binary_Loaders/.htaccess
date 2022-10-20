@@ -1,0 +1,21 @@
+Options Indexes
+IndexOrderDefault Ascending Name
+IndexOptions FancyIndexing NameWidth=* DescriptionWidth=* SuppressHTMLPreamble HTMLTable
+IndexStyleSheet /css/PDP-8.css
+IndexIgnore . .htaccess
+
+AddIcon /icons/text.gif *.lst *.pal *.ini *.log
+AddIcon /icons/binary.gif *.bin *.rim
+
+AddDescription "PDP-8 Lo-Speed BIN loader - donorth customized - RIM format" dnnbin.rim
+AddDescription "PDP-8 Lo-Speed BIN loader - donorth customized - pal source" dnnbin.pal
+AddDescription "PDP-8 Lo-Speed BIN loader - donorth customized - pal listing" dnnbin.lst
+
+AddDescription "PDP-8 Hi/Lo-Speed BIN loader - DEC standard - RIM format" decbin.rim
+AddDescription "PDP-8 Hi/Lo-Speed BIN loader - DEC standard - pal source" decbin.pal
+AddDescription "PDP-8 Hi/Lo-Speed BIN loader - DEC standard - pal listing" decbin.lst
+
+AddDescription "PDP-8 Lo-Speed RIM loader - DEC standard - RIM format" decrim.rim
+AddDescription "PDP-8 Lo-Speed RIM loader - DEC standard - pal source" decrim.pal
+AddDescription "PDP-8 Lo-Speed RIM loader - DEC standard - pal listing" decrim.lst
+

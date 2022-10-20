@@ -1,0 +1,256 @@
+	.title	Console/Diagnostic ROM for the 11/44
+
+	; This source code is an exact copy of the DEC 23-446F1 console PROM.
+	;
+	; This console/diagnostic PROM is for the 11/44 CPU.
+	;
+	; Standard devices are 82S137, 74S573 or other compatible bipolar PROMs
+	; with a 1024x4 TriState 18pin DIP architecture.
+
+	.asect
+	.=165000
+
+base	=.
+START:	mov	#177777,@#706		;
+	br	L1			;
+L2:	clr	@#706			;
+	br	L1			;
+	nop				;
+
+	.=base+20
+DIAG:	br	L2			;
+
+L1:	mov	r0,@#700		;
+	mov	r1,@#702		;
+	mov	r4,@#704		;
+	mov	#N1,@#4			;
+	mov	#340,@#6		;
+	mov	#N2,@#30		;
+	mov	#340,@#32		;
+	br	L3			;
+	br	.			;
+
+L3:	clr	sp			;
+	bmi	L5			;
+	bvs	L5			;
+	bhi	L5			;
+	blt	L5			;
+	blos	L6			;
+L5:	br	.			;
+
+L6:	dec	sp			;
+	bpl	L7			;
+	beq	L7			;
+	bge	L7			;
+	ble	L8			;
+L7:	br	.			;
+
+L8:	ror	sp			;
+	bvc	L9			;
+	bcc	L9			;
+	bne	L10			;
+L9:	br	.			;
+
+L10:	mov	#125252,sp		;
+	br	L11			;
+
+	.=base+144
+NODIAG:	halt				;
+	br	NODIAG			;
+
+L11:	mov	sp,r0			;
+	mov	r0,r1			;
+	mov	r1,r2			;
+	mov	r2,r3			;
+	mov	r3,r4			;
+	mov	r4,r5			;
+	sub	r5,r1			;
+	blt	L12			;
+	beq	L13			;
+L12:	br	.			;
+
+L13:	rol	r2			;
+	bcc	L14			;
+	blt	L15			;
+L14:	br	.			;
+
+L15:	add	r2,r3			;
+	inc	r3			;
+	com	r3			;
+	add	r3,r1			;
+	bcs	L16			;
+	ble	L17			;
+L16:	br	.			;
+
+L17:	ror	r4			;
+	bis	r4,r3			;
+	add	r5,r3			;
+	inc	r3			;
+	bcs	L18			;
+	dec	r1			;
+	blt	L19			;
+L18:	br	.			;
+
+L19:	com	r0			;
+	blos	L20			;
+L21:	br	.			;
+
+L20:	bic	r0,r1			;
+	add	r1,r1			;
+	bgt	L22			;
+	ble	L23			;
+L22:	br	.			;
+
+L23:	swab	r1			;
+	cmp	r1,#052125		;
+	bne	L24			;
+	bit	r4,r5			;
+	bgt	L24			;
+	com	r5			;
+	bne	L25			;
+L24:	br	.			;
+
+L25:	movb	#177401,r0		;
+	bpl	L26			;
+L27:	br	.			;
+
+L26:	sob	r0,L27			;
+	clr	r1			;
+L28:	inc	r1			;
+	sob	r0,L28			;
+	tst	r0			;
+	bne	L29			;
+	tst	r1			;
+	beq	L30			;
+L29:	br	.			;
+
+L30:	mov	#776,sp			;
+	jsr	pc,L31			;
+L32:	br	.			;
+
+L31:	cmp	#L32,(sp)		;
+	beq	L33			;
+L34:	br	.			;
+
+L33:	mov	#N3,(sp)		;
+	rts	pc			;
+L35:	br	.			;
+
+N3:	clr	-(sp)			;
+	mov	#N4,-(sp)		;
+	rti				;
+L36:	br	.			;
+
+N4:	jmp	@#N5			;
+L37:	br	.			;
+
+N5:	mov	#160000,r5		;
+	clr	@#6			;
+	mov	#N6,@#4			;
+N6:	mov	#776,sp			;
+	tst	-(r5)			;
+	mov	#177746,r3		;
+	mov	#N7,@#4			;
+	mov	#1015,(r3)		;
+	mov	#N8,@#114		;
+	clr	@#116			;
+	br	L38			;
+N7:	mov	#N1,@#4			;
+L38:	mov	#1000,r2		;
+	mov	r2,r0			;
+L39:	mov	r0,(r0)			;
+	tst	(r0)+			;
+	cmp	r0,r5			;
+	blos	L39			;
+	mov	r2,r0			;
+L41:	mov	(r0),r1			;
+	cmp	r0,r1			;
+	beq	L40			;
+	emt	0			;
+	halt				;
+
+L40:	com	(r0)+			;
+	cmp	r0,r5			;
+	blos	L41			;
+L43:	mov	-(r0),r1		;
+	com	r1			;
+	cmp	r0,r1			;
+	beq	L42			;
+	emt	0			;
+	halt				;
+
+L42:	cmp	r0,r2			;
+	bne	L43			;
+	mov	#L51,@#4		;
+	br	L44			;
+
+	.=base+564
+RESTRT:	jmp	START			;
+
+L44:	clr	(r3)			;
+	mov	#N1,@#4			;
+	mov	#1000,r2		;
+	mov	r2,r0			;
+L46:	mov	r0,(r0)			;
+	tst	(r0)+			;
+	cmp	r0,r5			;
+	blos	L46			;
+	mov	r2,r0			;
+L50:	com	(r0)			;
+	com	(r0)			;
+	cmp	(r0),r0			;
+	beq	L47			;
+	emt	0			;
+	halt				;
+
+L47:	tst	(r0)+			;
+	bit	#400,@#177750		;
+	beq	L48			;
+	emt	0			;
+	halt				;
+	br	L49			;
+
+L48:	cmp	r0,r5			;
+	blos	L50			;
+	br	L51			;
+N8:	emt	0			;
+L52:	halt				;
+	br	L52			;
+
+L49:	mov	#1015,(r3)		;
+	br	L51			;
+N1:	emt	0			;
+L53:	halt				;
+	br	L53			;
+
+L51:	tst	@#706			;
+	bne	L54			;
+L55:	halt				;
+	br	L55			;
+
+L54:	mov	@#700,r0		;
+	mov	@#702,r1		;
+	mov	@#704,r4		;
+	jmp	2(r4)			;
+
+	; ------------------------------------------------------------
+
+N2:	mov	#A1,r4			;
+L56:	tstb	@#177564		;
+	bpl	L56			;
+	movb	(r4)+,@#177566		;
+	tstb	(r4)			;
+	bne	L56			;
+	rti				;
+
+A1:	.ascii	<015><012>"ERROR"<0><0><0>
+
+	; ------------------------------------------------------------
+
+	.=base+774
+verson:	.ascii	"0C"			; version ID
+
+	.=base+776
+crc16:	.word	<124140>		; CRC-16 will go here
+
+	.end

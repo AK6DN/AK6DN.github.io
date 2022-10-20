@@ -1,0 +1,132 @@
+       1                                	.title	M9312 'XM' BOOT prom for DECNET on a DMC11 controller
+       2                                
+       3                                	; This source code is an exact copy of the DEC M9312 23-862A9 boot PROM.
+       4                                	;
+       5                                	; This boot PROM is for booting DECNET on a DMC11 sync line interface.
+       6                                	; 
+       7                                	; This is ROM #2 of a three ROM set.
+       8                                	;
+       9                                	; Multiple units and/or CSR addresses are supported via different entry points.
+      10                                	;
+      11                                	; Standard devices are 82S131, Am27S13, 74S571 or other compatible bipolar
+      12                                	; PROMs with a 512x4 TriState 16pin DIP architecture. This code resides in
+      13                                	; the low half of the device; the top half is blank and unused.
+      14                                	;
+      15                                	; Alternatively, 82S129 compatible 256x4 TriState 16pin DIP devices can be
+      16                                	; used, as the uppermost address line (hardwired low) is an active low chip
+      17                                	; select (and will be correctly asserted low).
+      18                                
+      19 000000                         	.asect
+      20        173000                  	.=173000
+      21                                	
+      22                                	; --------------------------------------------------
+      23                                	
+      24 173000 177776                  start:	.word	<-2>			; signal this is a continuation ROM
+      25                                
+      26                                	; --------------------------------------------------
+      27                                	
+      28                                rom2:					; entry from rom1
+      29 173002 012704  000010          dmc:	mov	#8.,r4			; set retry count
+      30 173006 000005                  	reset				; master clear DMC
+      31                                	
+      32 173010 010702                  	mov	pc,r2			; return address
+      33 173012 000461                  	br	dmcin			; input to DMC
+      34 173014 000043                  	.word	43			; ..RQI + base request
+      35 173016 017370                  	.word	17370			; ..base address
+      36 173020 000000                  	.word	0			; ..no resume
+      37                                	
+      38 173022 000402                  	br	1$			; skip over vector
+      39                                
+      40                                	; --------------------------------------------------
+      41                                
+      42 173024 173000                  	.word	173000			; prom start addess @ 24
+      43 173026 000340                  	.word	340			; and priority level @ 26
+      44                                
+      45                                	; --------------------------------------------------
+      46                                
+      47 173030 010702                  1$:	mov	pc,r2			; set return address
+      48 173032 000451                  	br	dmcin			; input to DMC
+      49 173034 000041                  	.word	41			; ..RQI + CNTLI
+      50 173036 000000                  	.word	0			; ..filler
+      51 173040 002400                  	.word	2400			; ..maint mode + HDX
+      52                                	
+      53 173042 010702                  dmcrcv:	mov	pc,r2			; set return address
+      54 173044 000444                  	br	dmcin			; input to DMC
+      55 173046 000044                  	.word	44			; ..RQI + BA/CC + RCV
+      56 173050 000000                  	.word	0			; ..buffer address
+      57 173052 007774                  	.word	4092.			; ..set size to max for crc16
+      58                                	
+      59 173054 010705                  	mov	pc,r5			; set non-zero as R5 flag
+      60                                	
+      61 173056 010702                  dmcxmt:	mov	pc,r2			; set return address
+      62 173060 000436                  	br	dmcin			; input to DMC
+      63 173062 000040                  	.word	40			; ..RQI + BA/CC + XMT
+      64 173064 017774                  	.word	17774			; ..message address
+      65 173066 000004                  	.word	4			; ..message length
+      66                                	
+      67 173070 012702  000017          	mov	#15.,r2			; large loop counter
+      68 173074 105761  000002          1$:	tstb	2(r1)			; test rdy0 set
+      69 173100 100002                  	bpl	2$			; not yet
+      70 173102 010703                  	mov	pc,r3			; set return addr
+      71 173104 000456                  	br	dmcout			; check DMC request
+      72 173106 005705                  2$:	tst	r5			; is receive still outstanding?
+      73 173110 001754                  	beq	dmcrcv			; no, reissue one
+      74 173112 005300                  	dec	r0			; decrement short loop
+      75 173114 001367                  	bne	1$			; again
+      76 173116 005302                  	dec	r2			; decrement long loop
+      77 173120 001365                  	bne	1$			; again
+      78 173122 005304                  	dec	r4			; decrement retry count
+      79 173124 001354                  	bne	dmcxmt			; send again
+      80                                	
+      81 173126 010702                  	mov	pc,r2			; set return address
+      82 173130 000412                  	br	dmcin			; input to DMC
+      83 173132 000043                  	.word	43			; ..RQI + base request
+      84 173134 017370                  	.word	17370			; ..base address
+      85 173136 000000                  	.word	0			; ..no resume
+      86                                	
+      87 173140 012703  000012          hnglop:	mov	#10.,r3			; long loop counter, hold dtr down
+      88 173144 005300                  1$:	dec	r0			; decrement short loop
+      89 173146 001376                  	bne	1$			; again
+      90 173150 005303                  	dec	r3			; decrement long loop
+      91 173152 001374                  	bne	1$			; again
+      92 173154 000712                  	br	dmc			; hung up long enough, answer again
+      93                                
+      94                                	; --------------------------------------------------
+      95                                
+      96 173156 005722                  dmcin:	tst	(r2)+			; point to first parameter word
+      97 173160 112211                  	movb	(r2)+,(r1)		; command to DMC
+      98 173162 005202                  	inc	r2			; to next parameter word
+      99 173164 105711                  dmctst:	tstb	(r1)			; is rdyi set?
+     100 173166 100411                  	bmi	rdyiok			; yes, ok
+     101 173170 105761  000002          	tstb	2(r1)			; is rdyo set?
+     102 173174 000402                  	br	rom3			; continue in next ROM
+     103                                
+     104                                	; --------------------------------------------------
+     105                                	
+     106        173176                  	.=start+176
+     107 173176 114076                  crc16:	.word	<114076>		; CRC-16 will go here
+     108                                
+     109                                	; --------------------------------------------------
+     110                                	
+     111                                	;  link to locations in ROMs 1 and 3
+     112                                	
+     113        173202                  rom3	=.+2	;  code continuation
+     114        173212                  rdyiok	=.+12	;  DMC load input routine
+     115        173242                  dmcout	=.+42	;  DMC output routine
+     116                                	
+     117                                	.end
+     117                                
+
+
+Symbol table
+
+.     =******           2$1   =173106   L       DMCOUT=173242           HNGLOP=173140           START =173000           
+1$0   =173030   L       CRC16 =173176           DMCRCV=173042           RDYIOK=173212           
+1$1   =173074   L       DMC   =173002           DMCTST=173164           ROM2  =173002           
+1$2   =173144   L       DMCIN =173156           DMCXMT=173056           ROM3  =173202           
+
+
+Program sections:
+
+. ABS.  173200    000   (RW,I,GBL,ABS,OVR,NOSAV)
+        000000    001   (RW,I,LCL,REL,CON,NOSAV)

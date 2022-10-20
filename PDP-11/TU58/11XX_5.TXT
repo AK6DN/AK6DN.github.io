@@ -1,0 +1,45 @@
+DOS11 format, assume monitor starts at block 8
+Image supports 512 blocks
+4 directory blocks, block 3 thru 6
+1 bitmap block, block 7
+476 device blocks in use according to the bitmap
+
+ENTRY# FILNAM.EXT        DATE          LENGTH  START   VERSION
+
+    1  XXDPSM.SYS       1-MAR-89          29     40     E.0
+    2  XXDPXM.SYS       1-MAR-89          39     69     F.0
+    3  DRSSM .SYS       1-MAR-89          24    108     G.2
+    4  DRSXM .SYS       1-MAR-89          48    132     C.0
+    5  DATE  .SYS       1-MAR-89           2    180     B.0
+    6  DB    .SYS       1-MAR-89           2    182     C.0
+    7  DD    .SYS       1-MAR-89           3    184     D.0
+    8  DIR   .SYS       1-MAR-89           7    187     D.0
+    9  DL    .SYS       1-MAR-89           4    194     D.0
+   10  DM    .SYS       1-MAR-89           4    198     C.0
+   11  DR    .SYS       1-MAR-89           3    202     C.0
+   12  DU    .SYS       1-MAR-89           4    205     E.0
+   13  DUSZ  .SYS       1-MAR-89           2    209     C.0
+   14  DY    .SYS       1-MAR-89           3    211     D.0
+   15  LP    .SYS       1-MAR-89           1    214     B.0
+   16  MM    .SYS       1-MAR-89           3    215     C.0
+   17  MS    .SYS       1-MAR-89           4    218     C.0
+   18  MU    .SYS       1-MAR-89           4    222     E.0
+   19  ZRLGE0.BIC       1-MAR-89          19    226
+   20  ZRLHB1.BIC       1-MAR-89          27    245
+   21  ZRLID1.BIN       1-MAR-89          30    272
+   22  ZRLJC0.BIC       1-MAR-89          23    302
+   23  ZRLKB3.BIC       1-MAR-89          26    325
+   24  ZRLLC1.BIN       1-MAR-89          14    351
+   25  ZRLMB1.BIN       1-MAR-89          23    365
+   26  ZRLNC0.BIC       1-MAR-89          29    388
+   27  VRLAC0.BIN       1-MAR-89          24    417
+   28  VRLBC0.BIC       1-MAR-89          28    441
+   29  ZRLGE0.CCC      31-DEC-99           1    469
+   30  ZRLHB1.CCC      31-DEC-99           1    470
+   31  ZRLJC0.CCC      31-DEC-99           1    471
+   32  ZRLKB3.CCC      31-DEC-99           1    472
+   33  ZRLNC0.CCC      31-DEC-99           1    473
+   34  VRLBC0.CCC      31-DEC-99           1    474
+   35  TEST  .CCC      31-DEC-99           1    475
+
+FREE BLOCKS:    36

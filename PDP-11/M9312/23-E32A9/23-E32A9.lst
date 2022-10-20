@@ -1,0 +1,126 @@
+       1                                	.title	M9312 'XE' BOOT prom for NETWORK BOOT on a DEUNA/DELUA controller
+       2                                
+       3                                	; This source code is an exact copy of the DEC M9312 23-E32A9 boot PROM.
+       4                                	;
+       5                                	; This boot PROM is for network booting on a DEUNA/DELUA ethernet interface.
+       6                                	; 
+       7                                	; This is ROM #1 of a two ROM set.
+       8                                	;
+       9                                	; Multiple units and/or CSR addresses are supported via different entry points.
+      10                                	;
+      11                                	; Standard devices are 82S131, Am27S13, 74S571 or other compatible bipolar
+      12                                	; PROMs with a 512x4 TriState 16pin DIP architecture. This code resides in
+      13                                	; the low half of the device; the top half is blank and unused.
+      14                                	;
+      15                                	; Alternatively, 82S129 compatible 256x4 TriState 16pin DIP devices can be
+      16                                	; used, as the uppermost address line (hardwired low) is an active low chip
+      17                                	; select (and will be correctly asserted low).
+      18                                
+      19        174510                  devbas	=174510				; device csr base address
+      20                                
+      21        165564                  diags	=165564				; console diags phase2 entry
+      22                                	
+      23 000000                         	.asect
+      24        173000                  	.=173000
+      25                                
+      26                                	; --------------------------------------------------
+      27                                
+      28 173000    105     130          start:	.ascii	"EX"			; device code (reversed)
+      29                                
+      30 173002 000376                  	.word	last-.			; offset to next boot header
+      31                                
+      32 173004 000261                  xe0n:	sec				; boot std csr, unit zero, no diags
+      33 173006 012700  000000          xe0d:	mov	#0,r0			; boot std csr, unit zero, with diags
+      34 173012 012701  174510          xeNr:	mov	#devbas,r1		; boot std csr, unit <R0>
+      35 173016 010704                  xeNb:	mov	pc,r4			; boot csr <R1>, unit <R0>
+      36 173020 103061                  	bcc	diag			; br if diags requested
+      37 173022 000405                  	br	go			; return to (R4)+2 from diags
+      38                                					; then skip over the pseudo reboot vector
+      39                                	
+      40                                	; --------------------------------------------------
+      41                                
+      42 173024 173000                  	.word	173000			; prom start addess @ 24
+      43 173026 000340                  	.word	340			; and priority level @ 26
+      44                                
+      45                                	; --------------------------------------------------
+      46                                
+      47 173030 004001                  dat:	.word	004001			; CLR.DONE + CMD=GET_PCBB
+      48 173032 004002                  	.word	004002			; CLR.DONE + CMD=GET_CMD
+      49 173034 000000                  	.word	000000			; CMD=NOP and end of table
+      50                                
+      51                                	; --------------------------------------------------
+      52                                
+      53 173036 010702                  go:	mov	pc,r2			; setup r2 ptr to data table
+      54 173040 162702  000010          	sub	#.-dat,r2		; 
+      55 173044 012711  004040          	mov	#4040,(r1)		; CLR.DONE + CMD=START
+      56                                
+      57 173050 032711  004000          3$:	bit	#4000,(r1)		; test DONE set
+      58 173054 001775                  	beq	3$			; loop until done sets
+      59                                
+      60 173056 012705  000700          	mov	#700,r5			; ptr to PCBB control block
+      61 173062 010561  000004          	mov	r5,4(r1)		; into devbas+4
+      62 173066 005061  000006          	clr	6(r1)			; clear devbas+6
+      63 173072 012725  000002          	mov	#2,(r5)+		; 
+      64                                
+      65 173076 012211                  4$:	mov	(r2)+,(r1)		; get next command from table
+      66 173100 001404                  	beq	6$			; 
+      67                                	
+      68 173102 032711  004000          5$:	bit	#4000,(r1)		; test DONE set
+      69 173106 001775                  	beq	5$			; loop until set
+      70                                
+      71 173110 000772                  	br	4$			; lopp for next command
+      72                                	
+      73 173112 010703                  6$:	mov	pc,r3			; point to inline ascii string
+      74 173114 000417                  	br	8$			;
+      75                                
+      76 173116    015     012     105  7$:	.ascii	<015><012>"ETHERNET PHYSICAL ADDRESS = "
+         173121    124     110     105  
+         173124    122     116     105  
+         173127    124     040     120  
+         173132    110     131     123  
+         173135    111     103     101  
+         173140    114     040     101  
+         173143    104     104     122  
+         173146    105     123     123  
+         173151    040     075     040  
+      77                                
+      78 173154 005723                  8$:	tst	(r3)+			; point to ascii string start
+      79 173156 012704  000036          	mov	#<8$-7$>,r4		; contains this many characters
+      80 173162 000407                  	br	rom2			; br into next PROM
+      81                                
+      82                                	; --------------------------------------------------
+      83                                
+      84 173164 000137  165564          diag:	jmp	@#diags			; jump to console diags
+      85                                
+      86                                	; --------------------------------------------------
+      87                                
+      88 173170 000000  000000  000000  	.word	0,0,0			; unused
+      89                                
+      90                                	; --------------------------------------------------
+      91                                
+      92        173176                  	.=start+176
+      93 173176 072775                  crc16:	.word	<072775>		; CRC-16 will go here (computed=116257)
+      94                                
+      95                                	; --------------------------------------------------
+      96                                
+      97                                	; link to locations in ROM 2
+      98                                
+      99        173202                  rom2	=.+2	; code continuation
+     100        173400                  last	=.+200	; end of last ROM
+     101                                
+     102                                	.end
+     102                                
+
+
+Symbol table
+
+.     =******           6$0   =173112   L       DAT   =173030           GO    =173036           XE0D  =173006           
+3$0   =173050   L       7$0   =173116   L       DEVBAS=174510           LAST  =173400           XE0N  =173004           
+4$0   =173076   L       8$0   =173154   L       DIAG  =173164           ROM2  =173202           XENB  =173016           
+5$0   =173102   L       CRC16 =173176           DIAGS =165564           START =173000           XENR  =173012           
+
+
+Program sections:
+
+. ABS.  173200    000   (RW,I,GBL,ABS,OVR,NOSAV)
+        000000    001   (RW,I,LCL,REL,CON,NOSAV)

@@ -1,0 +1,2975 @@
+       1                                .title  TU58 tester
+       2                                
+       3                                ; (C) 2016 Donald North. All rights reserved.
+       4                                
+       5                                .include "mac/stddef.mac"
+       1                                ;================================================================================
+       2                                ; stddef.mac - standard definitions
+       3                                ; (C) 2009 Donald North. All rights reserved.
+       4                                ;================================================================================
+       5                                .macro	align	arg1
+      16                                ;================================================================================
+      17                                .macro	savreg	arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8
+      28                                ;================================================================================
+      29                                .macro	resreg	arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8
+      40                                ;================================================================================
+      41                                .macro	call	proc
+      44                                .macro	return
+      47                                .macro	calls	proc arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 arg11 arg12 arg13 arg14 arg15 arg16
+      67                                ;================================================================================
+      68                                .macro	jeq	label ?a1
+      73                                .macro	jne	label ?a1
+      78                                .macro	jpl	label ?a1
+      83                                .macro	jmi	label ?a1
+      88                                .macro	jlo	label ?a1
+      93                                .macro	jhis	label ?a1
+      98                                .macro	jlos	label ?a1
+     103                                .macro	jhi	label ?a1
+     108                                .macro	jlt	label ?a1
+     113                                .macro	jge	label ?a1
+     118                                .macro	jle	label ?a1
+     123                                .macro	jgt	label ?a1
+     128                                .macro	jcc	label ?a1
+     133                                .macro	jcs	label ?a1
+     138                                .macro	jvc	label ?a1
+     143                                .macro	jvs	label ?a1
+     148                                ;================================================================================
+     149                                .macro	printf	arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 arg11 arg12 arg13 arg14 arg15 arg16
+     152                                .macro	sprintf	arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 arg11 arg12 arg13 arg14 arg15 arg16
+     155                                ;================================================================================
+     156                                .macro	ipl	lvl
+     161                                ;================================================================================
+     162                                .macro	trapcatcher	list ?a1 ?a2 ?a3 ?a4
+     176                                ;================================================================================
+     177        000001                  tst$no	= 1
+     178                                .macro	test	title
+     198                                ;================================================================================
+     199                                ; end of stddef.mac
+     200                                ;================================================================================
+     200                                
+       6                                
+       7        000000                  DEBUG = 0
+       8                                
+       9                                ; --------------------------------------------------------------------------------
+      10                                
+      11                                .sbttl  general definitions
+      12                                
+      13                                .include "mac/bits.mac"
+       1                                ;================================================================================
+       2                                ; bits.mac - standard bit definitions
+       3                                ;================================================================================
+       4                                
+       5                                ;  system global fixed addresses
+       6                                
+       7        177776                  psw	==177776		; processor status word
+       8                                
+       9        165144                  console	==165144		; console routine start
+      10                                
+      11        177570                  swireg	==177570		; console switch register
+      12        177570                  dpyreg	==swireg		; console display register
+      13                                
+      14        177560                  ttrcsr	==177560		; console serial device
+      15        177562                  ttrbuf	==ttrcsr+2		;
+      16        177564                  ttxcsr	==ttrcsr+4		;
+      17        177566                  ttxbuf	==ttrcsr+6		;
+      18                                
+      19                                ; common values
+      20                                
+      21        000015                  cr	=015			; ascii CR
+      22        000012                  lf	=012			; ascii LF
+      23                                
+      24        000001                  bit00	=000001			; bit positions
+      25        000002                  bit01	=000002			;
+      26        000004                  bit02	=000004			;
+      27        000010                  bit03	=000010			;
+      28        000020                  bit04	=000020			;
+      29        000040                  bit05	=000040			;
+      30        000100                  bit06	=000100			;
+      31        000200                  bit07	=000200			;
+      32        000400                  bit08	=000400			;
+      33        001000                  bit09	=001000			;
+      34        002000                  bit10	=002000			;
+      35        004000                  bit11	=004000			;
+      36        010000                  bit12	=010000			;
+      37        020000                  bit13	=020000			;
+      38        040000                  bit14	=040000			;
+      39        100000                  bit15	=100000			;
+      40                                	
+      41        000001                  bit0	=bit00			; also
+      42        000002                  bit1	=bit01			;
+      43        000004                  bit2	=bit02			;
+      44        000010                  bit3	=bit03			;
+      45        000020                  bit4	=bit04			;
+      46        000040                  bit5	=bit05			;
+      47        000100                  bit6	=bit06			;
+      48        000200                  bit7	=bit07			;
+      49        000400                  bit8	=bit08			;
+      50        001000                  bit9	=bit09			;
+      51                                
+      52                                ;================================================================================
+      53                                ; end of bits.mac
+      54                                ;================================================================================
+      54                                
+      14                                
+      15                                ; --------------------------------------------------------------------------------
+      16                                
+      17                                .sbttl  TU58 device registers
+      18                                
+      19                                .include "tu58/define.mac"
+       1                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+       2                                
+       3                                ; TU58 device registers
+       4                                
+       5                                ; register declarations
+       6                                
+       7        176500                  tu$rcs	= 176500
+       8        176502                  tu$rdb	= tu$rcs+2
+       9        176504                  tu$tcs	= tu$rcs+4
+      10        176506                  tu$tdb	= tu$rcs+6
+      11                                
+      12                                ; register bits
+      13                                
+      14        004000                  trc_act  = bit11
+      15        000200                  trc_done = bit07
+      16        000100                  trc_ien  = bit06
+      17        000001                  trc_enb  = bit00
+      18                                
+      19        100000                  trd_err	 = bit15
+      20        040000                  trd_oerr = bit14
+      21        020000                  trd_ferr = bit13
+      22        010000                  trd_perr = bit12
+      23        000377                  trd_mask = bit08-1
+      24                                	
+      25        000200                  ttc_rdy  = bit07
+      26        000100                  ttc_ien  = bit06
+      27        000004                  ttc_maint= bit02
+      28        000001                  ttc_brk  = bit00
+      29                                
+      30        000377                  ttd_mask = bit08-1
+      31                                
+      32                                ;  TU58 Radial Serial Protocol
+      33                                
+      34                                ;  Packet Flag / Single Byte Commands
+      35                                
+      36        000000                  tf_null	= 0.	; null
+      37        000001                  tf_data	= 1.	; data packet
+      38        000002                  tf_ctrl	= 2.	; control packet
+      39        000004                  tf_init	= 4.	; initialize
+      40        000010                  tf_boot	= 8.	; boot
+      41        000020                  tf_cont	= 16.	; continue
+      42        000021                  tf_xon	= 17.	; flow control start (XON)
+      43        000023                  tf_xoff	= 19.	; flow control stop (XOFF)
+      44                                
+      45                                ; Opcodes
+      46                                
+      47        000000                  to_nop	= 0.	; no operation
+      48        000001                  to_init	= 1.	; initialize
+      49        000002                  to_rd	= 2.	; read block
+      50        000003                  to_wr	= 3.	; write block
+      51        000005                  to_seek	= 5.	; seek to block
+      52        000007                  to_diag	= 7.	; run diagnostics
+      53        000010                  to_gsts	= 8.	; get status
+      54        000011                  to_ssts	= 9.	; set status
+      55        000012                  to_gchr	= 10.	; get characteristics
+      56        000100                  to_end	= 64.	; end packet
+      57                                
+      58                                ; Modifiers
+      59                                
+      60        000001                  tm_rdrs	= 1.	; read with reduced sensitivity
+      61        000001                  tm_wrrv	= 1.	; write with read verify
+      62        000200                  tm_b128	= 128.	; special addressing mode
+      63                                
+      64                                ; Switches
+      65                                
+      66        000010                  ts_mrsp	= 8.	; modified RSP sync mode
+      67        000020                  ts_main	= 16.	; maintenance mode
+      68                                
+      69                                ; End packet success codes
+      70                                
+      71        000000                  te_succ	=  0.	; success
+      72        000001                  te_stry	=  1.	; success with retry
+      73        177777                  te_fail	= -1.	; failed self test
+      74        177776                  te_paro	= -2.	; partial operation
+      75        177770                  te_unit	= -8.	; bad unit
+      76        177767                  te_cart	= -9.	; no cartridge
+      77        177765                  te_wpro	= -11.	; write protected
+      78        177757                  te_data	= -17.	; data check error
+      79        177740                  te_seek	= -32.	; seek error
+      80        177737                  te_mtrs	= -33.	; motor stopped
+      81        177720                  te_illo	= -48.	; illegal op code
+      82        177711                  te_badb	= -55.	; bad block number
+      83        177601                  te_comm	= -127.	; communications error
+      84                                
+      85                                ; sizes of packets
+      86                                
+      87        000030                  tg_size	= 24.	; size of getchar data packet
+      88        000200                  ts_size	= 128.  ; size of a data segment
+      89        001000                  tb_size	= 512.	; size of a boot block
+      90                                
+      91                                ; command/end packet format
+      92                                
+      93        000016                  tc_size	  = 14.	; total packet size
+      94                                ;
+      95        000000                  tc_flg	  = 0.	; packet type
+      96        000001                  tc_len	  = 1.	; message length
+      97        000002                  tc_opc    = 2.	; operation code
+      98        000003                  tc_mod    = 3.	; modifier (end: success)
+      99        000004                  tc_unit	  = 4.	; drive number
+     100        000005                  tc_swi    = 5.	; switches (end: unused)
+     101        000006                  tc_seq    = 6.	; sequence number, always zero
+     102        000010                  tc_cnt    = 8.	; byte count for read or write
+     103        000012                  tc_blk    = 10.	; block number for read, write, or seek (end: summary)
+     104        000014                  tc_chk    = 12.	; checksum, 16b end-around carry
+     105                                
+     106                                ; data packet format
+     107                                
+     108        000204                  td_size	  = 132. ; total packet size
+     109                                ; 
+     110        000000                  td_flg	  = 0.	 ; packet type
+     111        000001                  td_len    = 1.	 ; message length
+     112        000002                  td_data	  = 2.	 ; ptr to 1..DATALEN data bytes
+     113        000202                  td_chk    = 130. ; checksum, 16b end-around carry
+     114                                
+     115                                ; device characteristics
+     116                                
+     117        001000                  tu_bps	= 512.	; bytes per sector (block)
+     118        000010                  tu_try	=   8.  ; retry counter
+     119                                	
+     120                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     120                                
+      20                                	
+      21                                ; --------------------------------------------------------------------------------
+      22                                	
+      23                                .sbttl	low memory
+      24                                
+      25                                   	.enabl	ama			; change all mode 67 references to 37
+      26                                
+      27 000000                           	.asect				; absolute load image;	
+      28                                
+      29        000046                  	.=46
+      30 000046 016400                  	.word	$endad			; address of JSR PC,(R0)
+      31        000052                  	.=52
+      32 000052 000000                  	.word	0			; run options
+      33                                
+      34        000200                  	.=200
+      35 000200 000137  012200          	jmp	@#start			; standard diagnostic entry
+      36                                
+      37                                ; --------------------------------------------------------------------------------
+      38                                
+      39                                .sbttl	global variables
+      40                                
+      41        002000                  	.=2000
+      42 002000 177777                  stack:	.word	-1			; top of stack
+      43 002002 000000                  optswi:	.word	0			; switches; bit0=dump
+      44 002004 000000                  $sav42:	.word	0			; XXDP restart address
+      45 002006 000000                  testno:	.word	0			; test number
+      46 002010 000000                  t0:	.word	0			; temp r0
+      47 002012 000000                  t1:	.word	0			; temp r1
+      48 002014 000000                  t2:	.word	0			; temp r2
+      49 002016 000000                  t3:	.word	0			; temp r3
+      50 002020 000000                  t4:	.word	0			; temp r4
+      51 002022 000000                  t5:	.word	0			; temp r5
+      52 002024 000000                  unit:	.word	0			; unit
+      53 002026 000000                  block:	.word	0			; block
+      54 002030 000777                  maxblk:	.word	511.			; maximum block number
+      55 002032 001000                  count:	.word	tu_bps			; bytes per block
+      56 002034 002040                  bufptr:	.word	buffer			; a(buffer)
+      57 002036 010000                  bufcnt:	.word	bufend-buffer		; size(buffer)
+      58        002040                  buffer:	.blkb	8.*tu_bps		; buffer, large enough for 8 blocks
+      59 012040 000000                  bufend:	.word	0			; spacer
+      60 012042    124     125     065  msg1:	.asciz	"TU58 tester v1.0"<cr><lf>
+         012045    070     040     164  
+         012050    145     163     164  
+         012053    145     162     040  
+         012056    166     061     056  
+         012061    060     015     012  
+         012064    000                  
+      61 012065    015     012     107  msg2:	.asciz	<cr><lf>"Goodbye"<cr><lf>
+         012070    157     157     144  
+         012073    142     171     145  
+         012076    015     012     000  
+      62 012101    000                  	.even
+      63                                
+      64                                ; --------------------------------------------------------------------------------
+      65                                	
+      66                                .sbttl	main program
+      67                                	
+      68 012102                         	align	7			; pc alignment
+      69                                
+      70 012200 012706  002000          start:	mov	#stack,sp		; setup a stack
+      71 012204 000005                  	reset				; reset the world
+      72 012206 013737  000042  002004  	mov	@#42,$sav42		; save XXDP restart
+      73                                
+      74 012214                         	trapcatcher <2,200,206,400>	; setup a trapcatcher in low vector space
+       1 012214 012700  012244          	mov	#32770$,r0    		; ptr to table
+       2 012220 012001                  32768$:	mov	(r0)+,r1		; start addr
+       3 012222 100415                  	bmi	32771$			; done?
+       4 012224 012002                  	mov	(r0)+,r2		; end addr
+       5 012226 010161  177776          32769$:	mov	r1,-2(r1)		; point vector at next word
+       6 012232 005011                  	clr	(r1)			; <0> which is a halt
+       7 012234 022121                  	cmp	(r1)+,(r1)+		; add four to ptr
+       8 012236 020102                  	cmp	r1,r2			; reached end?
+       9 012240 003772                  	ble	32769$			; not yet
+      10 012242 000766                  	br	32768$			; more
+      11 012244 000002  000200  000206  32770$:	.word	2,200,206,400, -1
+         012252 000400  177777          
+      12 012256 000240                  32771$:	nop				; placeholder
+      75                                
+      76 012260                         	printf	#msg1			; say hello
+       1 012260                         	calls	printf #msg1               
+       9 012260 012746  012042          	mov	#msg1,-(sp)
+       2 012264                         	call	printf
+       1 012264 004737  020442          	jsr	pc,printf
+       3 012270 062706  000002          	add	#2,sp
+      77                                
+      78 012274 012737  000001  002006  loop:	mov	#1,testno		; current test number
+      79                                
+      80                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      81                                
+      82 012302                         	test	<send an INIT sequence>
+       2                                
+       3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+       4                                	.sbttl	Test1 - send an INIT sequence
+       5                                	;------------------------------------------------------------
+       6                                
+       7                                test1:	; start of test
+       8                                
+       9 012302 022737  000001  002006  	cmp	#1,testno		; check for sequence error
+      10 012310 001401                  	beq	.+4			; OK, skip over halt
+      11 012312 000000                  	halt				; FATAL - SEQUENCE ERROR
+      83                                
+      84 012314                         	call	tuinit			; send INIT sequence to sync up
+       1 012314 004737  017156          	jsr	pc,tuinit
+      85 012320 100012                  	bpl	1$			; error N=0
+      86 012322 001011                  	bne	1$			; error Z=0
+      87 012324 102010                  	bvc	1$			; error V=0
+      88 012326 103007                  	bcc	1$			; error C=0
+      89                                	
+      90 012330                         	printf	#100$			; print status OK
+       1 012330                         	calls	printf #100$               
+       9 012330 012746  012364          	mov	#100$,-(sp)
+       2 012334                         	call	printf
+       1 012334 004737  020442          	jsr	pc,printf
+       3 012340 062706  000002          	add	#2,sp
+      91 012344 000434                  	br	999$			;
+      92                                
+      93 012346                         1$:	printf	#101$			; print status FAIL
+       1 012346                         	calls	printf #101$               
+       9 012346 012746  012411          	mov	#101$,-(sp)
+       2 012352                         	call	printf
+       1 012352 004737  020442          	jsr	pc,printf
+       3 012356 062706  000002          	add	#2,sp
+      94 012362 000425                  	br	999$			;
+      95                                
+      96 012364    111     116     111  100$:	.asciz	"INIT sequence PASS"<cr><lf>
+         012367    124     040     163  
+         012372    145     161     165  
+         012375    145     156     143  
+         012400    145     040     120  
+         012403    101     123     123  
+         012406    015     012     000  
+      97 012411    111     116     111  101$:	.asciz	"INIT sequence FAIL"<cr><lf>
+         012414    124     040     163  
+         012417    145     161     165  
+         012422    145     156     143  
+         012425    145     040     106  
+         012430    101     111     114  
+         012433    015     012     000  
+      98                                	.even
+      99                                
+     100 012436 005237  002006          999$:	inc	testno			; count tests
+     101                                
+     102                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     103                                
+     104 012442                         	test	<fill buffer with all 1s, print, read bootblock, print>
+       2                                
+       3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+       4                                	.sbttl	Test2 - fill buffer with all 1s, print, read bootblock, print
+       5                                	;------------------------------------------------------------
+       6                                
+       7                                test2:	; start of test
+       8                                
+       9 012442 022737  000002  002006  	cmp	#2,testno		; check for sequence error
+      10 012450 001401                  	beq	.+4			; OK, skip over halt
+      11 012452 000000                  	halt				; FATAL - SEQUENCE ERROR
+     105                                
+     106                                	;  fill buffer with all ones
+     107                                	
+     108 012454 013700  002032          	mov	count,r0		; buffer size
+     109 012460 013701  002034          	mov	bufptr,r1		; buffer address
+     110 012464 112702  177777          	movb	#-1,r2			; fill data
+     111 012470                         	call	filler			; fill buffer
+       1 012470 004737  016436          	jsr	pc,filler
+     112                                
+     113                                	; dump buffer
+     114                                	
+     115 012474 013700  002032          	mov	count,r0		; buffer size
+     116 012500 013701  002034          	mov	bufptr,r1		; buffer address
+     117 012504                         	call	dumper			; print it
+       1 012504 004737  016512          	jsr	pc,dumper
+     118                                
+     119                                	; issue boot command
+     120                                	
+     121 012510 013700  002024          	mov	unit,r0			; unit number
+     122 012514 013701  002034          	mov	bufptr,r1		; buffer address
+     123 012520                         	call	tuboot			; read boot block
+       1 012520 004737  017024          	jsr	pc,tuboot
+     124                                
+     125                                	; dump buffer
+     126                                	
+     127 012524 013700  002032          	mov	count,r0		; buffer size
+     128 012530 013701  002034          	mov	bufptr,r1		; buffer address
+     129 012534                         	call	dumper			; print it
+       1 012534 004737  016512          	jsr	pc,dumper
+     130                                
+     131 012540 005237  002006          999$:	inc	testno			; count tests
+     132                                
+     133                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     134                                
+     135 012544                         	test	<send a NOP command packet>
+       2                                
+       3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+       4                                	.sbttl	Test3 - send a NOP command packet
+       5                                	;------------------------------------------------------------
+       6                                
+       7                                test3:	; start of test
+       8                                
+       9 012544 022737  000003  002006  	cmp	#3,testno		; check for sequence error
+      10 012552 001401                  	beq	.+4			; OK, skip over halt
+      11 012554 000000                  	halt				; FATAL - SEQUENCE ERROR
+     136                                
+     137                                	;  send COMMAND packet
+     138                                
+     139 012556 012700  000000          	mov	#to_nop,r0		; opcode
+     140 012562 013701  002024          	mov	unit,r1			; unit
+     141 012566 005002                  	clr	r2			; byte count
+     142 012570 005003                  	clr	r3			; block number
+     143 012572                         	call	tucmd			; send command packet
+       1 012572 004737  017316          	jsr	pc,tucmd
+     144                                
+     145                                	; receive END packet
+     146                                
+     147 012576                         	call	tuend			; get end packet
+       1 012576 004737  017502          	jsr	pc,tuend
+     148                                
+     149                                	; status
+     150                                
+     151 012602                         	printf	#100$,r0,r1,r2,r3	; print results
+       1 012602                         	calls	printf #100$ r0 r1 r2 r3           
+       9 012602 010346                  	mov	r3,-(sp)
+      15 012604 010246                  	mov	r2,-(sp)
+      21 012606 010146                  	mov	r1,-(sp)
+      27 012610 010046                  	mov	r0,-(sp)
+      33 012612 012746  012630          	mov	#100$,-(sp)
+       2 012616                         	call	printf
+       1 012616 004737  020442          	jsr	pc,printf
+       3 012622 062706  000012          	add	#12,sp
+     152 012626 000434                  	br	999$			; next
+     153                                
+     154 012630    116     117     120  100$:	.asciz	"NOP:    code=%06o   unit=%06o  count=%06o status=%06o"<cr><lf>
+         012633    072     040     040  
+         012636    040     040     143  
+         012641    157     144     145  
+         012644    075     045     060  
+         012647    066     157     040  
+         012652    040     040     165  
+         012655    156     151     164  
+         012660    075     045     060  
+         012663    066     157     040  
+         012666    040     143     157  
+         012671    165     156     164  
+         012674    075     045     060  
+         012677    066     157     040  
+         012702    163     164     141  
+         012705    164     165     163  
+         012710    075     045     060  
+         012713    066     157     015  
+         012716    012     000          
+     155                                	.even
+     156                                
+     157 012720 005237  002006          999$:	inc	testno			; count tests
+     158                                	
+     159                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     160                                
+     161 012724                         	test	<send a GET STATUS command packet>
+       2                                
+       3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+       4                                	.sbttl	Test4 - send a GET STATUS command packet
+       5                                	;------------------------------------------------------------
+       6                                
+       7                                test4:	; start of test
+       8                                
+       9 012724 022737  000004  002006  	cmp	#4,testno		; check for sequence error
+      10 012732 001401                  	beq	.+4			; OK, skip over halt
+      11 012734 000000                  	halt				; FATAL - SEQUENCE ERROR
+     162                                
+     163                                	;  send COMMAND packet
+     164                                
+     165 012736 012700  000010          	mov	#to_gsts,r0		; opcode
+     166 012742 013701  002024          	mov	unit,r1			; unit
+     167 012746 005002                  	clr	r2			; byte count
+     168 012750 005003                  	clr	r3			; block number
+     169 012752                         	call	tucmd			; send command packet
+       1 012752 004737  017316          	jsr	pc,tucmd
+     170                                
+     171                                	; receive END packet
+     172                                
+     173 012756                         	call	tuend			; get end packet
+       1 012756 004737  017502          	jsr	pc,tuend
+     174                                
+     175                                	; status
+     176                                
+     177 012762                         	printf	#100$,r0,r1,r2,r3	; print results
+       1 012762                         	calls	printf #100$ r0 r1 r2 r3           
+       9 012762 010346                  	mov	r3,-(sp)
+      15 012764 010246                  	mov	r2,-(sp)
+      21 012766 010146                  	mov	r1,-(sp)
+      27 012770 010046                  	mov	r0,-(sp)
+      33 012772 012746  013010          	mov	#100$,-(sp)
+       2 012776                         	call	printf
+       1 012776 004737  020442          	jsr	pc,printf
+       3 013002 062706  000012          	add	#12,sp
+     178 013006 000434                  	br	999$			; next
+     179                                
+     180 013010    107     123     124  100$:	.asciz	"GSTS:   code=%06o   unit=%06o  count=%06o status=%06o"<cr><lf>
+         013013    123     072     040  
+         013016    040     040     143  
+         013021    157     144     145  
+         013024    075     045     060  
+         013027    066     157     040  
+         013032    040     040     165  
+         013035    156     151     164  
+         013040    075     045     060  
+         013043    066     157     040  
+         013046    040     143     157  
+         013051    165     156     164  
+         013054    075     045     060  
+         013057    066     157     040  
+         013062    163     164     141  
+         013065    164     165     163  
+         013070    075     045     060  
+         013073    066     157     015  
+         013076    012     000          
+     181                                	.even
+     182                                
+     183 013100 005237  002006          999$:	inc	testno			; count tests
+     184                                
+     185                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     186                                
+     187 013104                         	test	<send a SET STATUS command packet>
+       2                                
+       3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+       4                                	.sbttl	Test5 - send a SET STATUS command packet
+       5                                	;------------------------------------------------------------
+       6                                
+       7                                test5:	; start of test
+       8                                
+       9 013104 022737  000005  002006  	cmp	#5,testno		; check for sequence error
+      10 013112 001401                  	beq	.+4			; OK, skip over halt
+      11 013114 000000                  	halt				; FATAL - SEQUENCE ERROR
+     188                                
+     189                                	;  send COMMAND packet
+     190                                
+     191 013116 012700  000011          	mov	#to_ssts,r0		; opcode
+     192 013122 013701  002024          	mov	unit,r1			; unit
+     193 013126 005002                  	clr	r2			; byte count
+     194 013130 005003                  	clr	r3			; block number
+     195 013132                         	call	tucmd			; send command packet
+       1 013132 004737  017316          	jsr	pc,tucmd
+     196                                
+     197                                	; receive END packet
+     198                                
+     199 013136                         	call	tuend			; get end packet
+       1 013136 004737  017502          	jsr	pc,tuend
+     200                                
+     201                                	; status
+     202                                
+     203 013142                         	printf	#100$,r0,r1,r2,r3	; print results
+       1 013142                         	calls	printf #100$ r0 r1 r2 r3           
+       9 013142 010346                  	mov	r3,-(sp)
+      15 013144 010246                  	mov	r2,-(sp)
+      21 013146 010146                  	mov	r1,-(sp)
+      27 013150 010046                  	mov	r0,-(sp)
+      33 013152 012746  013170          	mov	#100$,-(sp)
+       2 013156                         	call	printf
+       1 013156 004737  020442          	jsr	pc,printf
+       3 013162 062706  000012          	add	#12,sp
+     204 013166 000434                  	br	999$			; next
+     205                                
+     206 013170    123     123     124  100$:	.asciz	"SSTS:   code=%06o   unit=%06o  count=%06o status=%06o"<cr><lf>
+         013173    123     072     040  
+         013176    040     040     143  
+         013201    157     144     145  
+         013204    075     045     060  
+         013207    066     157     040  
+         013212    040     040     165  
+         013215    156     151     164  
+         013220    075     045     060  
+         013223    066     157     040  
+         013226    040     143     157  
+         013231    165     156     164  
+         013234    075     045     060  
+         013237    066     157     040  
+         013242    163     164     141  
+         013245    164     165     163  
+         013250    075     045     060  
+         013253    066     157     015  
+         013256    012     000          
+     207                                	.even
+     208                                
+     209 013260 005237  002006          999$:	inc	testno			; count tests
+     210                                
+     211                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     212                                
+     213 013264                         	test	<send an INIT command packet>
+       2                                
+       3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+       4                                	.sbttl	Test6 - send an INIT command packet
+       5                                	;------------------------------------------------------------
+       6                                
+       7                                test6:	; start of test
+       8                                
+       9 013264 022737  000006  002006  	cmp	#6,testno		; check for sequence error
+      10 013272 001401                  	beq	.+4			; OK, skip over halt
+      11 013274 000000                  	halt				; FATAL - SEQUENCE ERROR
+     214                                
+     215                                	;  send COMMAND packet
+     216                                
+     217 013276 012700  000001          	mov	#to_init,r0		; opcode
+     218 013302 013701  002024          	mov	unit,r1			; unit
+     219 013306 005002                  	clr	r2			; byte count
+     220 013310 005003                  	clr	r3			; block number
+     221 013312                         	call	tucmd			; send command packet
+       1 013312 004737  017316          	jsr	pc,tucmd
+     222                                
+     223                                	; receive END packet
+     224                                
+     225 013316                          	call	tuend			; get end packet
+       1 013316 004737  017502          	jsr	pc,tuend
+     226                                
+     227                                	; status
+     228                                	
+     229 013322                          	printf	#100$,r0,r1,r2,r3	; print results
+       1 013322                         	calls	printf #100$ r0 r1 r2 r3           
+       9 013322 010346                  	mov	r3,-(sp)
+      15 013324 010246                  	mov	r2,-(sp)
+      21 013326 010146                  	mov	r1,-(sp)
+      27 013330 010046                  	mov	r0,-(sp)
+      33 013332 012746  013350          	mov	#100$,-(sp)
+       2 013336                         	call	printf
+       1 013336 004737  020442          	jsr	pc,printf
+       3 013342 062706  000012          	add	#12,sp
+     230 013346 000434                  	br	999$			; next
+     231                                
+     232 013350    111     116     111  100$:	.asciz	"INIT:   code=%06o   unit=%06o  count=%06o status=%06o"<cr><lf>
+         013353    124     072     040  
+         013356    040     040     143  
+         013361    157     144     145  
+         013364    075     045     060  
+         013367    066     157     040  
+         013372    040     040     165  
+         013375    156     151     164  
+         013400    075     045     060  
+         013403    066     157     040  
+         013406    040     143     157  
+         013411    165     156     164  
+         013414    075     045     060  
+         013417    066     157     040  
+         013422    163     164     141  
+         013425    164     165     163  
+         013430    075     045     060  
+         013433    066     157     015  
+         013436    012     000          
+     233                                	.even
+     234                                
+     235 013440 005237  002006          999$:	inc	testno			; count tests
+     236                                	
+     237                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     238                                
+     239 013444                         	test	<send a DIAG command packet>
+       2                                
+       3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+       4                                	.sbttl	Test7 - send a DIAG command packet
+       5                                	;------------------------------------------------------------
+       6                                
+       7                                test7:	; start of test
+       8                                
+       9 013444 022737  000007  002006  	cmp	#7,testno		; check for sequence error
+      10 013452 001401                  	beq	.+4			; OK, skip over halt
+      11 013454 000000                  	halt				; FATAL - SEQUENCE ERROR
+     240                                
+     241                                	;  send COMMAND packet
+     242                                
+     243 013456 012700  000007          	mov	#to_diag,r0		; opcode
+     244 013462 005001                  	clr	r1			; unit
+     245 013464 005002                  	clr	r2			; byte count
+     246 013466 005003                  	clr	r3			; block number
+     247 013470                         	call	tucmd			; send command packet
+       1 013470 004737  017316          	jsr	pc,tucmd
+     248                                
+     249                                	; receive END packet
+     250                                
+     251 013474                         	call	tuend			; get end packet
+       1 013474 004737  017502          	jsr	pc,tuend
+     252                                
+     253                                	; status
+     254                                	
+     255 013500                         	printf	#100$,r0,r1,r2,r3	; print results
+       1 013500                         	calls	printf #100$ r0 r1 r2 r3           
+       9 013500 010346                  	mov	r3,-(sp)
+      15 013502 010246                  	mov	r2,-(sp)
+      21 013504 010146                  	mov	r1,-(sp)
+      27 013506 010046                  	mov	r0,-(sp)
+      33 013510 012746  013526          	mov	#100$,-(sp)
+       2 013514                         	call	printf
+       1 013514 004737  020442          	jsr	pc,printf
+       3 013520 062706  000012          	add	#12,sp
+     256 013524 000434                  	br	999$			; next
+     257                                
+     258 013526    104     111     101  100$:	.asciz	"DIAG:   code=%06o   unit=%06o  count=%06o status=%06o"<cr><lf>
+         013531    107     072     040  
+         013534    040     040     143  
+         013537    157     144     145  
+         013542    075     045     060  
+         013545    066     157     040  
+         013550    040     040     165  
+         013553    156     151     164  
+         013556    075     045     060  
+         013561    066     157     040  
+         013564    040     143     157  
+         013567    165     156     164  
+         013572    075     045     060  
+         013575    066     157     040  
+         013600    163     164     141  
+         013603    164     165     163  
+         013606    075     045     060  
+         013611    066     157     015  
+         013614    012     000          
+     259                                	.even
+     260                                
+     261 013616 005237  002006          999$:	inc	testno			; count tests
+     262                                
+     263                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     264                                
+     265 013622                         	test	<send a SEEK command packet>
+       2                                
+       3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+       4                                	.sbttl	Test10 - send a SEEK command packet
+       5                                	;------------------------------------------------------------
+       6                                
+       7                                test10:	; start of test
+       8                                
+       9 013622 022737  000010  002006  	cmp	#10,testno		; check for sequence error
+      10 013630 001401                  	beq	.+4			; OK, skip over halt
+      11 013632 000000                  	halt				; FATAL - SEQUENCE ERROR
+     266                                
+     267 013634 012705  014176          	mov	#200$,r5		; ptr to block list
+     268                                
+     269                                	;  loop on blocks
+     270                                
+     271 013640 005037  002032          1$:	clr	count			; byte count
+     272 013644 012537  002026          	mov	(r5)+,block		; block number
+     273 013650                         	jmi	999$			; br if end
+       1 013650 100002                  	bpl	32768$
+       2 013652 000137  014274          	jmp	999$
+       3                                32768$:
+     274                                
+     275                                	;  send COMMAND packet
+     276                                
+     277 013656 012700  000005          	mov	#to_seek,r0		; opcode
+     278 013662 013701  002024          	mov	unit,r1			; unit
+     279 013666 013702  002032          	mov	count,r2		; byte count
+     280 013672 013703  002026          	mov	block,r3		; block number
+     281 013676                         	call	tucmd			; send command packet
+       1 013676 004737  017316          	jsr	pc,tucmd
+     282                                
+     283                                	; receive END packet
+     284                                
+     285 013702                         	call	tuend			; get end packet
+       1 013702 004737  017502          	jsr	pc,tuend
+     286                                	
+     287 013706 010037  002010          	mov	r0,t0			; save results
+     288 013712 010137  002012          	mov	r1,t1			;
+     289 013716 010237  002014          	mov	r2,t2			;
+     290 013722 010337  002016          	mov	r3,t3			; 
+     291                                
+     292                                	; status
+     293                                
+     294 013726                         	printf	#100$,unit,block,count,t0,t1,t2,t3 ; print results
+       1 013726                         	calls	printf #100$ unit block count t0 t1 t2 t3        
+       9 013726 013746  002016          	mov	t3,-(sp)
+      15 013732 013746  002014          	mov	t2,-(sp)
+      21 013736 013746  002012          	mov	t1,-(sp)
+      27 013742 013746  002010          	mov	t0,-(sp)
+      33 013746 013746  002032          	mov	count,-(sp)
+      39 013752 013746  002026          	mov	block,-(sp)
+      45 013756 013746  002024          	mov	unit,-(sp)
+      51 013762 012746  014042          	mov	#100$,-(sp)
+       2 013766                         	call	printf
+       1 013766 004737  020442          	jsr	pc,printf
+       3 013772 062706  000020          	add	#20,sp
+     295                                
+     296 013776 023725  002010          	cmp	t0,(r5)+		; check rcvd r0
+     297 014002 001401                  	beq	.+4			; br if error
+     298 014004 000000                  	halt				; die
+     299 014006 023725  002012          	cmp	t1,(r5)+		; check rcvd r1
+     300 014012 001401                  	beq	.+4			; br if error
+     301 014014 000000                  	halt				; die
+     302 014016 023725  002014          	cmp	t2,(r5)+		; check rcvd r2
+     303 014022 001401                  	beq	.+4			; br if error
+     304 014024 000000                  	halt				; die
+     305 014026 023725  002016          	cmp	t3,(r5)+		; check rcvd r3
+     306 014032 001401                  	beq	.+4			; br if ok
+     307 014034 000000                  	halt				; die on error
+     308                                
+     309 014036 000137  013640          	jmp	1$			; loop
+     310                                
+     311 014042    123     105     105  100$:	.asciz	"SEEK:   unit=%06o  block=%06o  count=%06o   code=%06o   unit=%06o  count=%06o status=%06o"<cr><lf>
+         014045    113     072     040  
+         014050    040     040     165  
+         014053    156     151     164  
+         014056    075     045     060  
+         014061    066     157     040  
+         014064    040     142     154  
+         014067    157     143     153  
+         014072    075     045     060  
+         014075    066     157     040  
+         014100    040     143     157  
+         014103    165     156     164  
+         014106    075     045     060  
+         014111    066     157     040  
+         014114    040     040     143  
+         014117    157     144     145  
+         014122    075     045     060  
+         014125    066     157     040  
+         014130    040     040     165  
+         014133    156     151     164  
+         014136    075     045     060  
+         014141    066     157     040  
+         014144    040     143     157  
+         014147    165     156     164  
+         014152    075     045     060  
+         014155    066     157     040  
+         014160    163     164     141  
+         014163    164     165     163  
+         014166    075     045     060  
+         014171    066     157     015  
+         014174    012     000          
+     312                                	.even
+     313                                
+     314                                	     ; block  code unit count status
+     315 014176 000000  000000  000000  200$:	.word	   0,    0,   0,    0,     0
+         014204 000000  000000          
+     316 014210 000123  000000  000000  	.word	 123,    0,   0,    0,     0
+         014216 000000  000000          
+     317 014222 000777  000000  000000  	.word	 777,    0,   0,    0,     0
+         014230 000000  000000          
+     318 014234 001000  000311  000000  	.word	1000,  311,   0,    0,     0
+         014242 000000  000000          
+     319 014246 001001  000311  000000  	.word	1001,  311,   0,    0,     0
+         014254 000000  000000          
+     320 014260 010000  000311  000000  	.word  10000,  311,   0,    0,     0
+         014266 000000  000000          
+     321 014272 177777                  	.word	  -1
+     322                                
+     323 014274 005237  002006          999$:	inc	testno			; count tests
+     324                                
+     325                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     326                                
+     327 014300                         	test	<send a READ command packet>
+       2                                
+       3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+       4                                	.sbttl	Test11 - send a READ command packet
+       5                                	;------------------------------------------------------------
+       6                                
+       7                                test11:	; start of test
+       8                                
+       9 014300 022737  000011  002006  	cmp	#11,testno		; check for sequence error
+      10 014306 001401                  	beq	.+4			; OK, skip over halt
+      11 014310 000000                  	halt				; FATAL - SEQUENCE ERROR
+     328                                
+     329 014312 012705  015004          	mov	#200$,r5		; ptr to block/count list
+     330                                
+     331                                	;  loop on blocks
+     332                                
+     333 014316 012537  002026          1$:	mov	(r5)+,block		; block number
+     334 014322                         	jmi	999$			; done
+       1 014322 100002                  	bpl	32768$
+       2 014324 000137  015266          	jmp	999$
+       3                                32768$:
+     335 014330 012537  002032          	mov	(r5)+,count		; byte count
+     336                                
+     337                                	;  fill buffer with all ones
+     338                                	
+     339 014334 013700  002036          2$:	mov	bufcnt,r0		; buffer size
+     340 014340 013701  002034          	mov	bufptr,r1		; buffer address
+     341 014344 112702  177777          	movb	#-1,r2			; data
+     342 014350                         	call	filler			; fill buffer
+       1 014350 004737  016436          	jsr	pc,filler
+     343                                
+     344 014354                         	savreg	r4,r5			; save
+       3 014354 010446                  	mov	r4,-(sp)
+       8 014356 010546                  	mov	r5,-(sp)
+     345                                
+     346                                	; send READ command sequence
+     347                                
+     348 014360 013700  002024          	mov	unit,r0			; unit
+     349 014364 013701  002032          	mov	count,r1		; byte count
+     350 014370 013702  002026          	mov	block,r2		; block number
+     351 014374 013703  002034          	mov	bufptr,r3		; buffer address
+     352 014400                         	call	turead			; read command sequence
+       1 014400 004737  020336          	jsr	pc,turead
+     353                                
+     354 014404 010037  002010          	mov	r0,t0			; save results
+     355 014410 010137  002012          	mov	r1,t1			;
+     356 014414 010237  002014          	mov	r2,t2			;
+     357 014420 010337  002016          	mov	r3,t3			; 
+     358 014424 010437  002020          	mov	r4,t4			;
+     359 014430 010537  002022          	mov	r5,t5			;
+     360                                
+     361 014434                         	resreg	r4,r5			; restore
+       8 014434 012605                  	mov	(sp)+,r5
+      13 014436 012604                  	mov	(sp)+,r4
+     362                                
+     363                                	; status
+     364                                	
+     365 014440                         	printf	#100$,unit,block,count,t0,t1,t2,t3,t4,t5 ; print results
+       1 014440                         	calls	printf #100$ unit block count t0 t1 t2 t3 t4 t5      
+       9 014440 013746  002022          	mov	t5,-(sp)
+      15 014444 013746  002020          	mov	t4,-(sp)
+      21 014450 013746  002016          	mov	t3,-(sp)
+      27 014454 013746  002014          	mov	t2,-(sp)
+      33 014460 013746  002012          	mov	t1,-(sp)
+      39 014464 013746  002010          	mov	t0,-(sp)
+      45 014470 013746  002032          	mov	count,-(sp)
+      51 014474 013746  002026          	mov	block,-(sp)
+      57 014500 013746  002024          	mov	unit,-(sp)
+      63 014504 012746  014620          	mov	#100$,-(sp)
+       2 014510                         	call	printf
+       1 014510 004737  020442          	jsr	pc,printf
+       3 014514 062706  000024          	add	#24,sp
+     366                                	
+     367 014520 023725  002010          	cmp	t0,(r5)+		; check rcvd r0
+     368 014524 001401                  	beq	.+4			; br if error
+     369 014526 000000                  	halt				; die
+     370 014530 023725  002012          	cmp	t1,(r5)+		; check rcvd r1
+     371 014534 001401                  	beq	.+4			; br if error
+     372 014536 000000                  	halt				; die
+     373 014540 023725  002014          	cmp	t2,(r5)+		; check rcvd r2
+     374 014544 001401                  	beq	.+4			; br if error
+     375 014546 000000                  	halt				; die
+     376 014550 023725  002016          	cmp	t3,(r5)+		; check rcvd r3
+     377 014554 001401                  	beq	.+4			; br if ok
+     378 014556 000000                  	halt				; die on error
+     379 014560 023725  002020          	cmp	t4,(r5)+		; check rcvd r4
+     380 014564 001401                  	beq	.+4			; br if ok
+     381 014566 000000                  	halt				; die on error
+     382 014570 023725  002022          	cmp	t5,(r5)+		; check rcvd r5
+     383 014574 001401                  	beq	.+4			; br if ok
+     384 014576 000000                  	halt				; die on error
+     385                                
+     386                                	; dump buffer
+     387                                	
+     388 014600 013700  002032          	mov	count,r0		; buffer size
+     389 014604 013701  002034          	mov	bufptr,r1		; buffer address
+     390 014610                         	call	dumper			; print it
+       1 014610 004737  016512          	jsr	pc,dumper
+     391                                
+     392 014614 000137  014316          	jmp	1$			; loop
+     393                                
+     394 014620    122     105     101  100$:	.asciz	"READ:   unit=%06o  block=%06o  count=%06o   code=%06o   unit=%06o  count=%06o status=%06o  count=%06o buffer=%06o"<cr><lf>
+         014623    104     072     040  
+         014626    040     040     165  
+         014631    156     151     164  
+         014634    075     045     060  
+         014637    066     157     040  
+         014642    040     142     154  
+         014645    157     143     153  
+         014650    075     045     060  
+         014653    066     157     040  
+         014656    040     143     157  
+         014661    165     156     164  
+         014664    075     045     060  
+         014667    066     157     040  
+         014672    040     040     143  
+         014675    157     144     145  
+         014700    075     045     060  
+         014703    066     157     040  
+         014706    040     040     165  
+         014711    156     151     164  
+         014714    075     045     060  
+         014717    066     157     040  
+         014722    040     143     157  
+         014725    165     156     164  
+         014730    075     045     060  
+         014733    066     157     040  
+         014736    163     164     141  
+         014741    164     165     163  
+         014744    075     045     060  
+         014747    066     157     040  
+         014752    040     143     157  
+         014755    165     156     164  
+         014760    075     045     060  
+         014763    066     157     040  
+         014766    142     165     146  
+         014771    146     145     162  
+         014774    075     045     060  
+         014777    066     157     015  
+         015002    012     000          
+     395                                	.even
+     396                                
+     397                                	     ; block count  code unit  count status count' buffer'
+     398 015004 000000  001000  000000  200$:	.word	   0, 1000,    0,   0,  1000,     0,    0, BUFFER+1000
+         015012 000000  001000  000000  
+         015020 000000  003040          
+     399 015024 000001  000077  000000  	.word	   1,   77,    0,   0,    77,     0,    0, BUFFER+77
+         015032 000000  000077  000000  
+         015040 000000  002137          
+     400 015044 000002  002000  000000  	.word	   2, 2000,    0,   0,  2000,     0,    0, BUFFER+2000
+         015052 000000  002000  000000  
+         015060 000000  004040          
+     401 015064 000001  000001  000000  	.word	   1,    1,    0,   0,     1,     0,    0, BUFFER+1
+         015072 000000  000001  000000  
+         015100 000000  002041          
+     402 015104 000002  000002  000000  	.word	   2,    2,    0,   0,     2,     0,    0, BUFFER+2
+         015112 000000  000002  000000  
+         015120 000000  002042          
+     403 015124 000003  000003  000000  	.word	   3,    3,    0,   0,     3,     0,    0, BUFFER+3
+         015132 000000  000003  000000  
+         015140 000000  002043          
+     404 015144 000775  000201  000000  	.word	 775,  201,    0,   0,   201,     0,    0, BUFFER+201
+         015152 000000  000201  000000  
+         015160 000000  002241          
+     405 015164 000776  000177  000000  	.word	 776,  177,    0,   0,   177,     0,    0, BUFFER+177
+         015172 000000  000177  000000  
+         015200 000000  002237          
+     406 015204 000777  001000  000000  	.word	 777, 1000,    0,   0,  1000,     0,    0, BUFFER+1000
+         015212 000000  001000  000000  
+         015220 000000  003040          
+     407 015224 001000  001000  000311  	.word	1000, 1000,  311,   0,     0,     0, 1000, BUFFER
+         015232 000000  000000  000000  
+         015240 001000  002040          
+     408 015244 001001  000400  000311  	.word	1001,  400,  311,   0,     0,     0,  400, BUFFER
+         015252 000000  000000  000000  
+         015260 000400  002040          
+     409 015264 177777                  	.word	  -1
+     410                                
+     411 015266 005237  002006          999$:	inc	testno			; count tests
+     412                                
+     413                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     414                                
+     415 015272                         	test	<send a WRITE command packet>
+       2                                
+       3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+       4                                	.sbttl	Test12 - send a WRITE command packet
+       5                                	;------------------------------------------------------------
+       6                                
+       7                                test12:	; start of test
+       8                                
+       9 015272 022737  000012  002006  	cmp	#12,testno		; check for sequence error
+      10 015300 001401                  	beq	.+4			; OK, skip over halt
+      11 015302 000000                  	halt				; FATAL - SEQUENCE ERROR
+     416                                
+     417 015304 012705  016066          	mov	#200$,r5		; ptr to block/count list
+     418                                
+     419                                	;  loop on blocks
+     420                                
+     421 015310 012537  002026          1$:	mov	(r5)+,block		; block number
+     422 015314                         	jmi	999$			; done
+       1 015314 100002                  	bpl	32768$
+       2 015316 000137  016350          	jmp	999$
+       3                                32768$:
+     423 015322 012537  002032          	mov	(r5)+,count		; byte count
+     424                                
+     425                                	;  fill block buffer with all ones
+     426                                	
+     427 015326 013700  002036          2$:	mov	bufcnt,r0		; buffer size
+     428 015332 013701  002034          	mov	bufptr,r1		; buffer address
+     429 015336 112702  177777          	movb	#-1,r2			; data
+     430 015342                         	call	filler			; fill buffer constant
+       1 015342 004737  016436          	jsr	pc,filler
+     431                                
+     432 015346                         	savreg	r4,r5			; save
+       3 015346 010446                  	mov	r4,-(sp)
+       8 015350 010546                  	mov	r5,-(sp)
+     433                                
+     434                                	; send WRITE command sequence, one full block of all ones
+     435                                
+     436 015352 013700  002024           	mov	unit,r0			; unit
+     437 015356 012701  001000          	mov	#tu_bps,r1		; byte count
+     438 015362 013702  002026          	mov	block,r2		; block number
+     439 015366 013703  002034          	mov	bufptr,r3		; buffer address
+     440 015372                          	call	tuwrite			; write command sequence
+       1 015372 004737  020400          	jsr	pc,tuwrite
+     441                                
+     442                                	; fill block buffer with pattern
+     443                                
+     444 015376 013700  002036          	mov	bufcnt,r0		; buffer size
+     445 015402 013701  002034          	mov	bufptr,r1		; buffer address
+     446 015406 013702  002026          	mov	block,r2		; data seed
+     447 015412                         	call	pattrn			; fill buffer pattern
+       1 015412 004737  016454          	jsr	pc,pattrn
+     448                                	
+     449                                	; send WRITE command sequence
+     450                                
+     451 015416 013700  002024          	mov	unit,r0			; unit
+     452 015422 013701  002032          	mov	count,r1		; byte count
+     453 015426 013702  002026          	mov	block,r2		; block number
+     454 015432 013703  002034          	mov	bufptr,r3		; buffer address
+     455 015436                         	call	tuwrite			; write command sequence
+       1 015436 004737  020400          	jsr	pc,tuwrite
+     456                                
+     457 015442 010037  002010          	mov	r0,t0			; save results
+     458 015446 010137  002012          	mov	r1,t1			;
+     459 015452 010237  002014          	mov	r2,t2			;
+     460 015456 010337  002016          	mov	r3,t3			; 
+     461 015462 010437  002020          	mov	r4,t4			;
+     462 015466 010537  002022          	mov	r5,t5			;
+     463                                
+     464                                	; send READ command sequence, one full block
+     465                                
+     466 015472 013700  002024          	mov	unit,r0			; unit
+     467 015476 012701  001000          	mov	#tu_bps,r1		; byte count
+     468 015502 013702  002026          	mov	block,r2		; block number
+     469 015506 013703  002034          	mov	bufptr,r3		; buffer address
+     470 015512                         	call	turead			; read command sequence
+       1 015512 004737  020336          	jsr	pc,turead
+     471                                	
+     472 015516                         	resreg	r4,r5			; restore
+       8 015516 012605                  	mov	(sp)+,r5
+      13 015520 012604                  	mov	(sp)+,r4
+     473                                	
+     474                                	; status
+     475                                	
+     476 015522                         	printf	#100$,unit,block,count,t0,t1,t2,t3,t4,t5 ; print results
+       1 015522                         	calls	printf #100$ unit block count t0 t1 t2 t3 t4 t5      
+       9 015522 013746  002022          	mov	t5,-(sp)
+      15 015526 013746  002020          	mov	t4,-(sp)
+      21 015532 013746  002016          	mov	t3,-(sp)
+      27 015536 013746  002014          	mov	t2,-(sp)
+      33 015542 013746  002012          	mov	t1,-(sp)
+      39 015546 013746  002010          	mov	t0,-(sp)
+      45 015552 013746  002032          	mov	count,-(sp)
+      51 015556 013746  002026          	mov	block,-(sp)
+      57 015562 013746  002024          	mov	unit,-(sp)
+      63 015566 012746  015702          	mov	#100$,-(sp)
+       2 015572                         	call	printf
+       1 015572 004737  020442          	jsr	pc,printf
+       3 015576 062706  000024          	add	#24,sp
+     477                                
+     478 015602 023725  002010          	cmp	t0,(r5)+		; check rcvd r0
+     479 015606 001401                  	beq	.+4			; br if error
+     480 015610 000000                  	halt				; die
+     481 015612 023725  002012          	cmp	t1,(r5)+		; check rcvd r1
+     482 015616 001401                  	beq	.+4			; br if error
+     483 015620 000000                  	halt				; die
+     484 015622 023725  002014          	cmp	t2,(r5)+		; check rcvd r2
+     485 015626 001401                  	beq	.+4			; br if error
+     486 015630 000000                  	halt				; die
+     487 015632 023725  002016          	cmp	t3,(r5)+		; check rcvd r3
+     488 015636 001401                  	beq	.+4			; br if ok
+     489 015640 000000                  	halt				; die on error
+     490 015642 023725  002020          	cmp	t4,(r5)+		; check rcvd r4
+     491 015646 001401                  	beq	.+4			; br if ok
+     492 015650 000000                  	halt				; die on error
+     493 015652 023725  002022          	cmp	t5,(r5)+		; check rcvd r5
+     494 015656 001401                  	beq	.+4			; br if ok
+     495 015660 000000                  	halt				; die on error
+     496                                
+     497                                	; dump buffer
+     498                                	
+     499 015662 012700  001000          	mov	#tu_bps,r0		; buffer size
+     500 015666 013701  002034          	mov	bufptr,r1		; buffer address
+     501 015672                         	call	dumper			; print it
+       1 015672 004737  016512          	jsr	pc,dumper
+     502                                
+     503 015676 000137  015310          	jmp	1$			; loop
+     504                                
+     505 015702    127     122     111  100$:	.asciz	"WRITE:  unit=%06o  block=%06o  count=%06o   code=%06o   unit=%06o  count=%06o status=%06o  count=%06o buffer=%06o"<cr><lf>
+         015705    124     105     072  
+         015710    040     040     165  
+         015713    156     151     164  
+         015716    075     045     060  
+         015721    066     157     040  
+         015724    040     142     154  
+         015727    157     143     153  
+         015732    075     045     060  
+         015735    066     157     040  
+         015740    040     143     157  
+         015743    165     156     164  
+         015746    075     045     060  
+         015751    066     157     040  
+         015754    040     040     143  
+         015757    157     144     145  
+         015762    075     045     060  
+         015765    066     157     040  
+         015770    040     040     165  
+         015773    156     151     164  
+         015776    075     045     060  
+         016001    066     157     040  
+         016004    040     143     157  
+         016007    165     156     164  
+         016012    075     045     060  
+         016015    066     157     040  
+         016020    163     164     141  
+         016023    164     165     163  
+         016026    075     045     060  
+         016031    066     157     040  
+         016034    040     143     157  
+         016037    165     156     164  
+         016042    075     045     060  
+         016045    066     157     040  
+         016050    142     165     146  
+         016053    146     145     162  
+         016056    075     045     060  
+         016061    066     157     015  
+         016064    012     000          
+     506                                	.even
+     507                                
+     508                                	     ; block count  code unit  count status count' buffer'
+     509 016066 000000  001000  000000  200$:	.word	   0, 1000,    0,   0,  1000,     0,    0, BUFFER+1000
+         016074 000000  001000  000000  
+         016102 000000  003040          
+     510 016106 000001  000077  000000  	.word	   1,   77,    0,   0,    77,     0,    0, BUFFER+77
+         016114 000000  000077  000000  
+         016122 000000  002137          
+     511 016126 000002  002000  000000  	.word	   2, 2000,    0,   0,  2000,     0,    0, BUFFER+2000
+         016134 000000  002000  000000  
+         016142 000000  004040          
+     512 016146 000001  000001  000000  	.word	   1,    1,    0,   0,     1,     0,    0, BUFFER+1
+         016154 000000  000001  000000  
+         016162 000000  002041          
+     513 016166 000002  000002  000000  	.word	   2,    2,    0,   0,     2,     0,    0, BUFFER+2
+         016174 000000  000002  000000  
+         016202 000000  002042          
+     514 016206 000003  000003  000000  	.word	   3,    3,    0,   0,     3,     0,    0, BUFFER+3
+         016214 000000  000003  000000  
+         016222 000000  002043          
+     515 016226 000775  000201  000000  	.word	 775,  201,    0,   0,   201,     0,    0, BUFFER+201
+         016234 000000  000201  000000  
+         016242 000000  002241          
+     516 016246 000776  000177  000000  	.word	 776,  177,    0,   0,   177,     0,    0, BUFFER+177
+         016254 000000  000177  000000  
+         016262 000000  002237          
+     517 016266 000777  001000  000000  	.word	 777, 1000,    0,   0,  1000,     0,    0, BUFFER+1000
+         016274 000000  001000  000000  
+         016302 000000  003040          
+     518 016306 001000  001000  000311  	.word	1000, 1000,  311,   0,     0,     0, 1000, BUFFER
+         016314 000000  000000  000000  
+         016322 001000  002040          
+     519 016326 001001  000400  000311  	.word	1001,  400,  311,   0,     0,     0,  400, BUFFER
+         016334 000000  000000  000000  
+         016342 000400  002040          
+     520 016346 177777                  	.word	  -1
+     521                                
+     522 016350 005237  002006          999$:	inc	testno			; count tests
+     523                                
+     524                                ; --------------------------------------------------------------------------------
+     525                                
+     526 016354                         done:	printf	#msg2			; say goodbye
+       1 016354                         	calls	printf #msg2               
+       9 016354 012746  012065          	mov	#msg2,-(sp)
+       2 016360                         	call	printf
+       1 016360 004737  020442          	jsr	pc,printf
+       3 016364 062706  000002          	add	#2,sp
+     527                                
+     528 016370 013700  002004          	mov	$sav42,r0		; check if loaded by XXDP
+     529 016374 001407                  	beq	noxxdp			; br if not
+     530 016376 000005                  	reset				; yes, reset the world
+     531 016400 004710                  $endad:	jsr	pc,(r0)			; return back to XXDP
+     532 016402 000240                  	nop				; standard sequence
+     533 016404 000240                  	nop				;
+     534 016406 000240                  	nop				;
+     535 016410 000137  012274          	jmp	loop			; back for more
+     536                                
+     537 016414 005000                  noxxdp:	clr	r0			;
+     538 016416 005300                  10$:	dec	r0			;
+     539 016420 001376                  	bne	10$			; some delay
+     540 016422 000005                  	reset				; zap the world
+     541 016424 012746  000340          	mov	#<7>*bit5,-(sp)		; prio7 in psw
+     542 016430 012746  165144          	mov	#console,-(sp)		; go there
+     543 016434 000002                  	rti				; reload psw
+     544                                
+     545                                ; --------------------------------------------------------------------------------
+     546                                ;
+     547                                ; filler - fill a buffer with constant data
+     548                                ;
+     549                                ; arguments:	r0 = buffer size, bytes
+     550                                ;		r1 = buffer address
+     551                                ;               r2 = data byte for fill
+     552                                
+     553 016436                         filler:	savreg	r0,r1			; save
+       3 016436 010046                  	mov	r0,-(sp)
+       8 016440 010146                  	mov	r1,-(sp)
+     554                                	
+     555 016442 110221                  1$:	movb	r2,(r1)+		; store a byte
+     556 016444 077002                  	sob	r0,1$			; count bytes
+     557                                
+     558 016446                         	resreg	r0,r1			; restore
+       8 016446 012601                  	mov	(sp)+,r1
+      13 016450 012600                  	mov	(sp)+,r0
+     559 016452                         	return				; return
+       1 016452 000207                  	rts	pc
+     560                                
+     561                                ; --------------------------------------------------------------------------------
+     562                                ;
+     563                                ; pattrn - fill a buffer with pattern data
+     564                                ;
+     565                                ; arguments:	r0 = buffer size, bytes
+     566                                ;		r1 = buffer address
+     567                                ;               r2 = data byte seed fof fill
+     568                                
+     569 016454                         pattrn:	savreg	r0,r1,r2,r3		; save
+       3 016454 010046                  	mov	r0,-(sp)
+       8 016456 010146                  	mov	r1,-(sp)
+      13 016460 010246                  	mov	r2,-(sp)
+      18 016462 010346                  	mov	r3,-(sp)
+     570                                	
+     571 016464 010203                  	mov	r2,r3			; copy
+     572 016466 000303                  	swab	r3			; swap
+     573 016470 060302                  	add	r3,r2			; merge
+     574                                
+     575 016472 110221                  1$:	movb	r2,(r1)+		; store a byte
+     576 016474 105202                  	incb	r2			; bump
+     577 016476 077003                  	sob	r0,1$			; count bytes
+     578                                
+     579 016500                         	resreg	r0,r1,r2,r3		; restore
+       8 016500 012603                  	mov	(sp)+,r3
+      13 016502 012602                  	mov	(sp)+,r2
+      18 016504 012601                  	mov	(sp)+,r1
+      23 016506 012600                  	mov	(sp)+,r0
+     580 016510                         	return				; return
+       1 016510 000207                  	rts	pc
+     581                                
+     582                                ; --------------------------------------------------------------------------------
+     583                                ;
+     584                                ; dumper - ascii dump of the block buffer
+     585                                ;
+     586                                ; arguments:	r0 = buffer size, bytes
+     587                                ;		r1 = buffer address
+     588                                
+     589 016512                         dumper:	savreg	r0,r1,r2,r3		; save
+       3 016512 010046                  	mov	r0,-(sp)
+       8 016514 010146                  	mov	r1,-(sp)
+      13 016516 010246                  	mov	r2,-(sp)
+      18 016520 010346                  	mov	r3,-(sp)
+     590                                	
+     591 016522 032737  000001  002002  	bit	#1,optswi		; check flag
+     592 016530 001454                  	beq	4$			; if not set don't print
+     593                                
+     594 016532 005002                  	clr	r2			; offset counter
+     595                                	
+     596 016534 032702  000017          1$:	bit	#17,r2			; check count position
+     597 016540 001007                  	bne	2$			; br if not 0/16/32/etc
+     598 016542                         	printf	#100$,r2		; print offset
+       1 016542                         	calls	printf #100$ r2              
+       9 016542 010246                  	mov	r2,-(sp)
+      15 016544 012746  016674          	mov	#100$,-(sp)
+       2 016550                         	call	printf
+       1 016550 004737  020442          	jsr	pc,printf
+       3 016554 062706  000004          	add	#4,sp
+     599                                	
+     600 016560 005003                  2$:	clr	r3			; zap upper
+     601 016562 152103                  	bisb	(r1)+,r3		; get a byte
+     602 016564                         	printf	#101$,r3		; print byte
+       1 016564                         	calls	printf #101$ r3              
+       9 016564 010346                  	mov	r3,-(sp)
+      15 016566 012746  016704          	mov	#101$,-(sp)
+       2 016572                         	call	printf
+       1 016572 004737  020442          	jsr	pc,printf
+       3 016576 062706  000004          	add	#4,sp
+     603                                	
+     604 016602 005102                  	com	r2			; invert offset
+     605 016604 032702  000017          	bit	#17,r2			; check count position
+     606 016610 001006                  	bne	3$			; br if not 0/16/32/etc
+     607 016612                         	printf	#102$			; print eol
+       1 016612                         	calls	printf #102$               
+       9 016612 012746  016712          	mov	#102$,-(sp)
+       2 016616                         	call	printf
+       1 016616 004737  020442          	jsr	pc,printf
+       3 016622 062706  000002          	add	#2,sp
+     608 016626 005102                  3$:	com	r2			; reset offset
+     609                                
+     610 016630 005202                  	inc	r2			; count
+     611 016632 020002                  	cmp	r0,r2			; reached end?
+     612 016634 001337                  	bne	1$			; loop
+     613                                
+     614 016636 005402                  	neg	r2			; dec/com count
+     615 016640 042702  177760          	bic	#^c17,r2		; check count position
+     616 016644 001406                  	beq	4$			; br if not 0/16/32/etc
+     617 016646                         	printf	#102$			; print eol
+       1 016646                         	calls	printf #102$               
+       9 016646 012746  016712          	mov	#102$,-(sp)
+       2 016652                         	call	printf
+       1 016652 004737  020442          	jsr	pc,printf
+       3 016656 062706  000002          	add	#2,sp
+     618                                
+     619 016662                         4$:	resreg	r0,r1,r2,r3		; restore
+       8 016662 012603                  	mov	(sp)+,r3
+      13 016664 012602                  	mov	(sp)+,r2
+      18 016666 012601                  	mov	(sp)+,r1
+      23 016670 012600                  	mov	(sp)+,r0
+     620 016672                         	return				; return
+       1 016672 000207                  	rts	pc
+     621                                
+     622 016674    053     045     060  100$:	.asciz	"+%04o: "
+         016677    064     157     072  
+         016702    040     000          
+     623 016704    040     045     060  101$:	.asciz	" %03o"
+         016707    063     157     000  
+     624 016712    015     012     000  102$:	.asciz	<cr><lf>
+     625 016715    000                  	.even
+     626                                
+     627                                ; --------------------------------------------------------------------------------
+     628                                	
+     629                                .sbttl	support routines
+     630                                
+     631                                .include "tu58/driver.mac"
+       1                                
+       2                                ; --------------------------------------------------------------------------------
+       3                                
+       4                                ; TU device support routines
+       5                                
+       6 016716 176500                  turcs:	.word	tu$rcs			; a(tu$rcs)
+       7 016720 176502                  turdb:	.word	tu$rdb			; a(tu$rdb)
+       8 016722 176504                  tutcs:	.word	tu$tcs			; a(tu$tcs)
+       9 016724 176506                  tutdb:	.word	tu$tdb			; a(tu$tdb)
+      10                                
+      11        016726                  tutry:	.blkw	1			; operation retry counter
+      12                                
+      13 016730    000                  turchr:	.byte	0			; last character receive save stack
+      14 016731    000                  turcnt:	.byte	0			; count of characters in save stack
+      15                                
+      16                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      17                                
+      18                                ; receive a byte from the TU58 interface
+      19                                ;
+      20                                ; arguments: none
+      21                                ;
+      22                                ; returns:   r0 = data byte (upper byte zeroed)
+      23                                
+      24 016732 005000                  turecv:	clr	r0			; zap
+      25                                
+      26 016734 105737  016731          	tstb	turcnt			; any in buffer?
+      27 016740 003405                  	ble	1$			; br if none
+      28                                
+      29 016742 153700  016730          	bisb	turchr,r0		; get byte
+      30 016746 105337  016731          	decb	turcnt			; count it
+      31                                
+      32 016752                         	return				; return
+       1 016752 000207                  	rts	pc
+      33                                
+      34 016754 105777  177736          1$:	tstb	@turcs			; check if available
+      35 016760 100375                  	bpl	1$			; br if none
+      36                                
+      37 016762 157700  177732          	bisb	@turdb,r0		; get byte
+      38                                
+      39 016766                         	return				; return
+       1 016766 000207                  	rts	pc
+      40                                
+      41                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      42                                
+      43                                ; push a byte back to the TU58 receive interface
+      44                                ;
+      45                                ; arguments: r0 = data byte to push
+      46                                ; 
+      47                                ; returns:   r0	= data byte pushed
+      48                                	
+      49 016770 105237  016731          tupush:	incb	turcnt			; indicate pushback
+      50                                
+      51 016774 110037  016730          	movb	r0,turchr		; save byte
+      52                                	
+      53 017000                         	return				; return
+       1 017000 000207                  	rts	pc
+      54                                	
+      55                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      56                                
+      57                                ; wait for TU58 transmit interface ready
+      58                                ;
+      59                                ; arguments: none
+      60                                ;
+      61                                ; returns:   none
+      62                                
+      63 017002 105777  177714          tuwait:	tstb	@tutcs			; check if ready
+      64 017006 100375                  	bpl	tuwait			; br if not
+      65                                	
+      66 017010                         	return				; return
+       1 017010 000207                  	rts	pc
+      67                                	
+      68                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      69                                
+      70                                ; send a byte to the TU58 interface
+      71                                ;
+      72                                ; arguments: r0 = data byte to send
+      73                                ;
+      74                                ; returns:   r0 = data byte sent
+      75                                
+      76 017012                         tusend:	call	tuwait			; wait for ready
+       1 017012 004737  017002          	jsr	pc,tuwait
+      77                                	
+      78 017016 110077  177702          	movb	r0,@tutdb		; put byte
+      79                                	
+      80 017022                         	return				; return
+       1 017022 000207                  	rts	pc
+      81                                	
+      82                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      83                                
+      84                                ; bootstrap code ... copied from M9312 boot prom
+      85                                ;
+      86                                ; arguments: r0 = unit number
+      87                                ;            r1 = buffer address
+      88                                	
+      89 017024                         tuboot:	savreg	r0,r1,r2		; save
+       3 017024 010046                  	mov	r0,-(sp)
+       8 017026 010146                  	mov	r1,-(sp)
+      13 017030 010246                  	mov	r2,-(sp)
+      90                                	
+      91 017032 005277  177664          	inc	@tutcs			; set break bit
+      92 017036 005002                  	clr	r2			; null data for break
+      93 017040                         	call	10$			; transmit a bunch of zero chars
+       1 017040 004737  017134          	jsr	pc,10$
+      94 017044 005077  177652          	clr	@tutcs			; clear break bit
+      95 017050 005777  177644          	tst	@turdb			; read/flush any stale rx char
+      96                                	
+      97 017054 012702  000004          	mov	#tf_init,r2		; init command
+      98 017060                         	call	13$			; transmit
+       1 017060 004737  017142          	jsr	pc,13$
+      99                                	
+     100 017064 012702  000010          	mov	#tf_boot,r2		; boot command
+     101 017070                         	call	13$			; transmit
+       1 017070 004737  017142          	jsr	pc,13$
+     102                                	
+     103 017074 010002                  	mov	r0,r2			; get unit number
+     104 017076                         	call	13$			; transmit
+       1 017076 004737  017142          	jsr	pc,13$
+     105                                
+     106 017102 012702  001000          	mov	#tb_size,r2		; size of boot block
+     107 017106 105777  177604          5$:	tstb	@turcs			; wait for rcv'd char available
+     108 017112 100375                  	bpl	5$			; br if not yet
+     109 017114 117721  177600          	movb	@turdb,(r1)+		; store the char in buffer, bump ptr
+     110 017120 005302                  	dec	r2			; 
+     111 017122 001371                  	bne	5$			; loop
+     112                                
+     113 017124                         	resreg	r0,r1,r2		; restore
+       8 017124 012602                  	mov	(sp)+,r2
+      13 017126 012601                  	mov	(sp)+,r1
+      18 017130 012600                  	mov	(sp)+,r0
+     114 017132                         	return				; return
+       1 017132 000207                  	rts	pc
+     115                                
+     116 017134                         10$:	call	(pc)			; recursive call for char replication
+       1 017134 004717                  	jsr	pc,(pc)
+     117 017136                         11$:	call	(pc)			; recursive call for char replication
+       1 017136 004717                  	jsr	pc,(pc)
+     118 017140                         12$:	call	(pc)			; recursive call for char replication
+       1 017140 004717                  	jsr	pc,(pc)
+     119 017142 105777  177554          13$:	tstb	@tutcs			; wait for xmit buffer available
+     120 017146 100375                  	bpl	13$			; br if not yet
+     121 017150 110277  177550          	movb	r2,@tutdb		; send the char
+     122 017154                         	return				; now recurse or return
+       1 017154 000207                  	rts	pc
+     123                                
+     124                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     125                                
+     126                                ; init the TU58 ... send INIT flags until a CONTINUE is returned
+     127                                ;
+     128                                ; arguments: none
+     129                                ;
+     130                                ; returns:   NZVC = 0000 fail / NZVC = 1111 success
+     131                                	
+     132 017156                         tuinit:	savreg	r0,r1,r2		; save
+       3 017156 010046                  	mov	r0,-(sp)
+       8 017160 010146                  	mov	r1,-(sp)
+      13 017162 010246                  	mov	r2,-(sp)
+     133                                
+     134 017164 012701  000010          	mov	#tu_try,r1		; retry counter
+     135                                
+     136                                	; send BREAK for two character times
+     137                                
+     138 017170                         1$:	call	tuwait			; wait for ready
+       1 017170 004737  017002          	jsr	pc,tuwait
+     139 017174 052777  000001  177520  	bis	#ttc_brk,@tutcs		; set break bit
+     140 017202 112700  000000          	movb	#tf_null,r0		; NULL command
+     141 017206 012702  000012          	mov	#10.,r2			; send this many
+     142 017212                         2$:	call	tusend			; send another
+       1 017212 004737  017012          	jsr	pc,tusend
+     143 017216 005302                  	dec	r2			; count
+     144 017220 001374                  	bne	2$			; loop
+     145 017222                         	call	tuwait			; wait for ready
+       1 017222 004737  017002          	jsr	pc,tuwait
+     146 017226 042777  000001  177466  	bic	#ttc_brk,@tutcs		; clear break bit
+     147                                
+     148                                	; send two INIT commands, wait for ready
+     149                                
+     150 017234 112700  000004          	movb	#tf_init,r0		; INIT command
+     151 017240                         	call	tusend			; send one
+       1 017240 004737  017012          	jsr	pc,tusend
+     152 017244                         	call	tusend			; send another
+       1 017244 004737  017012          	jsr	pc,tusend
+     153 017250                         	call	tuwait			; wait for ready
+       1 017250 004737  017002          	jsr	pc,tuwait
+     154                                
+     155                                	; get response
+     156                                
+     157 017254                         	call	turecv			; get a byte
+       1 017254 004737  016732          	jsr	pc,turecv
+     158 017260 122700  000020          	cmpb	#tf_cont,r0		; was it a CONTINUE?
+     159 017264 001407                  	beq	9$			; yup, exit
+     160                                
+     161                                	; retry until CONT received
+     162                                
+     163 017266 005301                  	dec	r1			; retry counter
+     164 017270 003337                  	bgt	1$			; keep trying
+     165                                
+     166                                	; failure
+     167                                
+     168 017272                         	resreg	r0,r1,r2		; restore
+       8 017272 012602                  	mov	(sp)+,r2
+      13 017274 012601                  	mov	(sp)+,r1
+      18 017276 012600                  	mov	(sp)+,r0
+     169 017300 000257                  	ccc				; set NZVC=0000 failure
+     170 017302                         	return				; return
+       1 017302 000207                  	rts	pc
+     171                                
+     172                                	;  success
+     173                                
+     174 017304                         9$:	resreg	r0,r1,r2		; restore
+       8 017304 012602                  	mov	(sp)+,r2
+      13 017306 012601                  	mov	(sp)+,r1
+      18 017310 012600                  	mov	(sp)+,r0
+     175 017312 000277                  	scc				; set NZVC=1111 success
+     176 017314                         	return				; return
+       1 017314 000207                  	rts	pc
+     177                                
+     178                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     179                                
+     180                                ; send a command packet to the TU58
+     181                                ;
+     182                                ; arguments: r0 = opcode
+     183                                ;            r1 = unit id
+     184                                ;	     r2	= byte count
+     185                                ;	     r3	= block number
+     186                                ;
+     187                                ; returns:   none
+     188                                	
+     189 017316                         tucmd:	savreg	r0,r1,r2,r3,r4,r5	; save
+       3 017316 010046                  	mov	r0,-(sp)
+       8 017320 010146                  	mov	r1,-(sp)
+      13 017322 010246                  	mov	r2,-(sp)
+      18 017324 010346                  	mov	r3,-(sp)
+      23 017326 010446                  	mov	r4,-(sp)
+      28 017330 010546                  	mov	r5,-(sp)
+     190                                
+     191                                	;  build the packet
+     192                                	
+     193 017332 012704  017464          	mov	#500$,r4		; pointer to command packet
+     194 017336 112764  000002  000000  	movb	#tf_ctrl,tc_flg(r4)	; flag
+     195 017344 112764  000012  000001  	movb	#tc_chk-tc_opc,tc_len(r4) ; length
+     196 017352 110064  000002          	movb	r0,tc_opc(r4)		; opcode
+     197 017356 105064  000003          	clrb	tc_mod(r4)		; mod
+     198 017362 110164  000004          	movb	r1,tc_unit(r4)		; unit
+     199 017366 105064  000005          	clrb	tc_swi(r4)		; switches
+     200 017372 005064  000006          	clr	tc_seq(r4)		; sequence
+     201 017376 010264  000010          	mov	r2,tc_cnt(r4)		; byte count
+     202 017402 010364  000012          	mov	r3,tc_blk(r4)		; block number
+     203                                	
+     204                                	;  checksum the packet
+     205                                	
+     206 017406 005000                  	clr	r0			; checksum init
+     207 017410 012701  000006          	mov	#tc_chk/2,r1		; number of words
+     208 017414 010402                  	mov	r4,r2			; pointer to packet
+     209 017416 062200                  1$:	add	(r2)+,r0		; add word to checksum
+     210 017420 005500                  	adc	r0			; end around carry
+     211 017422 005301                  	dec	r1			; 
+     212 017424 001374                  	bne	1$			; loop
+     213 017426 010012                  	mov	r0,(r2)			; store checksum
+     214                                
+     215                                	; send the packet
+     216                                	
+     217 017430 012701  000016          	mov	#tc_size,r1		; packet size in bytes
+     218 017434 112400                  2$:	movb	(r4)+,r0		; get the byte
+     219 017436                         	call	tusend			; send the byte
+       1 017436 004737  017012          	jsr	pc,tusend
+     220 017442 005301                  	dec	r1			; 
+     221 017444 001373                  	bne	2$			; loop
+     222                                	
+     223                                	;  done
+     224                                	
+     225 017446                         	resreg	r0,r1,r2,r3,r4,r5	; restore
+       8 017446 012605                  	mov	(sp)+,r5
+      13 017450 012604                  	mov	(sp)+,r4
+      18 017452 012603                  	mov	(sp)+,r3
+      23 017454 012602                  	mov	(sp)+,r2
+      28 017456 012601                  	mov	(sp)+,r1
+      33 017460 012600                  	mov	(sp)+,r0
+     226 017462                         	return				; return
+       1 017462 000207                  	rts	pc
+     227                                
+     228        017464                  500$:	.blkb	tc_size			; packet built here
+     229                                	.even
+     230                                
+     231                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     232                                
+     233                                ; receive an end packet from the TU58
+     234                                ;
+     235                                ; arguments: none
+     236                                ; 
+     237                                ; returns:   r0 = success code
+     238                                ;            r1 = unit id
+     239                                ;	     r2	= byte count
+     240                                ;	     r3	= summary status
+     241                                	
+     242 017502                         tuend:	savreg	r4,r5			; save
+       3 017502 010446                  	mov	r4,-(sp)
+       8 017504 010546                  	mov	r5,-(sp)
+     243                                
+     244 017506 005001                  	clr	r1			; zap
+     245 017510 005002                  	clr	r2			; zap
+     246 017512 005003                  	clr	r3			; zap
+     247                                
+     248                                	;  wait for CTRL flag
+     249                                
+     250 017514                         1$:	call	turecv			; get a byte
+       1 017514 004737  016732          	jsr	pc,turecv
+     251 017520 122700  000002          	cmpb	#tf_ctrl,r0		; control flag?
+     252 017524 001406                  	beq	2$			; br if YES
+     253                                
+     254                                	; some other flag seen
+     255                                
+     256 017526                         	call	tupush			; push back byte
+       1 017526 004737  016770          	jsr	pc,tupush
+     257 017532 010003                  	mov	r0,r3			; summary status
+     258 017534 012700  177701          	mov	#-63.,r0		; error
+     259 017540 000473                  	br	9$			; and done
+     260                                
+     261                                	;  store END packet
+     262                                
+     263 017542 012701  017736          2$:	mov	#500$,r1		; packet pointer
+     264 017546 110021                  	movb	r0,(r1)+		; store flag
+     265 017550 012702  000015          	mov	#tc_size-1,r2		; packet size in bytes
+     266 017554                         3$:	call	turecv			; get a byte
+       1 017554 004737  016732          	jsr	pc,turecv
+     267 017560 110021                  	movb	r0,(r1)+		; store the byte
+     268 017562 005302                  	dec	r2			; 
+     269 017564 001373                  	bne	3$			; loop
+     270                                	
+     271                                	;  checksum the packet
+     272                                	
+     273 017566 005000                  	clr	r0			; checksum init
+     274 017570 012701  000006          	mov	#tc_chk/2,r1		; number of words
+     275 017574 012702  017736          	mov	#500$,r2		; pointer to packet
+     276 017600 062200                  4$:	add	(r2)+,r0		; add word to checksum
+     277 017602 005500                  	adc	r0			; end around carry
+     278 017604 005301                  	dec	r1			; 
+     279 017606 001374                  	bne	4$			; loop
+     280 017610 020012                  	cmp	r0,(r2)			; compare checksum
+     281 017612 001403                  	beq	5$			; br if match
+     282 017614 012700  177700          	mov	#-64.,r0		; error
+     283 017620 000443                  	br	9$			; exit
+     284                                
+     285                                	;  parse the packet
+     286                                	
+     287 017622 005000                  5$:	clr	r0			; zap
+     288 017624 005001                  	clr	r1			;
+     289 017626 005002                  	clr	r2			;
+     290 017630 005003                  	clr	r3			; 
+     291 017632 012704  017736          	mov	#500$,r4		; pointer to command packet
+     292 017636 122764  000002  000000  	cmpb	#tf_ctrl,tc_flg(r4)	; flag
+     293 017644 001403                  	beq	6$			; br if match
+     294 017646 012700  177677          	mov	#-65.,r0		; error
+     295 017652 000426                  	br	9$			; exit
+     296 017654 122764  000012  000001  6$:	cmpb	#tc_chk-tc_opc,tc_len(r4) ; length
+     297 017662 001403                  	beq	7$			; br if match
+     298 017664 012700  177676          	mov	#-66.,r0		; error
+     299 017670 000417                  	br	9$			; exit
+     300 017672 122764  000100  000002  7$:	cmpb	#to_end,tc_opc(r4)	; opcode
+     301 017700 001403                  	beq	8$			; br if match
+     302 017702 012700  177675          	mov	#-67.,r0		; error
+     303 017706 000410                  	br	9$			; exit
+     304 017710 156400  000003          8$:	bisb	tc_mod(r4),r0		; success code
+     305 017714 156401  000004          	bisb	tc_unit(r4),r1		; unit id
+     306 017720 016402  000010          	mov	tc_cnt(r4),r2		; actual byte count
+     307 017724 016403  000012          	mov	tc_blk(r4),r3		; summary status code
+     308                                	
+     309                                	;  done
+     310                                	
+     311 017730                         9$:	resreg	r4,r5			; restore
+       8 017730 012605                  	mov	(sp)+,r5
+      13 017732 012604                  	mov	(sp)+,r4
+     312 017734                         	return				; return
+       1 017734 000207                  	rts	pc
+     313                                
+     314        017736                  500$:	.blkb	tc_size			; packet built here
+     315                                	.even
+     316                                
+     317                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     318                                
+     319                                ; receive data packets from the TU58
+     320                                ;
+     321                                ; arguments: r0	= byte count
+     322                                ;            r1	= buffer address
+     323                                ; 
+     324                                ; returns:   r0 = updated count
+     325                                ;            r1 = updated pointer
+     326                                ;
+     327                                ; internal:  r0	= data byte
+     328                                ;            r1	= output buffer pointer
+     329                                ;            r2	= data packet byte count
+     330                                ;            r3	= received checksum
+     331                                ;            r4	= total byte count
+     332                                ;            r5	= expected / computed checksum
+     333                                
+     334 017754                         turdat:	savreg	r2,r3,r4,r5		; save
+       3 017754 010246                  	mov	r2,-(sp)
+       8 017756 010346                  	mov	r3,-(sp)
+      13 017760 010446                  	mov	r4,-(sp)
+      18 017762 010546                  	mov	r5,-(sp)
+     335                                
+     336 017764 010004                  	mov	r0,r4			; expected byte count
+     337                                
+     338                                	; check for DATA flag
+     339                                
+     340 017766                         1$:	call	turecv			; get a byte
+       1 017766 004737  016732          	jsr	pc,turecv
+     341 017772 122700  000001          	cmpb	#tf_data,r0		; data flag?
+     342 017776 001403                  	beq	2$			; br if YES
+     343                                	
+     344                                	; some other control flag seen
+     345                                
+     346 020000                         	call	tupush			; push back byte
+       1 020000 004737  016770          	jsr	pc,tupush
+     347 020004 000446                  	br	9$			; and done
+     348                                
+     349                                	; start of DATA packet ... get length byte
+     350                                
+     351 020006 010005                  2$:	mov	r0,r5			; init received checksum from flag
+     352 020010                         	call	turecv			; get a byte
+       1 020010 004737  016732          	jsr	pc,turecv
+     353 020014 010002                  	mov	r0,r2			; get length of data packet
+     354 020016 000300                  	swab	r0			; move length to high side
+     355 020020 060005                  	add	r0,r5			; add to checksum
+     356                                
+     357                                	; get LENGTH data bytes
+     358                                
+     359 020022                         3$:	call	turecv			; get even byte
+       1 020022 004737  016732          	jsr	pc,turecv
+     360 020026 005304                  	dec	r4			; count total bytes
+     361 020030 002401                  	blt	4$			; skip if too many
+     362 020032 110021                  	movb	r0,(r1)+		; store
+     363 020034 060005                  4$:	add	r0,r5			; add to checksum
+     364 020036 005505                  	adc	r5			; end around carry
+     365 020040 005302                  	dec	r2			; count bytes
+     366 020042 003412                  	ble	6$			; br if done
+     367                                	
+     368 020044                         	call	turecv			; get odd byte
+       1 020044 004737  016732          	jsr	pc,turecv
+     369 020050 005304                  	dec	r4			; count total bytes
+     370 020052 002401                  	blt	5$			; skip if too many
+     371 020054 110021                  	movb	r0,(r1)+		; store
+     372 020056 000300                  5$:	swab	r0			; move to high byte
+     373 020060 060005                  	add	r0,r5			; add to checksum
+     374 020062 005505                  	adc	r5			; end around carry
+     375 020064 005302                  	dec	r2			; count bytes
+     376 020066 003355                  	bgt	3$			; br if more
+     377                                
+     378                                	; get checksum
+     379                                
+     380 020070 005003                  6$:	clr	r3			; checksum here
+     381 020072                         	call	turecv			; get a byte
+       1 020072 004737  016732          	jsr	pc,turecv
+     382 020076 150003                  	bisb	r0,r3			; insert low byte
+     383 020100 000303                  	swab	r3			; switch
+     384 020102                         	call	turecv			; get a byte
+       1 020102 004737  016732          	jsr	pc,turecv
+     385 020106 150003                  	bisb	r0,r3			; insert high byte
+     386 020110 000303                  	swab	r3			; restore
+     387                                	
+     388                                	; compare checksum
+     389                                	
+     390 020112 020305                  	cmp	r3,r5			; compare checksums
+     391 020114 001002                  	bne	9$			; early return if mismatch
+     392                                
+     393                                	;  check for more data
+     394                                	
+     395 020116 005704                  	tst	r4			; check all byte count
+     396 020120 003322                  	bgt	1$			; loop if more
+     397                                
+     398                                	;  all done
+     399                                
+     400 020122 010400                  9$:	mov	r4,r0			; returned count
+     401 020124                         	resreg	r2,r3,r4,r5		; restore
+       8 020124 012605                  	mov	(sp)+,r5
+      13 020126 012604                  	mov	(sp)+,r4
+      18 020130 012603                  	mov	(sp)+,r3
+      23 020132 012602                  	mov	(sp)+,r2
+     402 020134                         	return				; return
+       1 020134 000207                  	rts	pc
+     403                                
+     404                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     405                                
+     406                                ; send data packets to the TU58
+     407                                ;
+     408                                ; arguments: r0	= byte count
+     409                                ;            r1	= buffer address
+     410                                ; 
+     411                                ; returns:   r0 = updated count
+     412                                ;            r1 = updated pointer
+     413                                ;
+     414                                ; internal:  r0	= data byte
+     415                                ;            r1	= input buffer pointer
+     416                                ;            r2	= data packet byte count
+     417                                ;            r3	= (unused)
+     418                                ;            r4	= total byte count
+     419                                ;            r5	= expected / computed checksum
+     420                                	
+     421 020136                         tusdat:	savreg	r2,r3,r4,r5		; save
+       3 020136 010246                  	mov	r2,-(sp)
+       8 020140 010346                  	mov	r3,-(sp)
+      13 020142 010446                  	mov	r4,-(sp)
+      18 020144 010546                  	mov	r5,-(sp)
+     422                                
+     423 020146 010004                  	mov	r0,r4			; expected byte count
+     424                                
+     425                                	; check for CONT flag
+     426                                
+     427 020150                         1$:	call	turecv			; get a byte
+       1 020150 004737  016732          	jsr	pc,turecv
+     428 020154 122700  000020          	cmpb	#tf_cont,r0		; data flag?
+     429 020160 001403                  	beq	2$			; br if YES
+     430                                	
+     431                                	; some other control flag seen
+     432                                
+     433 020162                         	call	tupush			; push back byte
+       1 020162 004737  016770          	jsr	pc,tupush
+     434 020166 000455                  	br	9$			; and done
+     435                                
+     436                                	; start of DATA packet ... send at most ts_size bytes per transfer
+     437                                
+     438 020170 012700  000001          2$:	mov	#tf_data,r0		; data flag
+     439 020174                         	call	tusend			; send a byte
+       1 020174 004737  017012          	jsr	pc,tusend
+     440 020200 010005                  	mov	r0,r5			; initialize checksum
+     441                                	
+     442 020202 010402                  	mov	r4,r2			; remaining byte count
+     443 020204 020227  000200          	cmp	r2,#ts_size		; compare to max data packet size
+     444 020210 003402                  	ble	3$			; br if remaining byes fit in one packet
+     445 020212 012702  000200          	mov	#ts_size,r2		; else use this as the maximum
+     446                                
+     447 020216 010200                  3$:	mov	r2,r0			; get current packet length
+     448 020220                         	call	tusend			; send a byte
+       1 020220 004737  017012          	jsr	pc,tusend
+     449 020224 000300                  	swab	r0			; to high byte
+     450 020226 050005                  	bis	r0,r5			; get length of data packet as init checksum high
+     451                                
+     452                                	; send LENGTH data bytes
+     453                                
+     454 020230 005000                  4$:	clr	r0			; zap data byte
+     455 020232 005304                  	dec	r4			; count total bytes
+     456 020234 002401                  	blt	5$			; skip if too many
+     457 020236 152100                  	bisb	(r1)+,r0		; fetch
+     458 020240                         5$:	call	tusend			; send even byte
+       1 020240 004737  017012          	jsr	pc,tusend
+     459 020244 060005                  	add	r0,r5			; add to checksum
+     460 020246 005505                  	adc	r5			; end around carry
+     461 020250 005302                  	dec	r2			; count bytes
+     462 020252 003413                  	ble	7$			; br if done
+     463                                	
+     464 020254 005000                  	clr	r0			; zap data byte
+     465 020256 005304                  	dec	r4			; count total bytes
+     466 020260 002401                  	blt	6$			; skip if too many
+     467 020262 152100                  	bisb	(r1)+,r0		; fetch
+     468 020264                         6$:	call	tusend			; send odd byte
+       1 020264 004737  017012          	jsr	pc,tusend
+     469 020270 000300                  	swab	r0			; move to high byte
+     470 020272 060005                  	add	r0,r5			; add to checksum
+     471 020274 005505                  	adc	r5			; end around carry
+     472 020276 005302                  	dec	r2			; count bytes
+     473 020300 003353                  	bgt	4$			; br if more
+     474                                
+     475                                	; send checksum
+     476                                
+     477 020302 010500                  7$:	mov	r5,r0			; checksum low byte
+     478 020304                         	call	tusend			; send a byte
+       1 020304 004737  017012          	jsr	pc,tusend
+     479 020310 000300                  	swab	r0			; checksum high byte
+     480 020312                         	call	tusend			; send a byte
+       1 020312 004737  017012          	jsr	pc,tusend
+     481                                	
+     482                                	; check for more data
+     483                                	
+     484 020316 005704                  	tst	r4			; check all byte count
+     485 020320 003313                  	bgt	1$			; loop if more
+     486                                
+     487                                	; all done
+     488                                
+     489 020322 010400                  9$:	mov	r4,r0			; returned count
+     490 020324                         	resreg	r2,r3,r4,r5		; restore
+       8 020324 012605                  	mov	(sp)+,r5
+      13 020326 012604                  	mov	(sp)+,r4
+      18 020330 012603                  	mov	(sp)+,r3
+      23 020332 012602                  	mov	(sp)+,r2
+     491 020334                         	return				; return
+       1 020334 000207                  	rts	pc
+     492                                
+     493                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     494                                
+     495                                ; send a read command to the TU58
+     496                                ;
+     497                                ; arguments: r0 = unit id
+     498                                ;            r1 = byte count
+     499                                ;	     r2	= block number
+     500                                ;	     r3	= buffer address
+     501                                ;
+     502                                ; returns:   r0 = code
+     503                                ;            r1 = unit id
+     504                                ;            r2 = byte count
+     505                                ;            r3 = status
+     506                                ;            r4 = final count
+     507                                ;            r5 = final buffer address
+     508                                	
+     509 020336 010304                  turead:	mov	r3,r4			; buffer address
+     510                                
+     511                                	; send READ command packet
+     512                                
+     513 020340 010203                  	mov	r2,r3			; block number
+     514 020342 010102                  	mov	r1,r2			; byte count
+     515 020344 010001                  	mov	r0,r1			; unit id
+     516 020346 012700  000002          	mov	#to_rd,r0		; opcode
+     517 020352                         	call	tucmd			; send command packet
+       1 020352 004737  017316          	jsr	pc,tucmd
+     518                                
+     519                                	; receive DATA packet(s)
+     520                                
+     521 020356 010200                  	mov	r2,r0			; byte count
+     522 020360 010401                  	mov	r4,r1			; buffer pointer
+     523 020362                         	call	turdat			; receive data
+       1 020362 004737  017754          	jsr	pc,turdat
+     524 020366 010004                  	mov	r0,r4			; save
+     525 020370 010105                  	mov	r1,r5			; 
+     526                                
+     527                                	; receive END packet
+     528                                
+     529 020372                         	call	tuend			; get end packet
+       1 020372 004737  017502          	jsr	pc,tuend
+     530                                
+     531                                	; done
+     532                                
+     533 020376                         	return				; return
+       1 020376 000207                  	rts	pc
+     534                                
+     535                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     536                                
+     537                                ; send a write command to the TU58
+     538                                ;
+     539                                ; arguments: r0 = unit id
+     540                                ;            r1 = byte count
+     541                                ;	     r2	= block number
+     542                                ;	     r3	= buffer address
+     543                                ;
+     544                                ; returns:   r0 = code
+     545                                ;            r1 = unit id
+     546                                ;            r2 = byte count
+     547                                ;            r3 = status
+     548                                ;            r4 = final count
+     549                                ;            r5 = final buffer address
+     550                                	
+     551 020400 010304                  tuwrite:mov	r3,r4			; buffer address
+     552                                
+     553                                	; send WRITE command packet
+     554                                
+     555 020402 010203                  	mov	r2,r3			; block number
+     556 020404 010102                  	mov	r1,r2			; byte count
+     557 020406 010001                  	mov	r0,r1			; unit id
+     558 020410 012700  000003          	mov	#to_wr,r0		; opcode
+     559 020414                          	call	tucmd			; send command packet
+       1 020414 004737  017316          	jsr	pc,tucmd
+     560                                
+     561                                	; send DATA packet(s)
+     562                                
+     563 020420 010200                  	mov	r2,r0			; byte count
+     564 020422 010401                  	mov	r4,r1			; buffer pointer
+     565 020424                           	call	tusdat			; send data
+       1 020424 004737  020136          	jsr	pc,tusdat
+     566 020430 010004                  	mov	r0,r4			; save
+     567 020432 010105                  	mov	r1,r5			; 
+     568                                
+     569                                	; receive END packet
+     570                                
+     571 020434                          	call	tuend			; get end packet
+       1 020434 004737  017502          	jsr	pc,tuend
+     572                                
+     573                                	; done
+     574                                
+     575 020440                         	return				; return
+       1 020440 000207                  	rts	pc
+     576                                
+     577                                ; --------------------------------------------------------------------------------
+     578                                
+     578                                
+     632                                
+     633                                .include "mac/printf.mac"
+       1                                ;================================================================================
+       2                                ; printf.mac - printf routines for macro11 diagnostics
+       3                                ; (C) 2009-2016 Donald North. All rights reserved.
+       4                                ;================================================================================
+       5                                
+       6                                .if ndf ttxcsr
+       7                                	
+       8                                	; separate psect (if console registers not defined)
+       9                                	.psect	printf
+      10                                
+      11                                	; external tty references
+      12                                	.globl	ttxcsr, ttxbuf
+      13                                
+      14                                	; standard macro definitions
+      15                                 	.include "mac/stddef.mac"
+      16                                
+      17                                pf.sep	=1 ; flag separate compilation
+      18                                
+      19                                .iff
+      20                                
+      21        000000                  pf.sep	=0 ; flag unified compilation (via include)
+      22                                	
+      23                                .endc
+      24                                ; 
+      25                                ; global registers:
+      26                                ;
+      27                                ;  R5 - frame pointer
+      28                                ;  R4 - argument pointer
+      29                                ;  R3 - format string pointer
+      30                                ;  R2 - current format character
+      31                                ;  R1 - temp
+      32                                ;  R0 - temp
+      33                                ;
+      34                                ; note:	for 11/04-05-10 compatibility, do NOT use SXT/XOR/SOB and MUL/DIV/ASH/ASHC
+      35                                ; 
+      36                                ; offsets from frame pointer (r5):
+      37                                ; 
+      38        000012                  p.sr0	=+10.	; saved r0
+      39        000010                  p.sr1	=+8.	; saved r1
+      40        000006                  p.sr2	=+6.	; saved r2
+      41        000004                  p.sr3	=+4.	; saved r3
+      42        000002                  p.sr4	=+2.	; saved r4
+      43        000000                  p.sr5	=+0.	; saved r5
+      44        177777                  p.flg	=-1.	; format flags (byte)
+      45        177776                  p.fil	=-2.	; fill character (byte)
+      46        177774                  p.wid	=-4.	; format numeric width (word)
+      47        177772                  p.pre	=-6.	; format numeric precision (word)
+      48        177770                  p.len	=-8.	; number of digits generated (word)
+      49        177766                  p.out	=-10.	; addr(char print routine)
+      50        177764                  p.ptr	=-12.	; sprintf output buffer pointer
+      51                                ; 
+      52        000014                  n.last	=+12.	; number of bytes allocated on stack
+      53        000016                  n.args	=+14.	; offset to first argument on stack
+      54                                ; 
+      55                                ; bits in p.flg byte:
+      56                                ; 
+      57        000001                  pf.ljus	=1	; set for left justified ('-' seen)
+      58        000002                  pf.sign	=2	; set for sign requested ('+' seen)
+      59        000004                  pf.altf	=4	; set for alt flag ('#' seen)
+      60        000010                  pf.long	=10	; set for long value (%...l. seen)
+      61        000020                  pf.nega	=20	; set for negative value (msb set)
+      62                                
+      63                                ; --------------------------------------------------------------------------------
+      64                                ;
+      65                                ; printf routine .. 'C' printf(format,arg1,arg2,..,argn) ..  called in 'C' style
+      66                                ;
+      67                                ;	call:	mov	argN,-(sp)
+      68                                ;		...
+      69                                ;		mov	arg2,-(sp)
+      70                                ;		mov	arg1,-(sp)
+      71                                ;		mov	format,-(sp)
+      72                                ;		call	printf
+      73                                ;		add	#2*N,sp
+      74                                ;
+      75 020442 010046                  printf::mov	r0,-(sp)		; save reg
+      76 020444 010146                  	mov	r1,-(sp)		;
+      77 020446 010246                  	mov	r2,-(sp)		;
+      78 020450 010346                  	mov	r3,-(sp)		;
+      79 020452 010446                  	mov	r4,-(sp)		;
+      80 020454 010546                  	mov	r5,-(sp)		;
+      81                                	
+      82 020456 010605                  	mov	sp,r5			; frame pointer
+      83 020460 162706  000014          	sub	#n.last,sp		; reserve space on stack
+      84                                	
+      85 020464 010504                  	mov	r5,r4			; get frame ptr
+      86 020466 062704  000016          	add	#n.args,r4		; offset to first argument
+      87                                	
+      88 020472 012765  020506  177766  	mov	#1$,p.out(r5)		; character output routine
+      89 020500 005065  177764          	clr	p.ptr(r5)		; bufptr not used here
+      90                                	
+      91 020504 000442                  	br	xprintf			; continue
+      92                                
+      93                                	; ---------------------------------------------------------
+      94                                	
+      95                                	; character output to console
+      96                                	
+      97 020506 105737  177564          1$:	tstb	@#ttxcsr		; check if ready
+      98 020512 100375                  	bpl	1$			; not yet
+      99 020514 110037  177566          	movb	r0,@#ttxbuf		; send character
+     100 020520                         	return				; return
+       1 020520 000207                  	rts	pc
+     101                                	
+     102                                ; --------------------------------------------------------------------------------
+     103                                ;
+     104                                ; sprintf routine .. 'C' sprintf(buffer,format,arg1,arg2,..,argn) ..  called in 'C' style
+     105                                ;
+     106                                ;	call:	mov	argN,-(sp)
+     107                                ;		...
+     108                                ;		mov	arg2,-(sp)
+     109                                ;		mov	arg1,-(sp)
+     110                                ;		mov	format,-(sp)
+     111                                ;		mov	buffer,-(sp)
+     112                                ;		call	sprintf
+     113                                ;		add	#2*N,sp
+     114                                ;
+     115 020522 010046                  sprintf::mov	r0,-(sp)		; save reg
+     116 020524 010146                  	mov	r1,-(sp)		;
+     117 020526 010246                  	mov	r2,-(sp)		;
+     118 020530 010346                  	mov	r3,-(sp)		;
+     119 020532 010446                  	mov	r4,-(sp)		;
+     120 020534 010546                  	mov	r5,-(sp)		;
+     121                                	
+     122 020536 010605                  	mov	sp,r5			; frame pointer
+     123 020540 162706  000014          	sub	#n.last,sp		; reserve space on stack
+     124                                	
+     125 020544 010504                  	mov	r5,r4			; get frame ptr
+     126 020546 062704  000016          	add	#n.args,r4		; offset to first argument
+     127                                	
+     128 020552 012765  020566  177766  	mov	#1$,p.out(r5)		; character output routine
+     129 020560 012465  177764          	mov	(r4)+,p.ptr(r5)		; init bufptr from argument
+     130                                	
+     131 020564 000412                  	br	xprintf			; continue
+     132                                
+     133                                	; ---------------------------------------------------------
+     134                                	
+     135                                	; character output to buffer
+     136                                	
+     137 020566 110075  177764          1$:	movb	r0,@p.ptr(r5)		; store character
+     138 020572 005265  177764          	inc	p.ptr(r5)		; bump pointer
+     139 020576 105075  177764          	clrb	@p.ptr(r5)		; null terminate
+     140 020602 016565  177764  000012  	mov	p.ptr(r5),p.sr0(r5)	; return updated ptr in saved r0
+     141 020610                         	return				; return
+       1 020610 000207                  	rts	pc
+     142                                	
+     143                                ; --------------------------------------------------------------------------------
+     144                                
+     145                                	; process main format
+     146                                
+     147 020612 012403                  xprintf:mov	(r4)+,r3		; prime format string pointer
+     148                                
+     149 020614                         1$:	call	900$			; get next format character
+       1 020614 004737  021524          	jsr	pc,900$
+     150 020620 120227  000045          	cmpb	r2,#<'%>		; hit a format flag?
+     151 020624 001430                  	beq	10$			; yes, go process
+     152 020626 120227  000134          	cmpb	r2,#<'\>		; hit an escape flag?
+     153 020632 001404                  	beq	3$			; yes, go process
+     154 020634 010200                  2$:	mov	r2,r0			; char to print
+     155 020636                         	call	@p.out(r5)		; no, just print it
+       1 020636 004775  177766          	jsr	pc,@p.out(r5)
+     156 020642 000764                  	br	1$			; loop
+     157                                
+     158                                	; process escaped character \a .. \z
+     159                                
+     160 020644                         3$:	call	900$			; get the escaped character
+       1 020644 004737  021524          	jsr	pc,900$
+     161 020650 002771                  	blt	2$			; quick exit for [NUL-@] range
+     162 020652 120227  000172          	cmpb	r2,#<'z>		;
+     163 020656 003366                  	bgt	2$			; exit if [{-DEL]
+     164 020660 120227  000141          	cmpb	r2,#<'a>		;
+     165 020664 002005                  	bge	4$			; br if [a-z]	
+     166 020666 120227  000132          	cmpb	r2,#<'Z>		;
+     167 020672 003360                  	bgt	2$			; br if [[-`]
+     168 020674 152702  000040          	bisb	#40,r2			; force to [a-z] range
+     169 020700 116202  021421          4$:	movb	1000$-<'a>(r2),r2	; translate a..z to escaped
+     170 020704 000753                  	br	2$			; go print
+     171                                
+     172                                	; process format flag %[-+]?(0?\d+([.]\d+)?)?[lh]?[iduscpxo]
+     173                                
+     174 020706 112765  000040  177776  10$:	movb	#<' >,p.fil(r5)		; blank fill
+     175 020714 105065  177777          	clrb	p.flg(r5)		; clear flags
+     176 020720 005065  177774          	clr	p.wid(r5)		; init width spec
+     177 020724 005065  177772          	clr	p.pre(r5)		; init precision spec
+     178 020730 005065  177770          	clr	p.len(r5)		; no digits yet
+     179                                
+     180 020734                         11$:	call	900$			; get next format character
+       1 020734 004737  021524          	jsr	pc,900$
+     181 020740 002045                  	bge	40$			; br if [A-DEL]
+     182 020742 120227  000045          	cmpb	r2,#<'%>		; check for '%'
+     183 020746 001732                  	beq	2$			; br if yes
+     184                                
+     185                                	; some character in range [NUL-@]
+     186                                
+     187 020750 120227  000055          	cmpb	r2,#<'->		; check for '-'
+     188 020754 001004                  	bne	12$			; br if not
+     189 020756 152765  000001  177777  	bisb	#pf.ljus,p.flg(r5)	; yes, set a flag
+     190 020764 000763                  	br	11$			; loop
+     191 020766 120227  000053          12$:	cmpb	r2,#<'+>		; check for '+'
+     192 020772 001004                  	bne	13$			; br if not
+     193 020774 152765  000002  177777  	bisb	#pf.sign,p.flg(r5)	; yes, set a flag
+     194 021002 000754                  	br	11$			; loop
+     195 021004 120227  000043          13$:	cmpb	r2,#<'#>		; check for '#'
+     196 021010 001004                  	bne	20$			; br if not
+     197 021012 152765  000004  177777  	bisb	#pf.altr,p.flg(r5)	; yes, set a flag
+     198 021020 000745                  	br	11$			; loop
+     199                                
+     200 021022                         20$:	call	800$			; get a number if present
+       1 021022 004737  021430          	jsr	pc,800$
+     201 021026 010165  177774          	mov	r1,p.wid(r5)		; save number as width
+     202                                
+     203 021032 120227  000056          	cmpb	r2,#<'.>		; check for .
+     204 021036 001006                  	bne	40$			; br if not, should be alpha
+     205 021040                         	call	900$			; get next character
+       1 021040 004737  021524          	jsr	pc,900$
+     206                                
+     207 021044                         	call	800$			; get a number if present
+       1 021044 004737  021430          	jsr	pc,800$
+     208 021050 010165  177772          	mov	r1,p.pre(r5)		; save number as precision
+     209                                
+     210                                	; flag is in range [A-Za-z]
+     211                                
+     212 021054 005000                  40$:	clr	r0			; zap numerics
+     213 021056 005001                  	clr	r1			;
+     214 021060 120227  000101          41$:	cmpb	r2,#<'A>		; check for [:-@]
+     215 021064 002663                  	blt	2$			; br if yes
+     216 021066 120227  000172          	cmpb	r2,#<'z>		; check for [{-DEL]
+     217 021072 003260                  	bgt	2$			; br if yes
+     218 021074 120227  000141          	cmpb	r2,#<'a>		; check for [a-z]
+     219 021100 002003                  	bge	42$			; br if yes
+     220 021102 120227  000132          	cmpb	r2,#<'Z>		; check for [A-Z]
+     221 021106 003252                  	bgt	2$			; br if no
+     222 021110 042702  000040          42$:	bic	#40,r2			; force to [a-z] to [A-Z] range
+     223 021114 012401                  	mov	(r4)+,r1		; get the next value as lsb
+     224 021116 006302                  	asl	r2			; char*2 for word offset
+     225 021120 000172  020722          	jmp	@400$-<2*'A>(r2)	; dispatch
+     226                                
+     227                                400$:	;----	aaaa,bbbb,cccc,dddd,eeee,ffff,gggg,hhhh,iiii,jjjj,kkkk,llll,mmmm
+     228 021124 021210  021414  021254  	.word	401$,470$,420$,430$,401$,401$,401$,401$,430$,401$,401$,405$,401$
+         021132 021274  021210  021210  
+         021140 021210  021210  021274  
+         021146 021210  021210  021224  
+         021154 021210                  
+     229                                	;----	nnnn,oooo,pppp,qqqq,rrrr,ssss,tttt,uuuu,vvvv,wwww,xxxx,yyyy,zzzz
+     230 021156 021210  021364  021364  	.word	401$,450$,450$,401$,401$,410$,401$,440$,401$,401$,460$,401$,401$
+         021164 021210  021210  021242  
+         021172 021210  021350  021210  
+         021200 021210  021400  021210  
+         021206 021210                  
+     231                                
+     232 021210 005744                  401$:	tst	-(r4)			; %<illegal>: backup argument pointer
+     233 021212 005002                  	clr	r2			; zap
+     234 021214 156302  177777          	bisb	-1(r3),r2		; retrieve last character
+     235 021220 000137  020634          	jmp	2$			; just go print
+     236                                
+     237 021224                         405$:	call	900$			; %l: get next character
+       1 021224 004737  021524          	jsr	pc,900$
+     238 021230 152765  000010  177777  	bisb	#pf.long,p.flg(r5)	; indicate longword value
+     239 021236 010100                  	mov	r1,r0			; copy 1st arg to msb
+     240 021240 000707                  	br	41$			; and go parse next flag
+     241                                
+     242 021242 010102                  410$:	mov	r1,r2			; %s: get next arg as string address
+     243 021244                         	call	prtstr			; print as a string
+       1 021244 004737  022164          	jsr	pc,prtstr
+     244 021250 000137  020614          	jmp	1$			; continue at the top
+     245                                
+     246 021254 005046                  420$:	clr	-(sp)			; %c: zap upper byte
+     247 021256 110116                  	movb	r1,(sp)			; insert the character
+     248 021260 010602                  	mov	sp,r2			; point at string
+     249 021262                         	call	prtstr			; print as a string
+       1 021262 004737  022164          	jsr	pc,prtstr
+     250 021266 005726                  	tst	(sp)+			; flush temp string
+     251 021270 000137  020614          	jmp	1$			; continue at the top
+     252                                
+     253 021274 012702  000012          430$:	mov	#10.,r2			; %d,%i: decimal radix
+     254 021300 132765  000010  177777  	bitb	#pf.long,p.flg(r5)	; longword value?
+     255 021306 001004                  	bne	431$			; br if yes
+     256 021310 005000                  	clr	r0			; zap
+     257 021312 005701                  	tst	r1			; no; test lsb sign
+     258 021314 100001                  	bpl	431$			; br if plus/zero
+     259 021316 005100                  	com	r0			; extend -1 to msb
+     260 021320 005700                  431$:	tst	r0			; test msb sign
+     261 021322 002006                  	bge	439$			; br if zero or positive
+     262 021324 005400                  	neg	r0			; negative; make positive
+     263 021326 005401                  	neg	r1			;
+     264 021330 005600                  	sbc	r0			;
+     265 021332 152765  000020  177777  	bisb	#pf.nega,p.flg(r5)	; set flag indicating negative
+     266 021340                         439$:	call	prt32u			; print as unsigned decimal w/sign
+       1 021340 004737  021614          	jsr	pc,prt32u
+     267 021344 000137  020614          	jmp	1$			; continue at the top
+     268                                
+     269 021350 012702  000012          440$:	mov	#10.,r2			; %u: decimal radix
+     270 021354                         	call	prt32u			; print as an unsigned decimal
+       1 021354 004737  021614          	jsr	pc,prt32u
+     271 021360 000137  020614          	jmp	1$			; continue at the top
+     272                                
+     273 021364 012702  000010          450$:	mov	#8.,r2			; %o,%p: octal radix
+     274 021370                         	call	prt32u			; print as an unsigned hex
+       1 021370 004737  021614          	jsr	pc,prt32u
+     275 021374 000137  020614          	jmp	1$			; continue at the top
+     276                                
+     277 021400 012702  000020          460$:	mov	#16.,r2			; %x: hexadecimal radix
+     278 021404                         	call	prt32u			; print as an unsigned hex
+       1 021404 004737  021614          	jsr	pc,prt32u
+     279 021410 000137  020614          	jmp	1$			; continue at the top
+     280                                
+     281 021414 012702  000002          470$:	mov	#2.,r2			; %b: binary radix
+     282 021420                         	call	prt32u			; print as an unsigned binary
+       1 021420 004737  021614          	jsr	pc,prt32u
+     283 021424 000137  020614          	jmp	1$			; continue at the top
+     284                                
+     285                                	; ---------------------------------------------------------
+     286                                	; get a number as '[0-9]+' or '*'
+     287                                
+     288 021430 120227  000052          800$:	cmpb	r2,#<'*>		; check for '*' indirection
+     289 021434 001427                  	beq	880$			; br if yes
+     290 021436 120227  000060          	cmpb	r2,#<'0>		; check for leading '0' character
+     291 021442 001002                  	bne	810$			; br if not
+     292 021444 110265  177776          	movb	r2,p.fil(r5)		; yes, set a flag
+     293 021450 005001                  810$:	clr	r1			; number accumulated here
+     294 021452 120227  000060          820$:	cmpb	r2,#<'0>		; check for '0'
+     295 021456 002421                  	blt	890$			; br if less that a '0'
+     296 021460 120227  000071          	cmpb	r2,#<'9>		; check for '9'
+     297 021464 003016                  	bgt	890$			; br if greater than '9'
+     298 021466 162702  000060          	sub	#<'0>,r2		; offset to range 0..9
+     299 021472 006301                  	asl	r1			; number *= 2.
+     300 021474 010100                  	mov	r1,r0			; (number*2.)
+     301 021476 006300                  	asl	r0			; (number*4.)
+     302 021500 006300                  	asl	r0			; (number*8.)
+     303 021502 060001                  	add	r0,r1			; number = number*8. + number*2.
+     304 021504 060201                  	add	r2,r1			; add in this digit
+     305 021506                         	call	900$			; get next format character
+       1 021506 004737  021524          	jsr	pc,900$
+     306 021512 000757                  	br	820$			; and loop
+     307 021514 012401                  880$:	mov	(r4)+,r1		; get next arg as number
+     308 021516                         	call	900$			; get next character
+       1 021516 004737  021524          	jsr	pc,900$
+     309 021522                         890$:	return				; return
+       1 021522 000207                  	rts	pc
+     310                                
+     311                                	; ---------------------------------------------------------
+     312                                	; get next character (or exit) routine; result in r2
+     313                                
+     314 021524 112302                  900$:	movb	(r3)+,r2		; get next format character
+     315 021526 042702  177600          	bic	#^c177,r2		; 7bit ascii only
+     316 021532 001403                  	beq	990$			; end of string seen
+     317 021534 120227  000101          	cmpb	r2,#<'A>		; check for [A-DEL]
+     318 021540                         	return				; leave CC set with result
+       1 021540 000207                  	rts	pc
+     319                                
+     320 021542 010506                  990$:	mov	r5,sp			; flush frame
+     321 021544 012605                  	mov	(sp)+,r5		; restore reg
+     322 021546 012604                  	mov	(sp)+,r4		;
+     323 021550 012603                  	mov	(sp)+,r3		;
+     324 021552 012602                  	mov	(sp)+,r2		;
+     325 021554 012601                  	mov	(sp)+,r1		;
+     326 021556 012600                  	mov	(sp)+,r0		;
+     327 021560                         	return				; return
+       1 021560 000207                  	rts	pc
+     328                                
+     329                                	; ---------------------------------------------------------
+     330                                	; escaped character table
+     331                                1000$:	;	aaa bbb ccc ddd eee fff ggg hhh iii jjj kkk lll mmm
+     332                                	;	BEL  BS         ESC  FF
+     333 021562    007     010     143  	.byte	007,010,143,144,033,014,147,150,151,152,153,154,155
+         021565    144     033     014  
+         021570    147     150     151  
+         021573    152     153     154  
+         021576    155                  
+     334                                	;	nnn ooo ppp qqq rrr sss ttt uuu vvv www xxx yyy zzz
+     335                                	;	 LF              CR      HT      VT
+     336 021577    012     157     160  	.byte	012,157,160,161,015,163,011,165,013,167,170,172,172
+         021602    161     015     163  
+         021605    011     165     013  
+         021610    167     170     172  
+         021613    172                  
+     337                                	; ---------------------------------------------------------
+     338                                
+     339                                ; --------------------------------------------------------------------------------
+     340                                ;
+     341                                ; digit print routine .. print a 32b value as unsigned digits
+     342                                ;
+     343                                ;	call:	mov	datahi,r0
+     344                                ;		mov	datalo,r1
+     345                                ;		mov	#radix,r2 ; 2. or 8. or 10. or 16.
+     346                                ;		call	prt32u
+     347                                ;
+     348                                ;		r0 - data msb      (not saved)
+     349                                ;		r1 - data lsb      (not saved)
+     350                                ;		r2 - radix         (not saved)
+     351                                ;		r3 - ptr to format     (saved)
+     352                                ;		r4 - ptr to arglist    (saved) [input not used]
+     353                                ;		r5 - ptr to flags      (saved)
+     354                                ;
+     355 021614 010346                  prt32u:	mov	r3,-(sp)		; save regs we use
+     356 021616 010446                  	mov	r4,-(sp)		;
+     357                                
+     358                                	; render all the digits onto the stack (lsd first, msd last)
+     359                                
+     360 021620 005046                  	clr	-(sp)			; zero flag
+     361 021622 010246                  1$:	mov	r2,-(sp)		; radix lsb
+     362 021624 005046                  	clr	-(sp)			;   and msb
+     363 021626 010146                  	mov	r1,-(sp)		; number lsb
+     364 021630 010046                  	mov	r0,-(sp)		;    and msb
+     365 021632                         	call	uldiv			; get quo and rem
+       1 021632 004737  022432          	jsr	pc,uldiv
+     366 021636 016602  000006          	mov	6.(sp),r2		; restore radix from stack
+     367 021642 062706  000010          	add	#8.,sp			; flush args
+     368 021646 062703  000060          	add	#<'0>,r3		; make rem lsb a digit
+     369 021652 020327  000071          	cmp	r3,#<'9>		; still a valid digit?
+     370 021656 003402                  	ble	2$			; br if yes
+     371 021660 062703  000007          	add	#<'A>-<':>,r3		; offset to 'A...'Z range
+     372 021664 010346                  2$:	mov	r3,-(sp)		; save
+     373 021666 005265  177770          	inc	p.len(r5)		; count digits
+     374 021672 005701                  	tst	r1			; any lsb left?
+     375 021674 001352                  	bne	1$			; br if yes
+     376 021676 005700                  	tst	r0			; any msb left?
+     377 021700 001350                  	bne	1$			; br if yes
+     378                                
+     379                                	; check if we generated the minimum number of digits requested
+     380                                
+     381 021702 026565  177770  177772  10$:	cmp	p.len(r5),p.pre(r5)	; compare length to precision
+     382 021710 103005                  	bhis	20$			; br we're OK
+     383 021712 012746  000060          	mov	#<'0>,-(sp)		; nope, add another digit
+     384 021716 005265  177770          	inc	p.len(r5)		; count digits
+     385 021722 000767                  	br	10$			; and loop	
+     386                                
+     387                                	; check for options (#) flag
+     388                                
+     389 021724 132765  000004  177777  20$:	bitb	#pf.altf,p.flg(r5)	; check for options flag
+     390 021732 001422                  	beq	30$			; br if not set
+     391 021734 020227  000020          	cmp	r2,#16.			; radix 16?
+     392 021740 001407                  	beq	21$			; br if yes
+     393 021742 020227  000010          	cmp	r2,#8.			; radix 8?
+     394 021746 001014                  	bne	30$			; br if not
+     395 021750 022716  000060          	cmp	#<'0>,(sp)		; first digit already zero?
+     396 021754 001411                  	beq	30$			; yes, no need to add
+     397 021756 000404                  	br	22$			; no, add a leading zero
+     398 021760 012746  000170          21$:	mov	#<'x>,-(sp)		; add a '0x' prefix
+     399 021764 005265  177770          	inc	p.len(r5)		; count it
+     400 021770 012746  000060          22$:	mov	#<'0>,-(sp)		;
+     401 021774 005265  177770          	inc	p.len(r5)		; count it
+     402                                
+     403                                	; check if we need a sign (+/-/none)
+     404                                
+     405 022000 132765  000020  177777  30$:	bitb	#pf.nega,p.flg(r5)	; was original value negative?
+     406 022006 001403                  	beq	31$			; br if not
+     407 022010 012746  000055          	mov	#<'->,-(sp)		; minus sign
+     408 022014 000406                  	br	32$			;
+     409 022016 132765  000002  177777  31$:	bitb	#pf.sign,p.flg(r5)	; sign always requested?
+     410 022024 001404                  	beq	50$			; br if not
+     411 022026 012746  000053          	mov	#<'+>,-(sp)		; plus sign
+     412 022032 005265  177770          32$:	inc	p.len(r5)		; count all chars generated
+     413                                
+     414                                	; processing for right justification
+     415                                
+     416 022036 132765  000001  177777  50$:	bitb	#pf.ljus,p.flg(r5)	; check left-justify flag
+     417 022044 001020                  	bne	70$			; br if left justified
+     418 022046 116501  177776          	movb	p.fil(r5),r1		; get fill character
+     419 022052 026565  177770  177774  51$:	cmp	p.len(r5),p.wid(r5)	; compare length to width
+     420 022060 103012                  	bhis	70$			; br if we're OK
+     421 022062 011600                  	mov	(sp),r0			; copy last character
+     422 022064 010146                  	mov	r1,-(sp)		; add a fill character
+     423 022066 020100                  	cmp	r1,r0			; check fill/last char order
+     424 022070 101403                  	blos	52$			; br if order OK
+     425 022072 010016                  	mov	r0,(sp)			; copy sign/last char
+     426 022074 010166  000002          	mov	r1,2(sp)		; insert fill after sign
+     427 022100 005265  177770          52$:	inc	p.len(r5)		; count it
+     428 022104 000762                  	br	51$			; loop
+     429                                
+     430                                	; print all digits in order (sign..msd..lsd)
+     431                                
+     432 022106 005001                  70$:	clr	r1			; count characters output
+     433 022110 012600                  71$:	mov	(sp)+,r0		; get a digit
+     434 022112 001404                  	beq	80$			; br if no more
+     435 022114                         	call	@p.out(r5)		; print it
+       1 022114 004775  177766          	jsr	pc,@p.out(r5)
+     436 022120 005201                  	inc	r1			; count it
+     437 022122 000772                  	br	71$			; loop
+     438                                
+     439                                	; processing for left justification
+     440                                
+     441 022124 132765  000001  177777  80$:	bitb	#pf.ljus,p.flg(r5)	; check left-justify flag
+     442 022132 001411                  	beq	90$			; br if is right justified
+     443 022134 012700  000040          	mov	#<' >,r0		; space fill on right
+     444 022140 020165  177774          81$:	cmp	r1,p.wid(r5)		; compare length to width
+     445 022144 103004                  	bhis	90$			; br we're OK
+     446 022146                         	call	@p.out(r5)		; print it
+       1 022146 004775  177766          	jsr	pc,@p.out(r5)
+     447 022152 005201                  	inc	r1			; count characters
+     448 022154 000771                  	br	81$			; and loop	
+     449                                
+     450                                	; and done
+     451                                
+     452 022156 012604                  90$:	mov	(sp)+,r4		; restore regs
+     453 022160 012603                  	mov	(sp)+,r3		;
+     454 022162                         	return				; return
+       1 022162 000207                  	rts	pc
+     455                                
+     456                                ; --------------------------------------------------------------------------------
+     457                                ;
+     458                                ; asciz string print routine
+     459                                ;
+     460                                ;	call:	mov	#strptr,r2
+     461                                ;		call	prtstr
+     462                                ;
+     463                                ;		r0 - temp          (not saved)
+     464                                ;		r1 - temp          (not saved)
+     465                                ;		r2 - ptr to string (not saved)
+     466                                ;		r3 - ptr to format     (saved) [input not used]
+     467                                ;		r4 - ptr to arglist    (saved) [input not used]
+     468                                ;		r5 - ptr to flags      (saved)
+     469                                ;
+     470 022164 010346                  prtstr:	mov	r3,-(sp)		; save regs
+     471 022166 010446                  	mov	r4,-(sp)		;
+     472                                
+     473                                	; compute length of string
+     474                                
+     475 022170 010203                  	mov	r2,r3			; copy ptr to string
+     476 022172 105723                  1$:	tstb	(r3)+			; check a byte
+     477 022174 001376                  	bne	1$			; br if more string
+     478 022176 160203                  	sub	r2,r3			; compute length
+     479 022200 005303                  	dec	r3			; minus the trailing null	
+     480                                
+     481                                	; set precision to length if precision is zero
+     482                                
+     483 022202 005765  177772          	tst	p.pre(r5)		; check requested precision
+     484 022206 001002                  	bne	20$			; br if nonzero
+     485 022210 010365  177772          	mov	r3,p.pre(r5)		; else set to string length
+     486 022214 020365  177772          20$:	cmp	r3,p.pre(r5)		; compare actual length to precision
+     487 022220 101402                  	blos	50$			; br if actual <= precision
+     488 022222 016503  177772          	mov	p.pre(r5),r3		; else set actual to precision
+     489                                
+     490                                	; processing for right justification
+     491                                
+     492 022226 132765  000001  177777  50$:	bitb	#pf.ljus,p.flg(r5)	; check left-justify flag
+     493 022234 001002                  	bne	70$			; br if left justified
+     494 022236                         	call	100$			; do fill
+       1 022236 004737  022304          	jsr	pc,100$
+     495                                
+     496                                	; print string 
+     497                                
+     498 022242 010301                  70$:	mov	r3,r1			; copy length
+     499 022244 001406                  	beq	80$			; br if no characters
+     500 022246 112200                  71$:	movb	(r2)+,r0		; get a character
+     501 022250 001404                  	beq	80$			; br if no characters
+     502 022252                         	call	@p.out(r5)		; print it
+       1 022252 004775  177766          	jsr	pc,@p.out(r5)
+     503 022256 005301                  	dec	r1			; count
+     504 022260 001372                  	bne	71$			; loop
+     505                                
+     506                                	; processing for left justification
+     507                                
+     508 022262 132765  000001  177777  80$:	bitb	#pf.ljus,p.flg(r5)	; check left-justify flag
+     509 022270 001402                  	beq	90$			; br if is right justified
+     510 022272                         	call	100$			; do fill
+       1 022272 004737  022304          	jsr	pc,100$
+     511                                
+     512                                	; and done
+     513                                
+     514 022276 012604                  90$:	mov	(sp)+,r4		; restore
+     515 022300 012603                  	mov	(sp)+,r3		;
+     516 022302                         	return				; return
+       1 022302 000207                  	rts	pc
+     517                                
+     518                                	; ----------------------------------------------------
+     519                                	; generate fill characters
+     520                                
+     521 022304 016501  177774          100$:	mov	p.wid(r5),r1		; requested width
+     522 022310 160301                  	sub	r3,r1			; subtract string width
+     523 022312 101406                  	blos	102$			; br if no fill needed
+     524 022314 116500  177776          	movb	p.fil(r5),r0		; get fill character
+     525 022320                         101$:	call	@p.out(r5)		; print a fill character
+       1 022320 004775  177766          	jsr	pc,@p.out(r5)
+     526 022324 005301                  	dec	r1			; count
+     527 022326 001374                  	bne	101$			; loop
+     528 022330                         102$:	return				; done
+       1 022330 000207                  	rts	pc
+     529                                
+     530                                ; --------------------------------------------------------------------------------
+     531                                
+     532                                .include "mac/muldiv.mac"
+       1                                ;=================================================================================
+       2                                ; muldiv.mac - 32b mul/div routines for macro11 diagnostics
+       3                                ; (C) 2009-2016 Donald North. All rights reserved.
+       4                                ;=================================================================================
+       5                                
+       6                                ; --------------------------------------------------------------------------------
+       7                                ;
+       8                                ; unsigned 32b * 32b => 32b multiplication
+       9                                ; 
+      10                                ; from the 2.9BSD stdio C lib, using simple shift/add algorithm
+      11                                ; 
+      12                                ;	call:	mov	#b.lo,-(sp)
+      13                                ;		mov	#b.hi,-(sp)
+      14                                ;		mov	#a.lo,-(sp)
+      15                                ;		mov	#a.hi,-(sp)
+      16                                ;		call	ulmul
+      17                                ;		add	#8.,sp
+      18                                ;		mov	r1,q.lo
+      19                                ;		mov	r0,q.hi
+      20                                ;
+      21 022332 010246                  ulmul::	mov	r2,-(sp)		; save
+      22 022334 010346                  	mov	r3,-(sp)		;
+      23 022336 010446                  	mov	r4,-(sp)		;
+      24 022340 010546                  	mov	r5,-(sp)		;
+      25                                
+      26 022342 016605  000020          	mov	8.+8.(sp),r5		; b.lo
+      27 022346 016604  000016          	mov	6.+8.(sp),r4		; b.hi
+      28 022352 016603  000014          	mov	4.+8.(sp),r3		; a.lo
+      29 022356 016602  000012          	mov	2.+8.(sp),r2		; a.hi
+      30 022362 005001                  	clr	r1			; q.lo
+      31 022364 005000                  	clr	r0			; q.hi
+      32                                
+      33 022366 000241                  1$:	clc				; shiftin zeroes
+      34 022370 006004                  	ror	r4			; shift multiplier right one
+      35 022372 006005                  	ror	r5			;
+      36 022374 103003                  	bcc	2$			; br if shifted out a zero
+      37 022376 060301                  	add	r3,r1			; else add multiplicand to product
+      38 022400 005500                  	adc	r0			; propagate C
+      39 022402 060200                  	add	r2,r0			;
+      40 022404 006303                  2$:	asl	r3			; shift multiplicant left one
+      41 022406 006102                  	rol	r2			;
+      42 022410 005704                  	tst	r4			; any high multiplier bits left?
+      43 022412 001365                  	bne	1$			; br if yes
+      44 022414 005705                  	tst	r5			; any low multiplier bits left?
+      45 022416 001363                  	bne	1$			; br if yes
+      46                                
+      47 022420 012605                  	mov	(sp)+,r5		; restore
+      48 022422 012604                  	mov	(sp)+,r4		;
+      49 022424 012603                  	mov	(sp)+,r3		;
+      50 022426 012602                  	mov	(sp)+,r2		;
+      51 022430                         	return				; done
+       1 022430 000207                  	rts	pc
+      52                                
+      53                                ; --------------------------------------------------------------------------------
+      54                                ;
+      55                                ; unsigned 32b / 32b => 32b, 32b division with remainder
+      56                                ; 
+      57                                ; from Hennessey & Patterson Appendix A
+      58                                ;
+      59                                ;	call:	mov	#den.lo,-(sp)	; 8.(sp)
+      60                                ;		mov	#den.hi,-(sp)	; 6.(sp)
+      61                                ;		mov	#num.lo,-(sp)	; 4.(sp)
+      62                                ;		mov	#num.hi,-(sp)	; 2.(sp)
+      63                                ;		call	uldiv
+      64                                ;		add	#8.,sp
+      65                                ;		mov	r3,rem.lo
+      66                                ;		mov	r2,rem.hi
+      67                                ;		mov	r1,quo.lo
+      68                                ;		mov	r0,quo.hi
+      69                                ;
+      70 022432 010446                  uldiv::	mov	r4,-(sp)		; save
+      71 022434 010546                  	mov	r5,-(sp)		;
+      72                                
+      73 022436 016601  000010          	mov	4.+4.(sp),r1		; num.lo
+      74 022442 016600  000006          	mov	2.+4.(sp),r0		; num.hi
+      75                                
+      76 022446 005005                  	clr	r5			; tmp.lo
+      77 022450 005004                  	clr	r4			; tmp.hi
+      78                                
+      79 022452 012746  000037          	mov	#31.,-(sp)		; bit count
+      80                                
+      81 022456 006301                  1$:	asl	r1			; (tmp,num) <<= 1
+      82 022460 006100                  	rol	r0			;
+      83 022462 006105                  	rol	r5			;
+      84 022464 006104                  	rol	r4			;
+      85                                
+      86 022466 010503                  	mov	r5,r3			; rem = tmp - den
+      87 022470 010402                  	mov	r4,r2			;
+      88 022472 166603  000016          	sub	8.+6.(sp),r3		;
+      89 022476 005602                  	sbc	r2			;
+      90 022500 166602  000014          	sub	6.+6.(sp),r2		;
+      91                                
+      92 022504 100403                  	bmi	2$			; br if rem < 0
+      93                                
+      94 022506 005201                  	inc	r1			; quo |= 1
+      95 022510 010305                  	mov	r3,r5			; tmp = rem
+      96 022512 010204                  	mov	r2,r4			;
+      97                                
+      98 022514 005316                  2$:	dec	(sp)			; count bits
+      99 022516 002357                  	bge	1$			; loop if more
+     100 022520 005726                  	tst	(sp)+			; flush counter
+     101                                
+     102 022522 005702                  	tst	r2			; test for rem < 0
+     103 022524 002005                  	bge	3$			; br if not
+     104                                
+     105 022526 066603  000014          	add	8.+4.(sp),r3		; rem += den correction
+     106 022532 005502                  	adc	r2			;
+     107 022534 066602  000012          	add	6.+4.(sp),r2		;
+     108                                
+     109 022540 012605                  3$:	mov	(sp)+,r5		; restore
+     110 022542 012604                  	mov	(sp)+,r4		;
+     111 022544                         	return				; done
+       1 022544 000207                  	rts	pc
+     112                                
+     113                                ; --------------------------------------------------------------------------------
+     114                                ;
+     115                                ; signed 32b / 32b => 32b, 32b division with remainder
+     116                                ; 
+     117                                ;	call:	mov	#den.lo,-(sp)	; 8.(sp)
+     118                                ;		mov	#den.hi,-(sp)	; 6.(sp)
+     119                                ;		mov	#num.lo,-(sp)	; 4.(sp)
+     120                                ;		mov	#num.hi,-(sp)	; 2.(sp)
+     121                                ;		call	sldiv
+     122                                ;		add	#8.,sp
+     123                                ;		mov	r3,rem.lo
+     124                                ;		mov	r2,rem.hi
+     125                                ;		mov	r1,quo.lo
+     126                                ;		mov	r0,quo.hi
+     127                                ;
+     128 022546 010446                  sldiv::	mov	r4,-(sp)		; save
+     129                                
+     130 022550 016603  000012          	mov	8.+2.(sp),r3		; den.lo
+     131 022554 016602  000010          	mov	6.+2.(sp),r2		; den.hi
+     132 022560 016601  000006          	mov	4.+2.(sp),r1		; num.lo
+     133 022564 016600  000004          	mov	2.+2.(sp),r0		; num.hi
+     134                                
+     135 022570 005004                  	clr	r4			; pos
+     136                                
+     137 022572 005700                  	tst	r0			; num sign
+     138 022574 002006                  	bge	10$			; br if pos
+     139                                
+     140 022576 005104                  	com	r4			; neg
+     141                                
+     142 022600 005101                  	com	r1			; negate num
+     143 022602 005100                  	com	r0			;
+     144 022604 062701  000001          	add	#1,r1			;
+     145 022610 005500                  	adc	r0			; 
+     146                                
+     147 022612 005702                  10$:	tst	r2			; den sign
+     148 022614 002006                  	bge	20$			; br if pos
+     149                                
+     150 022616 105104                  	comb	r4			; neg
+     151                                
+     152 022620 005103                  	com	r3			; negate den
+     153 022622 005102                  	com	r2			;
+     154 022624 062703  000001          	add	#1,r3			;
+     155 022630 005502                  	adc	r2			; 
+     156                                	
+     157 022632 010346                  20$:	mov	r3,-(sp)		; den.lo
+     158 022634 010246                  	mov	r2,-(sp)		; den.hi
+     159 022636 010146                  	mov	r1,-(sp)		; num.lo
+     160 022640 010046                  	mov	r0,-(sp)		; num.hi
+     161 022642                         	call	uldiv			;
+       1 022642 004737  022432          	jsr	pc,uldiv
+     162 022646 062706  000010          	add	#8.,sp			; 
+     163                                
+     164 022652 005704                  	tst	r4			; invert result
+     165 022654 002005                  	bge	30$			;
+     166                                
+     167 022656 005103                   	com	r3			; negate rem
+     168 022660 005102                  	com	r2			;
+     169 022662 062703  000001          	add	#1,r3			;
+     170 022666 005502                  	adc	r2			; 
+     171                                
+     172 022670 105704                  30$:	tstb	r4			; invert result
+     173 022672 002005                  	bge	40$			;
+     174                                
+     175 022674 005101                  	com	r1			; negate quo
+     176 022676 005100                  	com	r0			;
+     177 022700 062701  000001          	add	#1,r1			;
+     178 022704 005500                  	adc	r0			; 
+     179                                
+     180 022706 012604                  40$:	mov	(sp)+,r4		; restore
+     181 022710                         	return				; done
+       1 022710 000207                  	rts	pc
+     182                                
+     183                                ;================================================================================
+     184                                ; end of muldiv.mac
+     185                                ;================================================================================
+     185                                
+     533                                
+     534                                ; --------------------------------------------------------------------------------
+     535                                
+     536        000000                  .iif ne,pf.sep,	.end
+     537                                
+     538                                ;=================================================================================
+     539                                ; end of printf.mac
+     540                                ;=================================================================================
+     540                                
+     634                                
+     635                                ; --------------------------------------------------------------------------------
+     636                                	
+     637                                	.end
+     637                                
+
+
+Symbol table
+
+$$NUM   =000002           200$9   =015004   L       9$20    =020122   L       P.SR1   =000010           TF_CTR  =000002           
+$$POS   =000200           21$25   =021760   L       9$21    =020322   L       P.SR2   =000006           TF_DAT  =000001           
+$ENDAD  =016400           22$25   =021770   L       90$25   =022156   L       P.SR3   =000004           TF_INI  =000004           
+$SAV42  =002004           3$14    =016626   L       90$26   =022276   L       P.SR4   =000002           TF_NUL  =000000           
+.       =******           3$19    =017554   L       900$24  =021524   L       P.SR5   =000000           TF_XOF  =000023           
+1$1     =012346   L       3$20    =020022   L       990$24  =021542   L       P.WID   =177774           TF_XON  =000021           
+1$10    =015310   L       3$21    =020216   L       999$1   =012436   L       PATTRN  =016454           TG_SIZ  =000030           
+1$12    =016442   L       3$24    =020644   L       999$10  =016350   L       PF.ALT  =000004           TM_B12  =000200           
+1$13    =016472   L       3$28    =022540   L       999$2   =012540   L       PF.LJU  =000001           TM_RDR  =000001           
+1$14    =016534   L       30$25   =022000   L       999$3   =012720   L       PF.LON  =000010           TM_WRR  =000001           
+1$15    =016754   L       30$29   =022670   L       999$4   =013100   L       PF.NEG  =000020           TO_DIA  =000007           
+1$17    =017170   L       31$25   =022016   L       999$5   =013260   L       PF.SEP  =000000           TO_END  =000100           
+1$18    =017416   L       32$25   =022032   L       999$6   =013440   L       PF.SIG  =000002           TO_GCH  =000012           
+1$19    =017514   L       32768$0 =012220   L       999$7   =013616   L       PRINTF  =020442 G         TO_GST  =000010           
+1$20    =017766   L       32768$10=015322   L       999$8   =014274   L       PRT32U  =021614           TO_INI  =000001           
+1$21    =020150   L       32768$8 =013656   L       999$9   =015266   L       PRTSTR  =022164           TO_NOP  =000000           
+1$22    =020506   L       32768$9 =014330   L       BIT0    =000001           PSW     =177776 G         TO_RD   =000002           
+1$23    =020566   L       32769$0 =012226   L       BIT00   =000001           SLDIV   =022546 G         TO_SEE  =000005           
+1$24    =020614   L       32770$0 =012244   L       BIT01   =000002           SPRINT  =020522 G         TO_SST  =000011           
+1$25    =021622   L       32771$0 =012256   L       BIT02   =000004           STACK   =002000           TO_WR   =000003           
+1$26    =022172   L       4$14    =016662   L       BIT03   =000010           START   =012200           TRC_AC  =004000           
+1$27    =022366   L       4$19    =017600   L       BIT04   =000020           SWIREG  =177570 G         TRC_DO  =000200           
+1$28    =022456   L       4$20    =020034   L       BIT05   =000040           T0      =002010           TRC_EN  =000001           
+1$8     =013640   L       4$21    =020230   L       BIT06   =000100           T1      =002012           TRC_IE  =000100           
+1$9     =014316   L       4$24    =020700   L       BIT07   =000200           T2      =002014           TRD_ER  =100000           
+10$11   =016416   L       40$24   =021054   L       BIT08   =000400           T3      =002016           TRD_FE  =020000           
+10$16   =017134   L       40$29   =022706   L       BIT09   =001000           T4      =002020           TRD_MA  =000377           
+10$24   =020706   L       400$24  =021124   L       BIT1    =000002           T5      =002022           TRD_OE  =040000           
+10$25   =021702   L       401$24  =021210   L       BIT10   =002000           TB_SIZ  =001000           TRD_PE  =010000           
+10$29   =022612   L       405$24  =021224   L       BIT11   =004000           TC_BLK  =000012           TST$NO  =000013           
+100$1   =012364   L       41$24   =021060   L       BIT12   =010000           TC_CHK  =000014           TS_MAI  =000020           
+100$10  =015702   L       410$24  =021242   L       BIT13   =020000           TC_CNT  =000010           TS_MRS  =000010           
+100$14  =016674   L       42$24   =021110   L       BIT14   =040000           TC_FLG  =000000           TS_SIZ  =000200           
+100$26  =022304   L       420$24  =021254   L       BIT15   =100000           TC_LEN  =000001           TTC_BR  =000001           
+100$3   =012630   L       430$24  =021274   L       BIT2    =000004           TC_MOD  =000003           TTC_IE  =000100           
+100$4   =013010   L       431$24  =021320   L       BIT3    =000010           TC_OPC  =000002           TTC_MA  =000004           
+100$5   =013170   L       439$24  =021340   L       BIT4    =000020           TC_SEQ  =000006           TTC_RD  =000200           
+100$6   =013350   L       440$24  =021350   L       BIT5    =000040           TC_SIZ  =000016           TTD_MA  =000377           
+100$7   =013526   L       450$24  =021364   L       BIT6    =000100           TC_SWI  =000005           TTRBUF  =177562 G         
+100$8   =014042   L       460$24  =021400   L       BIT7    =000200           TC_UNI  =000004           TTRCSR  =177560 G         
+100$9   =014620   L       470$24  =021414   L       BIT8    =000400           TD_CHK  =000202           TTXBUF  =177566 G         
+1000$24 =021562   L       5$16    =017106   L       BIT9    =001000           TD_DAT  =000002           TTXCSR  =177564 G         
+101$1   =012411   L       5$19    =017622   L       BLOCK   =002026           TD_FLG  =000000           TU$RCS  =176500           
+101$14  =016704   L       5$20    =020056   L       BUFCNT  =002036           TD_LEN  =000001           TU$RDB  =176502           
+101$26  =022320   L       5$21    =020240   L       BUFEND  =012040           TD_SIZ  =000204           TU$TCS  =176504           
+102$14  =016712   L       50$25   =022036   L       BUFFER  =002040           TEST1   =012302           TU$TDB  =176506           
+102$26  =022330   L       50$26   =022226   L       BUFPTR  =002034           TEST10  =013622           TUBOOT  =017024           
+11$16   =017136   L       500$18  =017464   L       CONSOL  =165144 G         TEST11  =014300           TUCMD   =017316           
+11$24   =020734   L       500$19  =017736   L       COUNT   =002032           TEST12  =015272           TUEND   =017502           
+12$16   =017140   L       51$25   =022052   L       CR      =000015           TEST2   =012442           TUINIT  =017156           
+12$24   =020766   L       52$25   =022100   L       DEBUG   =000000           TEST3   =012544           TUPUSH  =016770           
+13$16   =017142   L       6$19    =017654   L       DONE    =016354           TEST4   =012724           TURCHR  =016730           
+13$24   =021004   L       6$20    =020070   L       DPYREG  =177570 G         TEST5   =013104           TURCNT  =016731           
+2$10    =015326   L       6$21    =020264   L       DUMPER  =016512           TEST6   =013264           TURCS   =016716           
+2$14    =016560   L       7$19    =017672   L       FILLER  =016436           TEST7   =013444           TURDAT  =017754           
+2$17    =017212   L       7$21    =020302   L       LF      =000012           TESTNO  =002006           TURDB   =016720           
+2$18    =017434   L       70$25   =022106   L       LOOP    =012274           TE_BAD  =177711           TUREAD  =020336           
+2$19    =017542   L       70$26   =022242   L       MAXBLK  =002030           TE_CAR  =177767           TURECV  =016732           
+2$20    =020006   L       71$25   =022110   L       MSG1    =012042           TE_COM  =177601           TUSDAT  =020136           
+2$21    =020170   L       71$26   =022246   L       MSG2    =012065           TE_DAT  =177757           TUSEND  =017012           
+2$24    =020634   L       8$19    =017710   L       N.ARGS  =000016           TE_FAI  =177777           TUTCS   =016722           
+2$25    =021664   L       80$25   =022124   L       N.LAST  =000014           TE_ILL  =177720           TUTDB   =016724           
+2$27    =022404   L       80$26   =022262   L       NOXXDP  =016414           TE_MTR  =177737           TUTRY   =016726           
+2$28    =022514   L       800$24  =021430   L       OPTSWI  =002002           TE_PAR  =177776           TUWAIT  =017002           
+2$9     =014334   L       81$25   =022140   L       P.FIL   =177776           TE_SEE  =177740           TUWRIT  =020400           
+20$24   =021022   L       810$24  =021450   L       P.FLG   =177777           TE_STR  =000001           TU_BPS  =001000           
+20$25   =021724   L       820$24  =021452   L       P.LEN   =177770           TE_SUC  =000000           TU_TRY  =000010           
+20$26   =022214   L       880$24  =021514   L       P.OUT   =177766           TE_UNI  =177770           ULDIV   =022432 G         
+20$29   =022632   L       890$24  =021522   L       P.PRE   =177772           TE_WPR  =177765           ULMUL   =022332 G         
+200$10  =016066   L       9$17    =017304   L       P.PTR   =177764           TF_BOO  =000010           UNIT    =002024           
+200$8   =014176   L       9$19    =017730   L       P.SR0   =000012           TF_CON  =000020           XPRINT  =020612           
+
+
+Program sections:
+
+. ABS.  022712    000   (RW,I,GBL,ABS,OVR,NOSAV)
+        000000    001   (RW,I,LCL,REL,CON,NOSAV)

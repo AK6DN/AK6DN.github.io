@@ -1,0 +1,83 @@
+       1                                .title	DL11 Tester - programmed I/O
+       2                                
+       3                                .sbttl	DL11 definitions
+       4                                
+       5        177560                  ttbase	=177560
+       6        176500                  dlbase	=176500
+       7                                
+       8        000000                  rcsr	=0
+       9        000002                  rbuf	=2
+      10        000004                  tcsr	=4
+      11        000006                  tbuf	=6
+      12                                
+      13                                .sbttl	low memory
+      14                                
+      15                                	.enabl	ama			; change all mode 67 references to 37
+      16 000000                         	.asect				; absolute load image
+      17                                
+      18        000200                  	.=200
+      19 000200 000137  002010          	jmp	@#start			; standard diagnostic entry
+      20                                
+      21                                .sbttl	global variables
+      22                                
+      23        002000                  	.=2000
+      24        002000                  stack:	.blkw	3			; top of stack plus some space
+      25 002006 000000                  option:	.word	000000			; 0=straight thru, 4=loopback in TU58 interface
+      26                                
+      27                                .sbttl	program start
+      28                                
+      29 002010 012706  002000          start:	mov	#stack,sp		; setup a stack
+      30 002014 000005                  	reset				; reset the world
+      31                                
+      32 002016 005000                  	clr	r0			; clear TTY flag and char
+      33 002020 005001                  	clr	r1			; clear TU58 flag and char
+      34 002022 012702  100000          	mov	#100000,r2		; bit15 flag set plus zeroes
+      35 002026 012704  177560          	mov	#ttbase,r4		; console DL11 base
+      36 002032 012705  176500          	mov	#dlbase,r5		; TU58 DL11 base
+      37                                
+      38 002036 053765  002006  000004  	bis	option,tcsr(r5)		; TU58 interface option(s) [MAINT mode]
+      39                                
+      40 002044 005064  000006          	clr	tbuf(r4)		; kick transmitters
+      41 002050 005065  000006          	clr	tbuf(r5)		; 
+      42                                
+      43 002054 105764  000000          loop:	tstb	rcsr(r4)		; check TTY rcv char done
+      44 002060 100003                  	bpl	10$			; br if none
+      45 002062 010200                  	mov	r2,r0			; set rcv flag <15>
+      46 002064 156400  000002          	bisb	rbuf(r4),r0		; yes, get the char, clr rcv char done
+      47                                
+      48 002070 105765  000000          10$:	tstb	rcsr(r5)		; check TU58 rcv char done
+      49 002074 100003                  	bpl	20$			; br if none
+      50 002076 010201                  	mov	r2,r1			; set rcv flag <15>
+      51 002100 156501  000002          	bisb	rbuf(r5),r1		; yes, get the char, clr rcv char done
+      52                                
+      53 002104 105764  000004          20$:	tstb	tcsr(r4)		; check TTY xmt char ready
+      54 002110 100005                  	bpl	30$			; br if not ready
+      55 002112 005701                  	tst	r1			; check char avail to xmt
+      56 002114 100003                  	bpl	30$			; br if not
+      57 002116 110164  000006          	movb	r1,tbuf(r4)		; yes, send TU58 char to TTY
+      58 002122 005001                  	clr	r1			; clear flag and char
+      59                                
+      60 002124 105765  000004          30$:	tstb	tcsr(r5)		; check TU58 xmt char ready
+      61 002130 100005                  	bpl	40$			; br if not ready
+      62 002132 005700                  	tst	r0			; check char avail to xmt
+      63 002134 100003                  	bpl	40$			; br if not
+      64 002136 110065  000006          	movb	r0,tbuf(r5)		; yes, sent TTY char to TU58
+      65 002142 005000                  	clr	r0			; clear flag and char
+      66                                
+      67 002144 000137  002054          40$:	jmp	loop			; back to top	
+      68                                
+      69                                .end
+      69                                
+
+
+Symbol table
+
+.     =******           30$0  =002124   L       LOOP  =002054           RCSR  =000000           TBUF  =000006           
+10$0  =002070   L       40$0  =002144   L       OPTION=002006           STACK =002000           TCSR  =000004           
+20$0  =002104   L       DLBASE=176500           RBUF  =000002           START =002010           TTBASE=177560           
+
+
+Program sections:
+
+. ABS.  002150    000   (RW,I,GBL,ABS,OVR,NOSAV)
+        000000    001   (RW,I,LCL,REL,CON,NOSAV)

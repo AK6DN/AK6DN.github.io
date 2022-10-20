@@ -1,0 +1,47 @@
+Options Indexes
+IndexOptions FancyIndexing NameWidth=* DescriptionWidth=* SuppressHTMLPreamble
+IndexIgnore . .htaccess header.html trailer.html
+HeaderName header.html
+ReadmeName trailer.html
+
+AddDescription "XXDPv25 only, with utilities (RX02 disk image)" 11XXDP.RX2
+AddDescription "XXDPv25 only, with utilities (directory listing)" 11XXDP.TXT
+
+AddDescription "11/04 CPU, M9312, memory diagnostics (RX02 disk image)" 1104_1.RX2
+AddDescription "11/04 CPU, M9312, memory diagnostics (directory listing)" 1104_1.TXT
+
+AddDescription "11/34 CPU, MS11-L diagnostics (RX02 disk image)" 1134_1.RX2
+AddDescription "11/34 CPU, MS11-L diagnostics (directory listing)" 1134_1.TXT
+
+AddDescription "11/34 FPP, M9312, memory diagnostics (RX02 disk image)" 1134_2.RX2
+AddDescription "11/34 FPP, M9312, memory diagnostics (directory listing)" 1134_2.TXT
+
+AddDescription "11/44 CPU, MS11-P diagnostics (RX02 disk image)" 1144_1.RX2
+AddDescription "11/44 CPU, MS11-P diagnostics (directory listing)" 1144_1.TXT
+
+AddDescription "11/44 FPP, CIS diagnostics (RX02 disk image)" 1144_2.RX2
+AddDescription "11/44 FPP, CIS diagnostics (directory listing)" 1144_2.TXT
+
+AddDescription "11/23 CPU-MMU-FPP, memory diagnostics (RX02 disk image)" 1123_1.RX2
+AddDescription "11/23 CPU-MMU-FPP, memory diagnostics (directory listing)" 1123_1.TXT
+
+AddDescription "11/23 KDF11 FPF11 diagnostics (RX02 disk image)" 1123_2.RX2
+AddDescription "11/23 KDF11 FPF11 diagnostics (directory listing)" 1123_2.TXT
+
+AddDescription "DL11-W, RX02, DZ11, MSCP, KW11-P diagnostics (RX02 disk image)" 11XX_1.RX2
+AddDescription "DL11-W, RX02, DZ11, MSCP, KW11-P diagnostics (directory listing)" 11XX_1.TXT
+
+AddDescription "DEUNA, DELUA diagnostics (RX02 disk image)" 11XX_2.RX2
+AddDescription "DEUNA, DELUA diagnostics (directory listing)" 11XX_2.TXT
+
+AddDescription "UDA50/KDA50 diagnostics (RX02 disk image)" 11XX_3.RX2
+AddDescription "UDA50/KDA50 diagnostics (directory listing)" 11XX_3.TXT
+
+AddDescription "RX01/RX02/RX11/RX211 diagnostics (RX02 disk image)" 11XX_4.RX2
+AddDescription "RX01/RX02/RX11/RX211 diagnostics (directory listing)" 11XX_4.TXT
+
+AddDescription "RLV11/RLV12/RL11 RL01/RL02 diagnostics (RX02 disk image)" 11XX_5.RX2
+AddDescription "RLV11/RLV12/RL11 RL01/RL02 diagnostics (directory listing)" 11XX_5.TXT
+
+AddDescription "AK6DN's home grown memory, MSCP, M9313, other diagnostics (RX02 disk image)" 11XX_9.RX2
+AddDescription "AK6DN's home grown memory, MSCP, M9313, other diagnostics (directory listing)" 11XX_9.TXT

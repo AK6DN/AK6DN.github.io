@@ -1,0 +1,94 @@
+KK8-E_pdp8e_cpu[1] pdp8 diagnostics_bin.ini
+
+PDP-8 simulator V4.0-0 Beta        git commit id: fc417114
+============================================================
+MAINDEC-8E-D0AB-PB.bin
+
+Breakpoint, PC: 00200 (JMP 144)
+...............................................
+Step expired, PC: 02660 (CLA)
+============================================================
+MAINDEC-8E-D0BB-PB.bin
+
+Breakpoint, PC: 00200 (CLA)
+................................................
+Step expired, PC: 02115 (DCA 15)
+============================================================
+MAINDEC-8E-D0CC-PB.bin
+
+Breakpoint, PC: 00200 (JMP 156)
+
+SIMAD
+SIMROT
+FCT
+RANDOM
+Step expired, PC: 00214 (CMA)
+============================================================
+MAINDEC-8E-D0IB-PB.bin
+
+Breakpoint, PC: 00200 (JMP I 201)
+..............................................
+Step expired, PC: 03443 (DCA 136)
+============================================================
+MAINDEC-8E-D0EB-PB.bin
+
+Breakpoint, PC: 00200 (CAF)
+
+T
+T
+T
+T
+T
+Step expired, PC: 07223 (MQA)
+============================================================
+MAINDEC-8E-D0DB-PB.bin
+
+Breakpoint, PC: 00200 (CAF)
+
+A
+A
+A
+A
+A
+Step expired, PC: 00230 (TAD I 202)
+============================================================
+MAINDEC-8E-D0FC-PB.bin
+
+Breakpoint, PC: 00200 (JMP 40)
+
+FC
+FC
+FC
+FC
+FC
+Step expired, PC: 00134 (SNA CLA)
+============================================================
+MAINDEC-8E-D0GC-PB.bin
+
+Breakpoint, PC: 00200 (JMP 20)
+.................................................
+Step expired, PC: 00164 (JMP I 154)
+============================================================
+MAINDEC-8E-D0HC-PB.bin
+
+Breakpoint, PC: 00200 (JMP I 370)
+
+HC
+HC
+HC
+HC
+HC
+Step expired, PC: 00073 (TAD 124)
+============================================================
+MAINDEC-8E-D0JC-PB.bin
+
+Breakpoint, PC: 00200 (JMS 157)
+
+JC
+JC
+JC
+JC
+JC
+Step expired, PC: 00267 (SPA)
+============================================================
+Goodbye

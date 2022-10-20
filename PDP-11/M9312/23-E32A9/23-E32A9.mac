@@ -1,0 +1,102 @@
+	.title	M9312 'XE' BOOT prom for NETWORK BOOT on a DEUNA/DELUA controller
+
+	; This source code is an exact copy of the DEC M9312 23-E32A9 boot PROM.
+	;
+	; This boot PROM is for network booting on a DEUNA/DELUA ethernet interface.
+	; 
+	; This is ROM #1 of a two ROM set.
+	;
+	; Multiple units and/or CSR addresses are supported via different entry points.
+	;
+	; Standard devices are 82S131, Am27S13, 74S571 or other compatible bipolar
+	; PROMs with a 512x4 TriState 16pin DIP architecture. This code resides in
+	; the low half of the device; the top half is blank and unused.
+	;
+	; Alternatively, 82S129 compatible 256x4 TriState 16pin DIP devices can be
+	; used, as the uppermost address line (hardwired low) is an active low chip
+	; select (and will be correctly asserted low).
+
+devbas	=174510				; device csr base address
+
+diags	=165564				; console diags phase2 entry
+	
+	.asect
+	.=173000
+
+	; --------------------------------------------------
+
+start:	.ascii	"EX"			; device code (reversed)
+
+	.word	last-.			; offset to next boot header
+
+xe0n:	sec				; boot std csr, unit zero, no diags
+xe0d:	mov	#0,r0			; boot std csr, unit zero, with diags
+xeNr:	mov	#devbas,r1		; boot std csr, unit <R0>
+xeNb:	mov	pc,r4			; boot csr <R1>, unit <R0>
+	bcc	diag			; br if diags requested
+	br	go			; return to (R4)+2 from diags
+					; then skip over the pseudo reboot vector
+	
+	; --------------------------------------------------
+
+	.word	173000			; prom start addess @ 24
+	.word	340			; and priority level @ 26
+
+	; --------------------------------------------------
+
+dat:	.word	004001			; CLR.DONE + CMD=GET_PCBB
+	.word	004002			; CLR.DONE + CMD=GET_CMD
+	.word	000000			; CMD=NOP and end of table
+
+	; --------------------------------------------------
+
+go:	mov	pc,r2			; setup r2 ptr to data table
+	sub	#.-dat,r2		; 
+	mov	#4040,(r1)		; CLR.DONE + CMD=START
+
+3$:	bit	#4000,(r1)		; test DONE set
+	beq	3$			; loop until done sets
+
+	mov	#700,r5			; ptr to PCBB control block
+	mov	r5,4(r1)		; into devbas+4
+	clr	6(r1)			; clear devbas+6
+	mov	#2,(r5)+		; 
+
+4$:	mov	(r2)+,(r1)		; get next command from table
+	beq	6$			; 
+	
+5$:	bit	#4000,(r1)		; test DONE set
+	beq	5$			; loop until set
+
+	br	4$			; lopp for next command
+	
+6$:	mov	pc,r3			; point to inline ascii string
+	br	8$			;
+
+7$:	.ascii	<015><012>"ETHERNET PHYSICAL ADDRESS = "
+
+8$:	tst	(r3)+			; point to ascii string start
+	mov	#<8$-7$>,r4		; contains this many characters
+	br	rom2			; br into next PROM
+
+	; --------------------------------------------------
+
+diag:	jmp	@#diags			; jump to console diags
+
+	; --------------------------------------------------
+
+	.word	0,0,0			; unused
+
+	; --------------------------------------------------
+
+	.=start+176
+crc16:	.word	<072775>		; CRC-16 will go here (computed=116257)
+
+	; --------------------------------------------------
+
+	; link to locations in ROM 2
+
+rom2	=.+2	; code continuation
+last	=.+200	; end of last ROM
+
+	.end

@@ -1,0 +1,106 @@
+	.title	M9312 'DY' BOOT prom for RX211 compatible controller
+
+	; This source code is an exact copy of the DEC M9312 23-811A9 boot PROM.
+	;
+	; This boot PROM is for any RX211/RX02 compatible floppy controller.
+	;
+	; Multiple units and/or CSR addresses are supported via different entry points.
+	;
+	; Standard devices are 82S131, Am27S13, 74S571 or other compatible bipolar
+	; PROMs with a 512x4 TriState 16pin DIP architecture. This code resides in
+	; the low half of the device; the top half is blank and unused.
+	;
+	; Alternatively, 82S129 compatible 256x4 TriState 16pin DIP devices can be
+	; used, as the uppermost address line (hardwired low) is an active low chip
+	; select (and will be correctly asserted low).
+
+rxcsr	=177170				; std RX211 csrbase
+
+rxcs	=+0				; command/status
+rxdb	=+2				; data buffer
+
+diags	=165564				; console diags phase2 entry
+
+	.asect
+	.=173000
+
+	; --------------------------------------------------
+
+start:	.ascii	"YD"			; device code (reversed)
+
+	.word	last-.			; offset to next boot header
+
+dy0n:	sec				; boot std csr, unit zero, no diags
+dy0d:	mov	#0,r0			; boot std csr, unit zero, with diags
+dyNr:	mov	#rxcsr,r1		; boot std csr, unit <R0>
+dyNb:	mov	pc,r4			; boot csr <R1>, unit <R0>
+	bcc	diag			; br if diags requested
+	br	go			; return to (R4)+2 from diags
+					; then skip over pseudo reboot vector
+
+	; --------------------------------------------------
+
+	.word	173000			; prom start addess @ 24
+	.word	340			; and priority level @ 26
+
+	; --------------------------------------------------
+
+go:	com	r3			; complement density flag
+	reset				; clear all device registers
+	mov	#401,r4			; sector 1 and track 1
+	clr	r2			; init buffer address
+	mov	#200,r5			; assume double density
+	bic	#^c400,r3		; single density?
+	bne	2$			; br if not
+	asr	r5			; adjust for single density
+2$:	bis	pc,r0			; bis #173x60,r0 + r0=0/1 => r0=173x60/173x61
+	bisb	4$-.(r0),r3		; bis 007(unit0) or 027(unit1) into r3
+	bic	pc,r0			; bic #173x66,r0
+	mov	pc,sp			; mov #3$,sp: init state to step1
+3$:	br	7$			; step1
+	br	9$			; step2
+	br	6$			; step3
+	br	6$			; step4
+	br	8$			; step5
+	br	10$			; step6
+	br	5$			; step7
+	add	r5,r2			; address += 2
+	add	r5,r2			; 
+	cmpb	(r4)+,(r4)+		; sector += 2
+	cmpb	r4,(pc)+		; cmpb r4,#007; last sector read?
+4$:	.byte	007,027			; unit in <4>, read+go in <2:0>
+	ble	2$			; br if more to read
+
+	clr	pc			; jump to bootstrap at zero
+
+5$:	mov	r2,rxdb(r1)		; set bus address
+	br	7$			; more
+
+6$:	movb	r4,rxdb(r1)		; set sector or track
+	swab	r4			; swap sector/track
+
+7$:	bit	#100240,(r1)		; wait for error<15>, treq<7>, or done<5>
+	beq	7$			; keep looping, no bits set
+	bmi	go			; retry if error bit set
+	tst	(sp)+			; flush one word off list
+	jmp	(sp)			; go execute step1..step7
+
+8$:	bic	#4,r3			; change to empty+go
+9$:	mov	r3,(r1)			; set command
+	br	7$			; more
+
+10$:	movb	r5,rxdb(r1)		; set ? to 1
+	br	7$			; more
+
+	; --------------------------------------------------
+
+diag:	jmp	@#diags			; jump to console diags
+
+	; --------------------------------------------------
+
+	.=start+176
+crc16:	.word	<057141>		; CRC-16 will go here
+
+last:	; next boot prom starts here
+
+	.end

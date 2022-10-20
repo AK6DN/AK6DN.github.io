@@ -1,0 +1,110 @@
+       1                                	.title	M9312 'XM' BOOT prom for DECNET on a DMC11 controller
+       2                                
+       3                                	; This source code is an exact copy of the DEC M9312 23-862A9 boot PROM.
+       4                                	;
+       5                                	; This boot PROM is for booting DECNET on a DMC11 sync line interface.
+       6                                	; 
+       7                                	; This is ROM #3 of a three ROM set.
+       8                                	;
+       9                                	; Multiple units and/or CSR addresses are supported via different entry points.
+      10                                	;
+      11                                	; Standard devices are 82S131, Am27S13, 74S571 or other compatible bipolar
+      12                                	; PROMs with a 512x4 TriState 16pin DIP architecture. This code resides in
+      13                                	; the low half of the device; the top half is blank and unused.
+      14                                	;
+      15                                	; Alternatively, 82S129 compatible 256x4 TriState 16pin DIP devices can be
+      16                                	; used, as the uppermost address line (hardwired low) is an active low chip
+      17                                	; select (and will be correctly asserted low).
+      18                                
+      19 000000                         	.asect
+      20        173000                  	.=173000
+      21                                	
+      22                                	; --------------------------------------------------
+      23                                	
+      24 173000 177776                  start:	.word	<-2>			; signal this is a continuation ROM
+      25                                
+      26                                	; --------------------------------------------------
+      27                                	
+      28 173002 100370                  rom3:	bpl	dmctst			; no, wait
+      29 173004 010703                  	mov	pc,r3			; set return address
+      30 173006 000415                  	br	dmcout			; check DMC request
+      31 173010 000765                  	br	dmctst			; wait until DMC is ready
+      32                                
+      33                                	; DMC load input routine
+      34                                	
+      35 173012 012261  000004          rdyiok:	mov	(r2)+,4(r1)		; to first half DMC port
+      36 173016 012261  000006          	mov	(r2)+,6(r1)		; to second half DMC port
+      37 173022 000402                  	br	2$			; skip over vector
+      38                                	
+      39                                	; --------------------------------------------------
+      40                                
+      41 173024 173000                  	.word	173000			; prom start addess @ 24
+      42 173026 000340                  	.word	340			; and priority level @ 26
+      43                                
+      44                                	; --------------------------------------------------
+      45                                
+      46 173030 042711  000040          2$:	bic	#40,(r1)		; clear RQI, give to DMC
+      47 173034 105711                  1$:	tstb	(r1)			; test rdyi clear
+      48 173036 100776                  	bmi	1$			; not yet
+      49 173040 000112                  	jmp	(r2)			; return
+      50                                
+      51                                	; --------------------------------------------------
+      52                                
+      53                                	;  DMC output routine
+      54                                
+      55 173042 132761  000003  000002  dmcout:	bitb	#3,2(r1)		; BA/CC or CTL request?
+      56 173050 001013                  	bne	1$			; CTL request
+      57 173052 132761  000004  000002  	bitb	#4,2(r1)		; XMIT or RCV?
+      58 173060 001413                  	beq	2$			; XMIT complete
+      59 173062 005005                  	clr	r5			; RCV complete set non pending flag
+      60 173064 005715                  	tst	(r5)			; check for code 0, load 0, at loc 0
+      61 173066 001010                  	bne	2$			; rcvd message no good
+      62 173070 012600                  	mov	(sp)+,r0		; return unit # to R0
+      63 173072 000005                  	reset				; clear DMC
+      64 173074 000137  000006          	jmp	@#6			; and jump to loaded program
+      65                                	
+      66 173100 032761  001730  000006  1$:	bit	#1730,6(r1)		; fatal error?
+      67 173106 001314                  	bne	hnglop			; yes, start again after time delay
+      68 173110 105061  000002          2$:	clrb	2(r1)			; clear rdyo, throw away info
+      69 173114 000163  000002          	jmp	2(r3)			; return
+      70                                
+      71                                	; --------------------------------------------------
+      72                                
+      73                                	;  floating device modulo table
+      74                                	
+      75 173120    007                  devtab:	.byte	7			; DJ11 device modulus
+      76 173121    017                  	.byte	17			; DH11
+      77 173122    007                  	.byte	7			; DQ11
+      78 173123    007                  	.byte	7			; DU11
+      79 173124    007                  	.byte	7			; DUP11
+      80 173125    007                  	.byte	7			; LK11-A
+      81 173126    007                  	.byte	7			; DMC11
+      82 173127    000                  	.byte	0			; filler
+      83                                
+      84                                	; --------------------------------------------------
+      85                                	
+      86        173176                  	.=start+176
+      87 173176 060100                  crc16:	.word	<060100>		; CRC-16 will go here
+      88                                
+      89                                	; --------------------------------------------------
+      90                                
+      91                                	; link to locations in ROMs 1 and 2
+      92                                
+      93        172764                  dmctst	=.-214
+      94        172740                  hnglop	=.-240
+      95                                
+      96                                	.end
+      96                                
+
+
+Symbol table
+
+.     =******           2$0   =173030   L       DEVTAB=173120           HNGLOP=172740           START =173000           
+1$0   =173034   L       2$1   =173110   L       DMCOUT=173042           RDYIOK=173012           
+1$1   =173100   L       CRC16 =173176           DMCTST=172764           ROM3  =173002           
+
+
+Program sections:
+
+. ABS.  173200    000   (RW,I,GBL,ABS,OVR,NOSAV)
+        000000    001   (RW,I,LCL,REL,CON,NOSAV)

@@ -1,0 +1,25 @@
+
+   body { background:#c8b570; }
+  table { margin:10px auto; background:#fffee9; padding:15px; border-radius:15px; }
+     tr { font-family:"Trebuchet MS"; }
+     td { padding-right:10px; padding-left:10px; }
+     th { font-size:18px; text-align:center; }
+     h1 { font-size:36px; text-align:center; }
+
+  tr.indexhead { font-size:16px; font-family:"Trebuchet MS"; }
+  tr.even      { background:#fffff7; }
+  tr.odd       { background:#fcfbe5; }
+  tr.breakrow  { border:0; height:1px; background:black; }
+
+  th.indexcolicon    { text-align:center; }
+  th.indexcolname    { text-align:left; }
+  th.indexcollastmod { text-align:center; }
+  th.indexcolsize    { text-align:right; padding-right:20px; }
+  th.indexcoldesc    { text-align:left; }
+
+  td.indexcolicon    { text-align:center; }
+  td.indexcolname    { font-family:"Trebuchet MS"; font-size:16px; text-align:left; }
+  td.indexcollastmod { font-family:"Trebuchet MS"; font-size:16px; text-align:center; }
+  td.indexcolsize    { font-family:"Trebuchet MS"; font-size:16px; text-align:right; padding-right:20px; }
+  td.indexcoldesc    { font-family:"Trebuchet MS"; font-size:16px; text-align:left; padding-right:20px; }
+

@@ -1,0 +1,142 @@
+       1                                	.title	M9312 'XM' BOOT prom for DECNET on a DMC11 controller
+       2                                
+       3                                	; This source code is an exact copy of the DEC M9312 23-862A9 boot PROM.
+       4                                	;
+       5                                	; This boot PROM is for booting DECNET on a DMC11 sync line interface.
+       6                                	; 
+       7                                	; This is ROM #1 of a three ROM set.
+       8                                	;
+       9                                	; Multiple units and/or CSR addresses are supported via different entry points.
+      10                                	;
+      11                                	; Standard devices are 82S131, Am27S13, 74S571 or other compatible bipolar
+      12                                	; PROMs with a 512x4 TriState 16pin DIP architecture. This code resides in
+      13                                	; the low half of the device; the top half is blank and unused.
+      14                                	;
+      15                                	; Alternatively, 82S129 compatible 256x4 TriState 16pin DIP devices can be
+      16                                	; used, as the uppermost address line (hardwired low) is an active low chip
+      17                                	; select (and will be correctly asserted low).
+      18                                
+      19        160010                  fltbas	=160010				; floating csr base address
+      20                                
+      21        165564                  diags	=165564				; console diags phase2 entry
+      22                                	
+      23 000000                         	.asect
+      24        173000                  	.=173000
+      25                                
+      26                                	; --------------------------------------------------
+      27                                
+      28 173000    115     130          start:	.ascii	"MX"			; device code (reversed)
+      29                                
+      30 173002 000576                  	.word	last-.			; offset to next boot header
+      31                                
+      32 173004 000261                  xm0n:	sec				; boot std csr, unit zero, no diags
+      33 173006 012700  000000          xm0d:	mov	#0,r0			; boot std csr, unit zero, with diags
+      34 173012 012701  160010          xmNr:	mov	#fltbas,r1		; boot std csr, unit <R0>
+      35 173016 010704                  xmNb:	mov	pc,r4			; boot csr <R1>, unit <R0>
+      36 173020 103015                  	bcc	bdiag			; br if diags requested
+      37 173022 000416                  	br	setstk			; return to (R4)+2 from diags
+      38                                					; then skip over the pseudo reboot vector
+      39                                	
+      40                                	; --------------------------------------------------
+      41                                
+      42 173024 173000                  	.word	173000			; prom start addess @ 24
+      43 173026 000340                  	.word	340			; and priority level @ 26
+      44                                
+      45                                	; --------------------------------------------------
+      46                                
+      47 173030 000261                  xm1n:	sec				; entry for unit 1, no diags
+      48 173032 012700  000001          xm1d:	mov	#1,r0			; entry for unit 1, with diags
+      49 173036 000765                  	br	xmNr			;
+      50                                
+      51                                	; --------------------------------------------------
+      52                                
+      53                                	;  floating device interrupt routine
+      54                                
+      55 173040 005202                  nodev:	inc	r2			; update R2 to piunt to next dev modulo
+      56 173042 005303                  	dec	r3			; 
+      57 173044 100002                  	bpl	1$			; if can't find device, halt
+      58 173046 000000                  2$:	halt				; die because of system config error
+      59 173050 000776                  	br	2$			; review floating address assignments
+      60 173052 000002                  1$:	rti				; return
+      61                                
+      62                                	; --------------------------------------------------
+      63                                
+      64                                	;  run diagnostics
+      65                                
+      66 173054 000137  165564          bdiag:	jmp	@#diags			; jump to console diags
+      67                                
+      68                                	; --------------------------------------------------
+      69                                
+      70 173060 012706  017776          setstk:	mov	#17776,sp		; setup stack
+      71 173064 012716  000001          	mov	#1,(sp)			; set high order word of message
+      72 173070 012746  006010          	mov	#6010,-(sp)		; set low order word of message
+      73                                					; note boot msg = 10,14,1,0
+      74                                					; stack ptr is at 17774
+      75                                	
+      76 173074 010702                  2$:	mov	pc,r2			; setup R2 with ptr to devtab
+      77 173076 062702  000422          	add	#devtab-2$-2,r2		; 
+      78 173102 010704                  3$:	mov	pc,r4			; setup R4 with ptr to trap routine
+      79 173104 062704  177734          	add	#nodev-3$-2,r4		;
+      80                                	
+      81                                	; the next four instructions verify that the
+      82                                	; extension ROMs are propery installed
+      83                                	; if not, the boot will halt
+      84                                	
+      85 173110 011246                  	mov	(r2),-(sp)		; push the #7407 from ROM#3
+      86 173112 166416  000200          	sub	200(r4),(sp)		; subtract the #2400 from ROM#2
+      87 173116 022726  005007          	cmp	#5007,(sp)+		; this should match the result
+      88 173122 001402                  	beq	4$			; br if matches
+      89 173124 000000                  5$:	halt				; check positions of ROMs #3 and #3
+      90 173126 000776                  	br	5$			; they do not appear to be in the correct slots
+      91                                	
+      92 173130 012703  000004          4$:	mov	#4,r3			; set R3 to DMC pos in float -2
+      93 173134 010423                  	mov	r4,(r3)+		; set trap routine address in loc 4
+      94 173136 005013                  	clr	(r3)			; clear new PSW. R3 now contains DMC pos 6
+      95 173140 005711                  float:	tst	(r1)			; test for device, maybe trap to nodev
+      96 173142 111204                  	movb	(r2),r4			; modulo increment
+      97 173144 060401                  	add	r4,r1			; update address
+      98 173146 005201                  	inc	r1			; by modulo
+      99 173150 040401                  	bic	r4,r1			; in table
+     100 173152 005703                  	tst	r3			; is this a DMC?
+     101 173154 001371                  	bne	float			; not yet...
+     102                                	
+     103                                	; add unit displacement to unit 0 csr addr
+     104                                	
+     105 173156 042700  177760          	bic	#177760,r0		; prevent trying to boot unit # > 15
+     106 173162 010046                  	mov	r0,-(sp)		; save unit # for secondary boot
+     107 173164 006300                  	asl	r0			; unit # times 2
+     108 173166 006300                  	asl	r0			; unit # times 4
+     109 173170 006300                  	asl	r0			; unit # times 8
+     110 173172 060001                  	add	r0,r1			; csr addr + unit*8
+     111 173174 000402                  	br	rom2			; go to mainline code
+     112                                
+     113                                	; --------------------------------------------------
+     114                                
+     115        173176                  	.=start+176
+     116 173176 161040                  crc16:	.word	<161040>		; CRC-16 will go here
+     117                                
+     118                                	; --------------------------------------------------
+     119                                
+     120                                	; link to locations in ROMs 2 and 3
+     121                                
+     122        173202                  rom2	=.+2	; code continuation
+     123        173520                  devtab	=.+320	; device table
+     124        173600                  last	=.+400	; end of last ROM
+     125                                
+     126                                	.end
+     126                                
+
+
+Symbol table
+
+.     =******           4$1   =173130   L       DIAGS =165564           ROM2  =173202           XM1D  =173032           
+1$0   =173052   L       5$1   =173124   L       FLOAT =173140           SETSTK=173060           XM1N  =173030           
+2$0   =173046   L       BDIAG =173054           FLTBAS=160010           START =173000           XMNB  =173016           
+2$1   =173074   L       CRC16 =173176           LAST  =173600           XM0D  =173006           XMNR  =173012           
+3$1   =173102   L       DEVTAB=173520           NODEV =173040           XM0N  =173004           
+
+
+Program sections:
+
+. ABS.  173200    000   (RW,I,GBL,ABS,OVR,NOSAV)
+        000000    001   (RW,I,LCL,REL,CON,NOSAV)

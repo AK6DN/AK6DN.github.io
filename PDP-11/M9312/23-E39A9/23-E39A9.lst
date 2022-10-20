@@ -1,0 +1,139 @@
+       1                                	.title	M9312 'MU' BOOT prom for TMSCP compatible controller
+       2                                
+       3                                	; This source code is an exact copy of the DEC M9312 23-E39A9 boot PROM.
+       4                                	;
+       5                                	; This boot PROM is for any TMSCP compatible controller (DEC TK50, EMULEX UC17/UC18).
+       6                                	;
+       7                                	; Multiple units and/or CSR addresses are supported via different entry points.
+       8                                	;
+       9                                	; Standard devices are 82S131, Am27S13, 74S571 or other compatible bipolar
+      10                                	; PROMs with a 512x4 TriState 16pin DIP architecture. This code resides in
+      11                                	; the low half of the device; the top half is blank and unused.
+      12                                	;
+      13                                	; Alternatively, 82S129 compatible 256x4 TriState 16pin DIP devices can be
+      14                                	; used, as the uppermost address line (hardwired low) is an active low chip
+      15                                	; select (and will be correctly asserted low).
+      16                                
+      17        174500                  mucsr	=174500				; std TMSCP csrbase
+      18                                
+      19        000000                  muip	=+0				; IP register
+      20        000002                  musa	=+2				; SA register
+      21                                
+      22        165564                  diags	=165564				; console diags phase2 entry
+      23                                
+      24 000000                         	.asect
+      25        173000                  	.=173000
+      26                                
+      27                                	; --------------------------------------------------
+      28                                
+      29 173000    125     115          start:	.ascii	"UM"			; device code (reversed)
+      30                                
+      31 173002 000176                  	.word	last-.			; offset to next boot header
+      32                                
+      33 173004 000261                  mu0n:	sec				; boot std csr, unit zero, no diags
+      34 173006 012700  000000          mu0d:	mov	#0,r0			; boot std csr, unit zero, with diags
+      35 173012 012701  174500          muNr:	mov	#mucsr,r1		; boot std csr, unit <R0>
+      36 173016 010704                  muNb:	mov	pc,r4			; boot csr <R1>, unit <R0>
+      37 173020 103003                  	bcc	diag			; br if diags requested
+      38 173022 000413                  	br	init			; return to (R4)+2 from diags
+      39                                					; then skip over pseudo reboot vector
+      40                                
+      41                                	; --------------------------------------------------
+      42                                
+      43 173024 173000                  	.word	173000			; prom start addess @ 24
+      44 173026 000340                  	.word	340			; and priority level @ 26
+      45                                
+      46                                	; --------------------------------------------------
+      47                                
+      48 173030 000137  165564          diag:	jmp	@#diags			; jump to console diags
+      49                                
+      50        100000                  rpkt	=100000	; rpkt structure
+      51        100100                  cpkt	=100100 ; cpkt structure
+      52        100200                  comm	=100200	; comm structure
+      53                                
+      54                                	; command byte.cnt.hi/opc.hi table
+      55                                	
+      56 173034    002     041          	.byte	002,041			; #3 bch(002), opc(041)=read
+      57 173036    076     041          	.byte	076,041			; #2 bch(076), opc(041)=read
+      58 173040    000     011          	.byte	000,011			; #1 bch(000), opc(011)=online
+      59                                
+      60                                	; init sequence table
+      61                                
+      62 173042 000001                  	.word	000001			; S4: go bit
+      63 173044 000000                  	.word	000000			; S3: no purge/poll, ringbase hi addr
+      64 173046 100200                  	.word	comm			; S2: ringbase lo addr
+      65 173050 100000                  	.word	100000			; S1: no intr, ring size 1, no vector
+      66                                
+      67 173052 010703                  init:	mov	pc,r3			; point to next word
+      68 173054 010102                  	mov	r1,r2			; a(IP) in R1
+      69 173056 014322                  	mov	-(r3),(r2)+		; decr data ptr, a(SA) in R2
+      70 173060 012705  004000          	mov	#4000,r5		; S1 state bitmask
+      71                                
+      72                                	; init loop
+      73                                
+      74 173064 005712                  3$:	tst	(r2)			; error bit set ?
+      75 173066 100771                  	bmi	init			; yes, fall back to begin to retry
+      76 173070 031205                  	bit	(r2),r5			; step bit set ?
+      77 173072 001774                  	beq	3$			; not yet, wait loop
+      78 173074 014312                  	mov	-(r3),(r2)		; yes, send next init data
+      79 173076 006305                  	asl	r5			; next mask
+      80 173100 100371                  	bpl	3$			; s4 done? br if not yet
+      81                                					; exit with r5 = 100000
+      82                                	; command loop
+      83                                
+      84 173102 010502                  4$:	mov	r5,r2			; set bufptr to rpkt=100000
+      85 173104 005022                  5$:	clr	(r2)+			; clear buffer [0..comm-1]
+      86 173106 105702                  	tstb	r2			; check for end of buffer
+      87 173110 100375                  	bpl	5$			; loop if not done
+      88                                
+      89 173112 105237  100077          	incb	@#cpkt-1.		; set cmd len = 400
+      90 173116 105237  100075          	incb	@#cpkt-3.		; set cmd VCID = 1
+      91 173122 114337  100110          	movb	-(r3),@#cpkt+8.		; set cmd opcode from table
+      92 173126 114337  100115          	movb	-(r3),@#cpkt+13.	; set cmd bytecnt hi from table
+      93 173132 010037  100104          	mov	r0,@#cpkt+4.		; set cmd unit
+      94                                	
+      95 173136 010522                  	mov	r5,(r2)+		; rq desc addr = rpkt
+      96 173140 010522                  	mov	r5,(r2)+		; rq own bit15
+      97 173142 012722  100100          	mov	#cpkt,(r2)+		; cp desc addr = cpkt
+      98 173146 010512                  	mov	r5,(r2)			; cp own bit15
+      99                                
+     100 173150 005711                  	tst	(r1)			; wake controller (read IP)
+     101 173152 024242                  	cmp	-(r2),-(r2)		; r2 -= 4
+     102                                
+     103                                	; wait loop
+     104                                
+     105 173154 005712                  6$:	tst	(r2)			; rq own controller ?
+     106 173156 100776                  	bmi	6$			; loop if not done
+     107                                
+     108 173160 105737  100012          	tstb	@#rpkt+10.		; check for error ?
+     109 173164 001332                  	bne	init			; yup, fall back to begin to retry
+     110                                
+     111 173166 105763  177777          	tstb	-1(r3)			; check end of table ?
+     112 173172 100343                  	bpl	4$			; br if not yet
+     113                                
+     114 173174 005007                  	clr	pc			; jmp to bootstrap at zero
+     115                                
+     116                                	; --------------------------------------------------
+     117                                
+     118        173176                  	.=start+176
+     119 173176 011426                  crc16:	.word	<011426>		; CRC-16 will go here
+     120                                
+     121                                last:	; next boot prom starts here
+     122                                
+     123                                	.end
+     123                                
+
+
+Symbol table
+
+.     =******           COMM  =100200           INIT  =173052           MUIP  =000000           START =173000           
+3$0   =173064   L       CPKT  =100100           LAST  =173200           MUNB  =173016           
+4$0   =173102   L       CRC16 =173176           MU0D  =173006           MUNR  =173012           
+5$0   =173104   L       DIAG  =173030           MU0N  =173004           MUSA  =000002           
+6$0   =173154   L       DIAGS =165564           MUCSR =174500           RPKT  =100000           
+
+
+Program sections:
+
+. ABS.  173200    000   (RW,I,GBL,ABS,OVR,NOSAV)
+        000000    001   (RW,I,LCL,REL,CON,NOSAV)

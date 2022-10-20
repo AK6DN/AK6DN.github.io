@@ -1,0 +1,378 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>M9312 PROM Files</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=ISO-8859-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+<STYLE TYPE="text/css">
+ .HEADER { FONT-SIZE:250%; COLOR:BLACK; FONT-WEIGHT:BOLD; BACKGROUND-COLOR:#EE66AA; }
+ .SUBHEAD { FONT-FAMILY:SANS-SERIF; FONT-SIZE:200%; COLOR:WHITE; FONT-WEIGHT:NORMAL; BACKGROUND-COLOR:#880044; TEXT-DECORATION:NONE; }
+ .TITLE { FONT-SIZE:100%; COLOR:BLACK; FONT-WEIGHT:BOLD; BACKGROUND-COLOR:#CCCCCC; }
+ .ENTRY { FONT-SIZE:90%; COLOR:BLACK; FONT-WEIGHT:NORMAL; BACKGROUND-COLOR:#EEEEEE; }
+</STYLE>
+</HEAD>
+<BODY>
+
+<TABLE WIDTH="100%" BORDER="2" CELLPADDING="1" CELLSPACING="1">
+  <TR>
+    <TH WIDTH="10%">
+      <TABLE WIDTH="100%" BORDER="0" CELLPADDING="1" CELLSPACING="1"><TR>
+      <TD><A HREF="http://www.ak6dn.com/PDP-11/" CLASS="SUBHEAD">a</A></TD>
+      <TD><A HREF="http://www.ak6dn.com/PDP-11/" CLASS="SUBHEAD">k</A></TD>
+      <TD><A HREF="http://www.ak6dn.com/PDP-11/" CLASS="SUBHEAD">6</A></TD>
+      <TD><A HREF="http://www.ak6dn.com/PDP-11/" CLASS="SUBHEAD">d</A></TD>
+      <TD><A HREF="http://www.ak6dn.com/PDP-11/" CLASS="SUBHEAD">n</A></TD>
+      </TR></TABLE>
+    </TH>
+    <TH CLASS="HEADER">M9312 PROM Files</TH>
+    <TH WIDTH="10%">
+      <TABLE WIDTH="100%" BORDER="0" CELLPADDING="1" CELLSPACING="1"><TR>
+      <TD><A HREF="http://www.ak6dn.com/PDP-11/" CLASS="SUBHEAD">a</A></TD>
+      <TD><A HREF="http://www.ak6dn.com/PDP-11/" CLASS="SUBHEAD">k</A></TD>
+      <TD><A HREF="http://www.ak6dn.com/PDP-11/" CLASS="SUBHEAD">6</A></TD>
+      <TD><A HREF="http://www.ak6dn.com/PDP-11/" CLASS="SUBHEAD">d</A></TD>
+      <TD><A HREF="http://www.ak6dn.com/PDP-11/" CLASS="SUBHEAD">n</A></TD>
+      </TR></TABLE>
+    </TH>
+  </TR>
+</TABLE>
+
+<BR>
+The following files are source, listing, and object images in Intel HEX format for the
+DEC PDP-11 M9312 Bootstrap module (and other compatible sockets such as the 11/44 UBI).
+<BR><BR>
+All source files are a faithful representation of the contents of the respective PROM.
+<BR><BR>
+Two additional images have been added that are non-standard:
+<UL>
+<LI>23-765B9 - (yes I know ...B9 is not actually correct per DEC nomenclature) is a rewrite of the
+standard DD TU58 boot PROM. The standard DEC PROM is completely broken when it comes
+to supporting a non-standard CSR address other than 776500. 23-765B9 fixes this issue.
+<BR><BR>
+<LI>23-ZZZA9 - fits in an M9312 boot PROM socket, but is not a boot PROM per se. When started,
+it runs the M9312 diagnostics forever, checking both the CPU and the low 28K
+of memory using the standard console PROM diagnostic tests (see the 23-248F1 listing).
+It has proven to be very useful when debugging old PDP-11s when not enough works to boot
+diagnostics from a disk/tape (or you don't yet actually have a disk or tape).
+</UL>
+An image of the TMSCP boot device 23-E39A9 has been found! Thanks to Jack Rubin for sending me a real device to read (21-Feb-2020).
+<BR><BR>
+Images of the DEUNA/DELUA netboot devices 23-E32A9/E33A9 have been found! Actual devices have been read (24-Feb-2020).
+<BR><BR>
+The tools to assemble/build a PROM image are available in <A HREF="tools.tar.gz">tools.tar.gz</A>.
+Refer to the included README.txt file for further information on usage.
+<BR><BR>
+Questions or comments email <I>Don North &lt;ak6dn&nbsp;_at_&nbsp;mindspring&nbsp;_dot_&nbsp;com&gt;</I>
+<BR><BR><BR>
+
+<TABLE WIDTH="100%" BORDER="2" CELLPADDING="2" CELLSPACING="2">
+<TR CLASS="TITLE">
+  <TH ALIGN="CENTER">DEC&nbsp;Module<BR>&amp;&nbsp;Location</TH>
+  <TH>PROM<BR>Type</TH>
+  <TH ALIGN="LEFT">&nbsp;Function</TH>
+  <TH>DEC&nbsp;P/N<BR>&amp;<BR>HEX&nbsp;File</TH>
+  <TH>Device<BR>Checksum</TH>
+  <TH>Source<BR>&amp;<BR>Listing</TH>
+  <TH>Notes</TH>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD ALIGN="CENTER" ROWSPAN=4>M9312 Console</TD>
+  <TD ALIGN="CENTER" ROWSPAN=4>82S137<BR>Am27S32<BR>74S573<BR>(1024x4-TS)</TD>
+  <TD>11/04,34 Diagnostic/Console (M9312 E20)</TD>
+  <TD ALIGN="CENTER"><A HREF="23-248F1/23-248F1-1983.hex">23-248F1</A></TD>
+  <TD ALIGN="CENTER">0x1983</TD>
+  <TD ALIGN="CENTER"><A HREF="23-248F1/23-248F1.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-248F1/23-248F1.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(1,3)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>11/60,70 Diagnostic/Console (M9312 E20)</TD>
+  <TD ALIGN="CENTER"><A HREF="23-616F1/23-616F1-1666.hex">23-616F1</A></TD>
+  <TD ALIGN="CENTER">0x1666</TD>
+  <TD ALIGN="CENTER"><A HREF="23-616F1/23-616F1.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-616F1/23-616F1.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(1,3)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>11/44 Diagnostic/Console (UBI; M7098 E58)</TD>
+  <TD ALIGN="CENTER"><A HREF="23-446F1/23-446F1-1978.hex">23-446F1</A></TD>
+  <TD ALIGN="CENTER">0x1978</TD>
+  <TD ALIGN="CENTER"><A HREF="23-446F1/23-446F1.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-446F1/23-446F1.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(1)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>11/24 Diagnostic/Console (MEM; M7134 E74)</TD>
+  <TD ALIGN="CENTER"><A HREF="23-774F1/23-774F1-1A2E.hex">23-774F1</A></TD>
+  <TD ALIGN="CENTER">0x1A2E</TD>
+  <TD ALIGN="CENTER"><A HREF="23-774F1/23-774F1.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-774F1/23-774F1.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(1)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD ALIGN="CENTER" ROWSPAN=99>M9312 Boot<BR>11/44 UBI<BR>11/24 MEM</TD>
+  <TD ALIGN="CENTER" ROWSPAN=35>82S131<BR>Am27S13<BR>63S241<BR>74S571<BR>(512x4-TS)<BR>&<BR>82S129<BR>(256x4-TS)</TD>
+  <TD>(DL) RL01/02 cartridge disk</TD>
+  <TD ALIGN="CENTER"><A HREF="23-751A9/23-751A9-0698.hex">23-751A9</A></TD>
+  <TD ALIGN="CENTER">0x0698</TD>
+  <TD ALIGN="CENTER"><A HREF="23-751A9/23-751A9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-751A9/23-751A9.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(1,2)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(DM) RK06/07 cartridge disk</TD>
+  <TD ALIGN="CENTER"><A HREF="23-752A9/23-752A9-0627.hex">23-752A9</A></TD>
+  <TD ALIGN="CENTER">0x0627</TD>
+  <TD ALIGN="CENTER"><A HREF="23-752A9/23-752A9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-752A9/23-752A9.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(1,2)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(DX) RX01 floppy disk, single density</TD>
+  <TD ALIGN="CENTER"><A HREF="23-753A9/23-753A9-066D.hex">23-753A9</A></TD>
+  <TD ALIGN="CENTER">0x066D</TD>
+  <TD ALIGN="CENTER"><A HREF="23-753A9/23-753A9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-753A9/23-753A9.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(2)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(DP) RP02/03 cartridge disk<BR>(DB) RP04/05/06,RM02/03/05 cartridge disk</TD>
+  <TD ALIGN="CENTER"><A HREF="23-755A9/23-755A9-0622.hex">23-755A9</A></TD>
+  <TD ALIGN="CENTER">0x0622</TD>
+  <TD ALIGN="CENTER"><A HREF="23-755A9/23-755A9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-755A9/23-755A9.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(1,2)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(DK) RK03/05 DECdisk<BR>(DT) TU55/56 DECtape</TD>
+  <TD ALIGN="CENTER"><A HREF="23-756A9/23-756A9-0613.hex">23-756A9</A></TD>
+  <TD ALIGN="CENTER">0x0613</TD>
+  <TD ALIGN="CENTER"><A HREF="23-756A9/23-756A9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-756A9/23-756A9.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(1,2)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(MM) TU16/45/77,TE16 magtape</TD>
+  <TD ALIGN="CENTER"><A HREF="23-757A9/23-757A9-06F2.hex">23-757A9</A></TD>
+  <TD ALIGN="CENTER">0x06F2</TD>
+  <TD ALIGN="CENTER"><A HREF="23-757A9/23-757A9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-757A9/23-757A9.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(1,2)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(MT) TS03,TU10,TE10 magtape</TD>
+  <TD ALIGN="CENTER"><A HREF="23-758A9/23-758A9-06DC.hex">23-758A9</A></TD>
+  <TD ALIGN="CENTER">0x06DC</TD>
+  <TD ALIGN="CENTER"><A HREF="23-758A9/23-758A9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-758A9/23-758A9.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(1,2)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(DS) RS03/04 fixed disk</TD>
+  <TD ALIGN="CENTER"><A HREF="23-759A9/23-759A9-04BC.hex">23-759A9</A></TD>
+  <TD ALIGN="CENTER">0x04BC</TD>
+  <TD ALIGN="CENTER"><A HREF="23-759A9/23-759A9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-759A9/23-759A9.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(2)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(TT) ASR33 lowspeed reader<BR>(PR) PC05 hispeed reader</TD>
+  <TD ALIGN="CENTER"><A HREF="23-760A9/23-760A9-0681.hex">23-760A9</A></TD>
+  <TD ALIGN="CENTER">0x0681</TD>
+  <TD ALIGN="CENTER"><A HREF="23-760A9/23-760A9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-760A9/23-760A9.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(1,2)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(CT) TU60 DECcassette</TD>
+  <TD ALIGN="CENTER"><A HREF="23-761A9/23-761A9-05E2.hex">23-761A9</A></TD>
+  <TD ALIGN="CENTER">0x05E2</TD>
+  <TD ALIGN="CENTER"><A HREF="23-761A9/23-761A9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-761A9/23-761A9.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(2)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(RS) RS11/64 fixed disk</TD>
+  <TD ALIGN="CENTER">23-762A9</TD>
+  <TD ALIGN="CENTER">-</TD>
+  <TD ALIGN="CENTER">-</TD>
+  <TD ALIGN="CENTER">(4)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(CR) CR11 card reader</TD>
+  <TD ALIGN="CENTER">23-763A9</TD>
+  <TD ALIGN="CENTER">-</TD>
+  <TD ALIGN="CENTER">-</TD>
+  <TD ALIGN="CENTER">(4)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(MS) TS04/11,TU80,TSU05 tape</TD>
+  <TD ALIGN="CENTER"><A HREF="23-764A9/23-764A9-06E1.hex">23-764A9</A></TD>
+  <TD ALIGN="CENTER">0x06E1</TD>
+  <TD ALIGN="CENTER"><A HREF="23-764A9/23-764A9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-764A9/23-764A9.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(2)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(DD) TU58 DECtapeII</TD>
+  <TD ALIGN="CENTER"><A HREF="23-765A9/23-765A9-0603.hex">23-765A9</A></TD>
+  <TD ALIGN="CENTER">0x0603</TD>
+  <TD ALIGN="CENTER"><A HREF="23-765A9/23-765A9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-765A9/23-765A9.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(2)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(DD) TU58 DECtapeII; fixes non-std CSR access</TD>
+  <TD ALIGN="CENTER"><A HREF="23-765B9/23-765B9-05BC.hex">23-765B9</A></TD>
+  <TD ALIGN="CENTER">0x05BC</TD>
+  <TD ALIGN="CENTER"><A HREF="23-765B9/23-765B9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-765B9/23-765B9.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(5)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(DU) MSCP UDA50(RAxx) disk</TD>
+  <TD ALIGN="CENTER"><A HREF="23-767A9/23-767A9-0677.hex">23-767A9</A></TD>
+  <TD ALIGN="CENTER">0x0677</TD>
+  <TD ALIGN="CENTER"><A HREF="23-767A9/23-767A9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-767A9/23-767A9.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(1)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(DY) RX02 floppy disk, double density</TD>
+  <TD ALIGN="CENTER"><A HREF="23-811A9/23-811A9-0646.hex">23-811A9</A></TD>
+  <TD ALIGN="CENTER">0x0646</TD>
+  <TD ALIGN="CENTER"><A HREF="23-811A9/23-811A9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-811A9/23-811A9.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(1,2)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(MU) TMSCP TK50,TU81 magtape</TD>
+  <TD ALIGN="CENTER"><A HREF="23-E39A9/23-E39A9-0705.hex">23-E39A9</A></TD>
+  <TD ALIGN="CENTER">0x0705</TD>
+  <TD ALIGN="CENTER"><A HREF="23-E39A9/23-E39A9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-E39A9/23-E39A9.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(1)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(XE) Ethernet DEUNA/DELUA Net Boot (v1)</TD>
+  <TD ALIGN="CENTER">23-E22A9</TD>
+  <TD ALIGN="CENTER">-</TD>
+  <TD ALIGN="CENTER">-</TD>
+  <TD ALIGN="CENTER">(4)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD ROWSPAN=2>(XE) Ethernet DEUNA/DELUA Net Boot (v2)</TD>
+  <TD ALIGN="CENTER"><A HREF="23-E32A9/23-E32A9-05D6.hex">23-E32A9</A></TD>
+  <TD ALIGN="CENTER">0x05D6</TD>
+  <TD ALIGN="CENTER"><A HREF="23-E32A9/23-E32A9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-E32A9/23-E32A9.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER" ROWSPAN=2>(1)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD ALIGN="CENTER"><A HREF="23-E33A9/23-E33A9-0755.hex">23-E33A9</A></TD>
+  <TD ALIGN="CENTER">0x0755</TD>
+  <TD ALIGN="CENTER"><A HREF="23-E33A9/23-E33A9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-E33A9/23-E33A9.lst" TYPE="text/plain">LST</A></TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD ROWSPAN=3>(XM) DECnet DDCMP DMC11/DMR11</TD>
+  <TD ALIGN="CENTER"><A HREF="23-862A9/23-862A9-0625.hex">23-862A9</A></TD>
+  <TD ALIGN="CENTER">0x0625</TD>
+  <TD ALIGN="CENTER"><A HREF="23-862A9/23-862A9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-862A9/23-862A9.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER" ROWSPAN=3>(1,2)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD ALIGN="CENTER"><A HREF="23-863A9/23-863A9-063F.hex">23-863A9</A></TD>
+  <TD ALIGN="CENTER">0x063F</TD>
+  <TD ALIGN="CENTER"><A HREF="23-863A9/23-863A9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-863A9/23-863A9.lst" TYPE="text/plain">LST</A></TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD ALIGN="CENTER"><A HREF="23-864A9/23-864A9-0551.hex">23-864A9</A></TD>
+  <TD ALIGN="CENTER">0x0551</TD>
+  <TD ALIGN="CENTER"><A HREF="23-864A9/23-864A9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-864A9/23-864A9.lst" TYPE="text/plain">LST</A></TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(XU) DECnet DDCMP DU11</TD>
+  <TD ALIGN="CENTER">23-865A9<BR>23-866A9<BR>23-867A9</TD>
+  <TD ALIGN="CENTER">-</TD>
+  <TD ALIGN="CENTER">-</TD>
+  <TD ALIGN="CENTER">(4)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(XW) DECnet DDCMP DUP11</TD>
+  <TD ALIGN="CENTER">23-868A9<BR>23-869A9<BR>23-870A9</TD>
+  <TD ALIGN="CENTER">-</TD>
+  <TD ALIGN="CENTER">-</TD>
+  <TD ALIGN="CENTER">(4)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(XL) DECnet DDCMP DL11-E</TD>
+  <TD ALIGN="CENTER">23-926A9<BR>23-927A9<BR>23-928A9</TD>
+  <TD ALIGN="CENTER">-</TD>
+  <TD ALIGN="CENTER">-</TD>
+  <TD ALIGN="CENTER">(4)</TD>
+</TR>
+
+<TR CLASS="ENTRY">
+  <TD>(ZZ) Test ROM; runs diagnostics continuously</TD>
+  <TD ALIGN="CENTER"><A HREF="23-ZZZA9/23-ZZZA9-05FE.hex">23-ZZZA9</A></TD>
+  <TD ALIGN="CENTER">0x05FE</TD>
+  <TD ALIGN="CENTER"><A HREF="23-ZZZA9/23-ZZZA9.mac" TYPE="text/plain">SRC</A><BR>
+                     <A HREF="23-ZZZA9/23-ZZZA9.lst" TYPE="text/plain">LST</A></TD>
+  <TD ALIGN="CENTER">(5)</TD>
+</TR>
+
+</TABLE>
+<PRE>
+  Notes:  (1) verified against a physical device
+          (2) verified against DEC document K-SP-M9312-0-7 (rev A11 Aug78)
+          (3) verified against DEC document K-SP-M9312-0-5 (rev B1 Aug78)
+          (4) no device or file available
+          (5) newly written code
+</PRE>
+
+<HR>
+<TABLE WIDTH="100%" STYLE="FONT-SIZE:80%; FONT-WEIGHT:NORMAL; FONT-STYLE:ITALIC">
+<TR>
+<TD ALIGN="LEFT">Last updated:  2020-02-24 07:30pm PST</TD>
+<TD ALIGN="RIGHT">By:&nbsp;&nbsp;ak6dn&nbsp;_at_&nbsp;mindspring&nbsp;_dot_&nbsp;com</TD>
+</TR>
+</TABLE>
+<HR>
+
+</BODY>
+</HTML>

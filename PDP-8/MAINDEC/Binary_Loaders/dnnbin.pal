@@ -1,0 +1,112 @@
+TITLE	"DNN LO SPD RDR BIN loader"
+
+*7612
+SWITCH,	0			/
+MEMTEM,	0			/
+CHAR,	0			/
+CHKSUM,	0			/
+ORIGIN,	0			/
+
+*7626
+BEGG,	0			/
+	DCA SWITCH		/ get switch
+	JMS READ		/ get a character
+	TAD M376		/ test for 377
+	SPA SNA CLA		/
+	 JMP L1			/ no
+	ISZ SWITCH		/ yes, complement switch
+	 CMA			/
+	JMP BEGG+1		/
+L1,	TAD SWITCH		/ not 377
+	SZA CLA			/ is switch set?
+	 JMP BEGG+2		/ yes; ignore
+	TAD CHAR		/ no; test for code
+	AND MASK		/ types
+	TAD M200		/ 
+	SPA			/
+	 ISZ BEGG		/ data or origin
+	  SPA SNA CLA		/
+	   JMP I BEGG		/ data, origin, or L/T
+	TAD CHAR		/ field setting
+	AND FMASK		/
+	TAD CHANGE		/
+	DCA MEMTEM		/
+	JMP BEGG+2		/ continue input
+
+READ,	0			/ return address
+	KSF			/ wait for flag
+	 JMP .-1		/ loop
+	KRB			/ read char
+	DCA CHAR		/ save
+	TAD CHAR		/ get
+	JMP I READ		/ return
+
+ASSEMB,	0			/ return address
+	TAD WORD1		/
+	CLL RTL			/
+	RTL			/
+	RTL			/
+	TAD WORD2		/
+	JMP I ASSEMB		/ return
+
+BEND,	JMS ASSEMB		/ trailer code seen
+	CIA			/
+	TAD CHKSUM		/
+	SZA			/ skip if no checksum error
+	 HLT			/
+	CLA / LAS		/ get switches
+	SMA                     / if SR<0>=1 keep loading
+	 JMP I START		/ go to program
+BEGIN,	KCC			/
+	RDF			/
+	TAD CHANGE		/
+	DCA MEMTEM		/ save field instruction
+	JMS BEGG		/
+	 JMP .-1		/ ignore leader
+
+GO,	DCA CHKSUM		/ init checksum
+	TAD MEMTEM		/
+	DCA MEMFLD		/
+	TAD CHAR		/
+	DCA WORD1		/
+	JMS READ		/
+	DCA WORD2		/
+	JMS BEGG		/ look ahead
+	 JMP BEND		/ trailer, end
+	JMS ASSEMB		/
+	SNL			/
+	 JMP MEMFLD		/
+	DCA ORIGIN		/
+CHEX,	TAD WORD1		/
+	TAD WORD2		/
+	TAD CHKSUM		/
+	JMP GO			/
+MEMFLD,	CDF			/
+	DCA I ORIGIN		/
+	ISZ ORIGIN		/
+	 CLA			/
+	JMP CHEX		/
+
+START,	200			/
+CHANGE,	CDF			/
+MASK,	300			/
+FMASK,	70			/
+M200,	-200			/
+M376,	-376			/
+WORD1=7776			/
+WORD2,	0			/
+
+/ loc 7737-7755 is H/W bootstrap space
+/ loc 7756-7776 is RIMLDR space
+
+*7777
+	JMP BEGIN		/ jump to start address
+
+*7752				/ align to RIMLDR location
+	KCC			/ first instr in std RIMLDR
+	TAD .-1			/ get KCC instr
+	DCA .+2			/ restore into RIMLDR
+	JMP BEGIN		/ start program
+	JMP .-3			/ overlay first word of RIMLDR
+
+$ / the end

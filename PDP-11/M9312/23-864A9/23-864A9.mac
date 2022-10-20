@@ -1,0 +1,96 @@
+	.title	M9312 'XM' BOOT prom for DECNET on a DMC11 controller
+
+	; This source code is an exact copy of the DEC M9312 23-862A9 boot PROM.
+	;
+	; This boot PROM is for booting DECNET on a DMC11 sync line interface.
+	; 
+	; This is ROM #3 of a three ROM set.
+	;
+	; Multiple units and/or CSR addresses are supported via different entry points.
+	;
+	; Standard devices are 82S131, Am27S13, 74S571 or other compatible bipolar
+	; PROMs with a 512x4 TriState 16pin DIP architecture. This code resides in
+	; the low half of the device; the top half is blank and unused.
+	;
+	; Alternatively, 82S129 compatible 256x4 TriState 16pin DIP devices can be
+	; used, as the uppermost address line (hardwired low) is an active low chip
+	; select (and will be correctly asserted low).
+
+	.asect
+	.=173000
+	
+	; --------------------------------------------------
+	
+start:	.word	<-2>			; signal this is a continuation ROM
+
+	; --------------------------------------------------
+	
+rom3:	bpl	dmctst			; no, wait
+	mov	pc,r3			; set return address
+	br	dmcout			; check DMC request
+	br	dmctst			; wait until DMC is ready
+
+	; DMC load input routine
+	
+rdyiok:	mov	(r2)+,4(r1)		; to first half DMC port
+	mov	(r2)+,6(r1)		; to second half DMC port
+	br	2$			; skip over vector
+	
+	; --------------------------------------------------
+
+	.word	173000			; prom start addess @ 24
+	.word	340			; and priority level @ 26
+
+	; --------------------------------------------------
+
+2$:	bic	#40,(r1)		; clear RQI, give to DMC
+1$:	tstb	(r1)			; test rdyi clear
+	bmi	1$			; not yet
+	jmp	(r2)			; return
+
+	; --------------------------------------------------
+
+	;  DMC output routine
+
+dmcout:	bitb	#3,2(r1)		; BA/CC or CTL request?
+	bne	1$			; CTL request
+	bitb	#4,2(r1)		; XMIT or RCV?
+	beq	2$			; XMIT complete
+	clr	r5			; RCV complete set non pending flag
+	tst	(r5)			; check for code 0, load 0, at loc 0
+	bne	2$			; rcvd message no good
+	mov	(sp)+,r0		; return unit # to R0
+	reset				; clear DMC
+	jmp	@#6			; and jump to loaded program
+	
+1$:	bit	#1730,6(r1)		; fatal error?
+	bne	hnglop			; yes, start again after time delay
+2$:	clrb	2(r1)			; clear rdyo, throw away info
+	jmp	2(r3)			; return
+
+	; --------------------------------------------------
+
+	;  floating device modulo table
+	
+devtab:	.byte	7			; DJ11 device modulus
+	.byte	17			; DH11
+	.byte	7			; DQ11
+	.byte	7			; DU11
+	.byte	7			; DUP11
+	.byte	7			; LK11-A
+	.byte	7			; DMC11
+	.byte	0			; filler
+
+	; --------------------------------------------------
+	
+	.=start+176
+crc16:	.word	<060100>		; CRC-16 will go here
+
+	; --------------------------------------------------
+
+	; link to locations in ROMs 1 and 2
+
+dmctst	=.-214
+hnglop	=.-240
+
+	.end

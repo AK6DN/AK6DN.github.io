@@ -1,0 +1,2203 @@
+       1                                .title  RX211 write/read sector buffer
+       2                                
+       3                                ; (C) 2016 Donald North. All rights reserved.
+       4                                
+       5                                .include "mac/stddef.mac"
+       1                                ;================================================================================
+       2                                ; stddef.mac - standard definitions
+       3                                ; (C) 2009 Donald North. All rights reserved.
+       4                                ;================================================================================
+       5                                .macro	align	arg1
+      16                                ;================================================================================
+      17                                .macro	savreg	arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8
+      28                                ;================================================================================
+      29                                .macro	resreg	arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8
+      40                                ;================================================================================
+      41                                .macro	call	proc
+      44                                .macro	return
+      47                                .macro	calls	proc arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 arg11 arg12 arg13 arg14 arg15 arg16
+      67                                ;================================================================================
+      68                                .macro	jeq	label ?a1
+      73                                .macro	jne	label ?a1
+      78                                .macro	jpl	label ?a1
+      83                                .macro	jmi	label ?a1
+      88                                .macro	jlo	label ?a1
+      93                                .macro	jhis	label ?a1
+      98                                .macro	jlos	label ?a1
+     103                                .macro	jhi	label ?a1
+     108                                .macro	jlt	label ?a1
+     113                                .macro	jge	label ?a1
+     118                                .macro	jle	label ?a1
+     123                                .macro	jgt	label ?a1
+     128                                .macro	jcc	label ?a1
+     133                                .macro	jcs	label ?a1
+     138                                .macro	jvc	label ?a1
+     143                                .macro	jvs	label ?a1
+     148                                ;================================================================================
+     149                                .macro	printf	arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 arg11 arg12 arg13 arg14 arg15 arg16
+     152                                .macro	sprintf	arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 arg11 arg12 arg13 arg14 arg15 arg16
+     155                                ;================================================================================
+     156                                .macro	ipl	lvl
+     161                                ;================================================================================
+     162                                .macro	trapcatcher	list ?a1 ?a2 ?a3 ?a4
+     176                                ;================================================================================
+     177        000001                  tst$no	= 1
+     178                                .macro	test	title
+     198                                ;================================================================================
+     199                                ; end of stddef.mac
+     200                                ;================================================================================
+     200                                
+       6                                
+       7                                ; --------------------------------------------------------------------------------
+       8                                
+       9                                .sbttl  general definitions
+      10                                
+      11                                .include "mac/bits.mac"
+       1                                ;================================================================================
+       2                                ; bits.mac - standard bit definitions
+       3                                ;================================================================================
+       4                                
+       5                                ;  system global fixed addresses
+       6                                
+       7        177776                  psw	==177776		; processor status word
+       8                                
+       9        165144                  console	==165144		; console routine start
+      10                                
+      11        177570                  swireg	==177570		; console switch register
+      12        177570                  dpyreg	==swireg		; console display register
+      13                                
+      14        177560                  ttrcsr	==177560		; console serial device
+      15        177562                  ttrbuf	==ttrcsr+2		;
+      16        177564                  ttxcsr	==ttrcsr+4		;
+      17        177566                  ttxbuf	==ttrcsr+6		;
+      18                                
+      19                                ; common values
+      20                                
+      21        000015                  cr	=015			; ascii CR
+      22        000012                  lf	=012			; ascii LF
+      23                                
+      24        000001                  bit00	=000001			; bit positions
+      25        000002                  bit01	=000002			;
+      26        000004                  bit02	=000004			;
+      27        000010                  bit03	=000010			;
+      28        000020                  bit04	=000020			;
+      29        000040                  bit05	=000040			;
+      30        000100                  bit06	=000100			;
+      31        000200                  bit07	=000200			;
+      32        000400                  bit08	=000400			;
+      33        001000                  bit09	=001000			;
+      34        002000                  bit10	=002000			;
+      35        004000                  bit11	=004000			;
+      36        010000                  bit12	=010000			;
+      37        020000                  bit13	=020000			;
+      38        040000                  bit14	=040000			;
+      39        100000                  bit15	=100000			;
+      40                                	
+      41        000001                  bit0	=bit00			; also
+      42        000002                  bit1	=bit01			;
+      43        000004                  bit2	=bit02			;
+      44        000010                  bit3	=bit03			;
+      45        000020                  bit4	=bit04			;
+      46        000040                  bit5	=bit05			;
+      47        000100                  bit6	=bit06			;
+      48        000200                  bit7	=bit07			;
+      49        000400                  bit8	=bit08			;
+      50        001000                  bit9	=bit09			;
+      51                                
+      52                                ;================================================================================
+      53                                ; end of bits.mac
+      54                                ;================================================================================
+      54                                
+      12                                
+      13                                ; --------------------------------------------------------------------------------
+      14                                
+      15                                .sbttl  RX211 device registers
+      16                                
+      17                                .include "rx/define.mac"
+       1                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+       2                                
+       3                                ; RX11/RX211 device registers
+       4                                
+       5                                ; register declarations
+       6                                
+       7        177170                  rx$cs	= 177170
+       8        177172                  rx$db	= rx$cs+2
+       9                                
+      10                                ; command/status register
+      11                                
+      12        100000                  rc_error = bit15
+      13        040000                  rc_init  = bit14
+      14        020000                  rc_a17   = bit13	; RX211 only
+      15        010000                  rc_a16   = bit12	; RX211 only
+      16        004000                  rc_rx02  = bit11	; RX211 only
+      17        002000                  rc_nu10	 = bit10
+      18        001000                  rc_head	 = bit09	; RX211 only
+      19        000400                  rc_den   = bit08	; RX211 only
+      20        000200                  rc_treq  = bit07
+      21        000100                  rc_ien   = bit06
+      22        000040                  rc_done  = bit05
+      23        000020                  rc_unit  = bit04
+      24        000000                  rc_fill  = 0*bit01
+      25        000002                  rc_empt  = 1*bit01
+      26        000004                  rc_wr    = 2*bit01
+      27        000006                  rc_rd    = 3*bit01
+      28        000010                  rc_sde   = 4*bit01	; RX211 only
+      29        000012                  rc_rds   = 5*bit01
+      30        000014                  rc_wrd   = 6*bit01
+      31        000016                  rc_rde   = 7*bit01
+      32        000016                  rc_cmd	 = 7*bit01
+      33        000001                  rc_go    = bit00
+      34                                
+      35        072017                  rc_wocs	 = bit14 + bit13 + bit12 + bit10 + bit03 + bit02 + bit01 + bit00 ; cs undef bits
+      36                                
+      37        177400                  rc_wodb	 = bit15 + bit14 + bit13 + bit12 + bit11 + bit10 + bit09 + bit08 ; db undef bits
+      38                                
+      39        170000                  rc_woes	 = bit15 + bit14 + bit13 + bit12				 ; es undef bits
+      40                                
+      41        100240                  rc_any	 = rc_error+rc_treq+rc_done ; error/status bits
+      42                                
+      43                                ; error/status register
+      44                                
+      45        004000                  re_nxm  = bit11		; RX211 only
+      46        002000                  re_wco  = bit10		; RX211 only
+      47        001000                  re_nu9	= bit09
+      48        000400                  re_unit = bit08
+      49        000200                  re_drdy = bit07
+      50        000100                  re_ddat = bit06
+      51        000040                  re_dden = bit05
+      52        000020                  re_derr = bit04
+      53        000010                  re_aclo = bit03		; RX211 only
+      54        000004                  re_done = bit02
+      55        000002                  re_perr	= bit01
+      56        000001                  re_cerr = bit00
+      57                                
+      58                                ; device characteristics
+      59                                
+      60        000000                  rx_tal   =   0.  ; min track address
+      61        000114                  rx_tah   =  76.  ; max track address
+      62        000001                  rx_sal   =   1.  ; min sector address
+      63        000032                  rx_sah   =  26.  ; max sector address
+      64        000200                  rx_wps   = 128.  ; words per sector (RX02; RX01 mode is half this)
+      65        000400                  rx_bps   = 256.  ; bytes per sector (RX02; RX01 mode is half this)
+      66                                	
+      67                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      67                                
+      18                                
+      19                                ; --------------------------------------------------------------------------------
+      20                                	
+      21                                .sbttl	low memory
+      22                                
+      23                                   	.enabl	ama			; change all mode 67 references to 37
+      24                                
+      25 000000                           	.asect				; absolute load image;	
+      26                                
+      27        000046                  	.=46
+      28 000046 006206                  	.word	$endad			; address of JSR PC,(R0)
+      29        000052                  	.=52
+      30 000052 000000                  	.word	0			; run options
+      31                                
+      32        000200                  	.=200
+      33 000200 000137  004000          	jmp	@#start			; standard diagnostic entry
+      34                                
+      35                                ; --------------------------------------------------------------------------------
+      36                                
+      37                                .sbttl	global variables
+      38                                
+      39 000204                         	align	10.
+      40                                
+      41 002000 177777                  stack:	.word	-1			; top of stack
+      42 002002 000000                  $sav42:	.word	0			; XXDP restart address
+      43 002004 000000                  loops:	.word	0			; loop count
+      44 002006 000000                  unit:	.word	0			; 0 or 1, unit ID
+      45 002010 000001                  densty:	.word	1			; 0 (single) or 1 (double) density
+      46 002012 000000                  base:	.word	0			; density and unit
+      47 002014 000200                  count:	.word	rx_wps			; word count
+      48 002016 003000                  bufptr:	.word	buffer			; a(buffer)
+      49 002020 002400                  patptr:	.word	pattrn			; a(pattern)
+      50 002022 003400                  errptr:	.word	errbuf			; a(errbuf)
+      51                                	
+      52 002024                         	align	8.
+      53                                
+      54        002400                  pattrn:	.blkw	rx_wps			; pattern buffer
+      55        003000                  buffer:	.blkw	rx_wps			; sector buffer
+      56        003400                  errbuf:	.blkw	4			; error buffer
+      57                                
+      58                                ; --------------------------------------------------------------------------------
+      59                                	
+      60                                .sbttl	main program
+      61                                	
+      62 003410                         	align	11.
+      63                                
+      64 004000 012706  002000          start:	mov	#stack,sp		; setup stack
+      65 004004 000005                  	reset				; reset the world
+      66 004006 013737  000042  002002  	mov	@#42,$sav42		; save XXDP restart
+      67                                
+      68 004014                         	trapcatcher <2,200,206,400>	; setup a trapcatcher in low vector space
+       1 004014 012700  004044          	mov	#32770$,r0    		; ptr to table
+       2 004020 012001                  32768$:	mov	(r0)+,r1		; start addr
+       3 004022 100415                  	bmi	32771$			; done?
+       4 004024 012002                  	mov	(r0)+,r2		; end addr
+       5 004026 010161  177776          32769$:	mov	r1,-2(r1)		; point vector at next word
+       6 004032 005011                  	clr	(r1)			; <0> which is a halt
+       7 004034 022121                  	cmp	(r1)+,(r1)+		; add four to ptr
+       8 004036 020102                  	cmp	r1,r2			; reached end?
+       9 004040 003772                  	ble	32769$			; not yet
+      10 004042 000766                  	br	32768$			; more
+      11 004044 000002  000200  000206  32770$:	.word	2,200,206,400, -1
+         004052 000400  177777          
+      12 004056 000240                  32771$:	nop				; placeholder
+      69                                
+      70 004060                         	printf	#msg1			; say hello
+       1 004060                         	calls	printf #msg1               
+       9 004060 012746  006102          	mov	#msg1,-(sp)
+       2 004064                         	call	printf
+       1 004064 004737  010064          	jsr	pc,printf
+       3 004070 062706  000002          	add	#2,sp
+      71                                
+      72                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      73                                	
+      74                                	; loop begin
+      75                                
+      76 004074 005237  002004          loop:	inc	loops			; bump loop counter
+      77 004100                         	printf	#402$,loops		; status
+       1 004100                         	calls	printf #402$ loops              
+       9 004100 013746  002004          	mov	loops,-(sp)
+      15 004104 012746  006062          	mov	#402$,-(sp)
+       2 004110                         	call	printf
+       1 004110 004737  010064          	jsr	pc,printf
+       3 004114 062706  000004          	add	#4,sp
+      78                                	
+      79                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      80                                
+      81                                	; check init sequence
+      82                                
+      83 004120                         	printf	#204$			; message
+       1 004120                         	calls	printf #204$               
+       9 004120 012746  005470          	mov	#204$,-(sp)
+       2 004124                         	call	printf
+       1 004124 004737  010064          	jsr	pc,printf
+       3 004130 062706  000002          	add	#2,sp
+      84                                
+      85 004134 012705  005675          	mov	#300$,r5		; message
+      86 004140                         	call	ckcses			; check ok
+       1 004140 004737  006324          	jsr	pc,ckcses
+      87                                
+      88 004144                         	call	delay			; wait
+       1 004144 004737  006244          	jsr	pc,delay
+      89                                
+      90 004150 000005                  	reset				; reset the world
+      91                                
+      92 004152                         	call	delay			; wait
+       1 004152 004737  006244          	jsr	pc,delay
+      93                                
+      94 004156 012705  005734          	mov	#301$,r5		; message
+      95 004162                         	call	ckinit			; check ok
+       1 004162 004737  006264          	jsr	pc,ckinit
+      96                                
+      97 004166                         	call	delay			; wait
+       1 004166 004737  006244          	jsr	pc,delay
+      98                                
+      99 004172 052777  040000  003272  	bis	#rc_init,@rxcs		; set INIT
+     100                                
+     101 004200                         	call	delay			; wait
+       1 004200 004737  006244          	jsr	pc,delay
+     102                                
+     103 004204 012705  005773          	mov	#302$,r5		; message
+     104 004210                         	call	ckinit			; check ok
+       1 004210 004737  006264          	jsr	pc,ckinit
+     105                                
+     106                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     107                                
+     108                                	; setup unit and density bits in cs
+     109                                
+     110 004214 013701  002006          	mov	unit,r1			; unit number (0,1)
+     111 004220 005401                  	neg	r1			; make (000000,177777)
+     112 004222 042701  177757          	bic	#^c<rc_unit>,r1		; mask
+     113 004226 010137  002012          	mov	r1,base			; store
+     114                                
+     115 004232 013701  002010          	mov	densty,r1		; data density (0,1)
+     116 004236 005401                  	neg	r1			; make (000000,177777)
+     117 004240 042701  177377          	bic	#^c<rc_den>,r1		; mask
+     118 004244 050137  002012          	bis	r1,base			; merge
+     119                                
+     120                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     121                                
+     122                                	;  check buffer fill/empty
+     123                                
+     124 004250                         	printf	#205$			; message
+       1 004250                         	calls	printf #205$               
+       9 004250 012746  005527          	mov	#205$,-(sp)
+       2 004254                         	call	printf
+       1 004254 004737  010064          	jsr	pc,printf
+       3 004260 062706  000002          	add	#2,sp
+     125                                
+     126                                	; set pattern buffer
+     127                                
+     128 004264 013700  002014          	mov	count,r0		; word count
+     129 004270 013701  002020          	mov	patptr,r1		; buffer address
+     130 004274 013702  002004          	mov	loops,r2		; seed value
+     131 004300 005402                  	neg	r2			; randomize
+     132 004302                         	call	filran			; fill with random data
+       1 004302 004737  007434          	jsr	pc,filran
+     133                                
+     134                                	; fill sector buffer
+     135                                
+     136 004306 013700  002014          	mov	count,r0		; word count
+     137 004312 013701  002020          	mov	patptr,r1		; pattern address
+     138 004316 013702  002012          	mov	base,r2			; density and unit
+     139 004322                         	call	rxfill			; fill sector buffer
+       1 004322 004737  007574          	jsr	pc,rxfill
+     140                                	
+     141 004326 012705  005110          	mov	#100$,r5		; message
+     142 004332                         	call	ckcses			; check ok
+       1 004332 004737  006324          	jsr	pc,ckcses
+     143                                
+     144                                	; zap received buffer
+     145                                
+     146 004336 013700  002014          	mov	count,r0		; word count
+     147 004342 013701  002016          	mov	bufptr,r1		; buffer address
+     148 004346 012702  123456          	mov	#123456,r2		; data
+     149 004352                         	call	filbuf			; fill with constant data
+       1 004352 004737  007420          	jsr	pc,filbuf
+     150                                
+     151                                	; empty sector buffer
+     152                                
+     153 004356 013700  002014          	mov	count,r0		; word count
+     154 004362 013701  002016          	mov	bufptr,r1		; buffer address
+     155 004366 013702  002012          	mov	base,r2			; density and unit
+     156 004372                         	call	rxempt			; empty sector buffer
+       1 004372 004737  007602          	jsr	pc,rxempt
+     157                                	
+     158 004376 012705  005147          	mov	#101$,r5		; message
+     159 004402                         	call	ckcses			; check ok
+       1 004402 004737  006324          	jsr	pc,ckcses
+     160                                
+     161                                	; compare buffer expected/received
+     162                                
+     163 004406                         	printf	#201$			; status
+       1 004406                         	calls	printf #201$               
+       9 004406 012746  005316          	mov	#201$,-(sp)
+       2 004412                         	call	printf
+       1 004412 004737  010064          	jsr	pc,printf
+       3 004416 062706  000002          	add	#2,sp
+     164 004422 013700  002014          	mov	count,r0		; word count
+     165 004426 013701  002016          	mov	bufptr,r1		; buffer pointer
+     166 004432 013702  002020          	mov	patptr,r2		; pattern pointer
+     167 004436 005005                  	clr	r5			; counter
+     168 004440 012103                  40$:	mov	(r1)+,r3		; get rcv
+     169 004442 012204                  	mov	(r2)+,r4		; get exp
+     170 004444 020304                  	cmp	r3,r4			; compare
+     171 004446 001411                  	beq	41$			; br if match
+     172 004450                         	printf	#200$,r5,r4,r3		; print result on error
+       1 004450                         	calls	printf #200$ r5 r4 r3            
+       9 004450 010346                  	mov	r3,-(sp)
+      15 004452 010446                  	mov	r4,-(sp)
+      21 004454 010546                  	mov	r5,-(sp)
+      27 004456 012746  005245          	mov	#200$,-(sp)
+       2 004462                         	call	printf
+       1 004462 004737  010064          	jsr	pc,printf
+       3 004466 062706  000010          	add	#10,sp
+     173 004472 005205                  41$:	inc	r5			; count
+     174 004474 005300                  	dec	r0			; decr word cound
+     175 004476 001360                  	bne	40$			; loop if more
+     176                                
+     177                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     178                                
+     179                                	;  check short buffer zero fill modes
+     180                                
+     181 004500                         	printf	#203$			; message
+       1 004500                         	calls	printf #203$               
+       9 004500 012746  005416          	mov	#203$,-(sp)
+       2 004504                         	call	printf
+       1 004504 004737  010064          	jsr	pc,printf
+       3 004510 062706  000002          	add	#2,sp
+     182                                
+     183 004514 012700  000000          	mov	#0.,r0			; entire buffer
+     184 004520                         	call	ckwcfb			; 
+       1 004520 004737  006364          	jsr	pc,ckwcfb
+     185                                
+     186 004524 012700  000001          	mov	#1.,r0			; one word short
+     187 004530                         	call	ckwcfb			; 
+       1 004530 004737  006364          	jsr	pc,ckwcfb
+     188                                
+     189 004534 012700  000002          	mov	#2.,r0			; two words short
+     190 004540                         	call	ckwcfb			; 
+       1 004540 004737  006364          	jsr	pc,ckwcfb
+     191                                
+     192 004544 012700  000003          	mov	#3.,r0			; three words short
+     193 004550                         	call	ckwcfb			; 
+       1 004550 004737  006364          	jsr	pc,ckwcfb
+     194                                
+     195 004554 012700  000175          	mov	#125.,r0		; only three words
+     196 004560                         	call	ckwcfb			; 
+       1 004560 004737  006364          	jsr	pc,ckwcfb
+     197                                
+     198 004564 012700  000176          	mov	#126.,r0		; only two words
+     199 004570                         	call	ckwcfb			; 
+       1 004570 004737  006364          	jsr	pc,ckwcfb
+     200                                
+     201 004574 012700  000177          	mov	#127.,r0		; only one word
+     202 004600                         	call	ckwcfb			; 
+       1 004600 004737  006364          	jsr	pc,ckwcfb
+     203                                
+     204                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     205                                
+     206                                	;  check short buffer empty modes
+     207                                
+     208 004604                         	printf	#207$			; message
+       1 004604                         	calls	printf #207$               
+       9 004604 012746  005622          	mov	#207$,-(sp)
+       2 004610                         	call	printf
+       1 004610 004737  010064          	jsr	pc,printf
+       3 004614 062706  000002          	add	#2,sp
+     209                                
+     210 004620 012700  000000          	mov	#0.,r0			; entire buffer
+     211 004624                         	call	ckwceb			; 
+       1 004624 004737  007022          	jsr	pc,ckwceb
+     212                                
+     213 004630 012700  000001          	mov	#1.,r0			; one word short
+     214 004634                         	call	ckwceb			; 
+       1 004634 004737  007022          	jsr	pc,ckwceb
+     215                                
+     216 004640 012700  000002          	mov	#2.,r0			; two words short
+     217 004644                         	call	ckwceb			; 
+       1 004644 004737  007022          	jsr	pc,ckwceb
+     218                                
+     219 004650 012700  000003          	mov	#3.,r0			; three words short
+     220 004654                         	call	ckwceb			; 
+       1 004654 004737  007022          	jsr	pc,ckwceb
+     221                                
+     222 004660 012700  000175          	mov	#125.,r0		; only three words
+     223 004664                         	call	ckwceb			; 
+       1 004664 004737  007022          	jsr	pc,ckwceb
+     224                                
+     225 004670 012700  000176          	mov	#126.,r0		; only two words
+     226 004674                         	call	ckwceb			; 
+       1 004674 004737  007022          	jsr	pc,ckwceb
+     227                                
+     228 004700 012700  000177          	mov	#127.,r0		; only one word
+     229 004704                         	call	ckwceb			; 
+       1 004704 004737  007022          	jsr	pc,ckwceb
+     230                                
+     231                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     232                                
+     233                                	; read extended status
+     234                                
+     235 004710                         	printf	#206$			; message
+       1 004710                         	calls	printf #206$               
+       9 004710 012746  005571          	mov	#206$,-(sp)
+       2 004714                         	call	printf
+       1 004714 004737  010064          	jsr	pc,printf
+       3 004720 062706  000002          	add	#2,sp
+     236                                
+     237 004724 005000                  	clr	r0			; not used
+     238 004726 013701  002022          	mov	errptr,r1		; buffer pointer
+     239 004732 013702  002012          	mov	base,r2			; density and unit
+     240 004736                           	call	rxrdes			; read extended status
+       1 004736 004737  007672          	jsr	pc,rxrdes
+     241                                	
+     242 004742 012705  005206          	mov	#102$,r5		; message
+     243 004746                         	call	ckcses			; check ok
+       1 004746 004737  006324          	jsr	pc,ckcses
+     244                                
+     245 004752 012700  000001          	mov	#1,r0			; word counter
+     246 004756 013701  002022          	mov	errptr,r1		; buffer pointer
+     247 004762 005002                  55$:	clr	r2			; lower byte
+     248 004764 152102                  	bisb	(r1)+,r2		; 
+     249 004766 005003                  	clr	r3			; upper byte
+     250 004770 152103                  	bisb	(r1)+,r3		; 
+     251 004772                         	printf	#202$,r0,r3,r3,r3,r2,r2,r2 ; print
+       1 004772                         	calls	printf #202$ r0 r3 r3 r3 r2 r2 r2        
+       9 004772 010246                  	mov	r2,-(sp)
+      15 004774 010246                  	mov	r2,-(sp)
+      21 004776 010246                  	mov	r2,-(sp)
+      27 005000 010346                  	mov	r3,-(sp)
+      33 005002 010346                  	mov	r3,-(sp)
+      39 005004 010346                  	mov	r3,-(sp)
+      45 005006 010046                  	mov	r0,-(sp)
+      51 005010 012746  005344          	mov	#202$,-(sp)
+       2 005014                         	call	printf
+       1 005014 004737  010064          	jsr	pc,printf
+       3 005020 062706  000020          	add	#20,sp
+     252 005024 005200                  	inc	r0			; count
+     253 005026 020027  000004          	cmp	r0,#4			; loop end
+     254 005032 003753                  	ble	55$			; br if more
+     255                                
+     256                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     257                                
+     258                                	; done
+     259                                
+     260 005034                         90$:	printf	#401$,loops		; count loops
+       1 005034                         	calls	printf #401$ loops              
+       9 005034 013746  002004          	mov	loops,-(sp)
+      15 005040 012746  006042          	mov	#401$,-(sp)
+       2 005044                         	call	printf
+       1 005044 004737  010064          	jsr	pc,printf
+       3 005050 062706  000004          	add	#4,sp
+     261 005054 022737  000010  002004  	cmp	#8.,loops		; reached end?
+     262 005062                         	jne	loop			; not yet
+       1 005062 001402                  	beq	32768$
+       2 005064 000137  004074          	jmp	loop
+       3                                32768$:
+     263                                
+     264 005070                         	printf	#400$			; status
+       1 005070                         	calls	printf #400$               
+       9 005070 012746  006032          	mov	#400$,-(sp)
+       2 005074                         	call	printf
+       1 005074 004737  010064          	jsr	pc,printf
+       3 005100 062706  000002          	add	#2,sp
+     265 005104 000137  006162          	jmp	done			; all done
+     266                                
+     267                                ; --------------------------------------------------------------------------------
+     268                                
+     269 005110    146     151     154  100$:	.asciz	"fill:    rxcs=%06o rxdb=%06o"<cr><lf>
+         005113    154     072     040  
+         005116    040     040     040  
+         005121    162     170     143  
+         005124    163     075     045  
+         005127    060     066     157  
+         005132    040     162     170  
+         005135    144     142     075  
+         005140    045     060     066  
+         005143    157     015     012  
+         005146    000                  
+     270 005147    145     155     160  101$:	.asciz	"empty:   rxcs=%06o rxdb=%06o"<cr><lf>
+         005152    164     171     072  
+         005155    040     040     040  
+         005160    162     170     143  
+         005163    163     075     045  
+         005166    060     066     157  
+         005171    040     162     170  
+         005174    144     142     075  
+         005177    045     060     066  
+         005202    157     015     012  
+         005205    000                  
+     271 005206    145     162     162  102$:	.asciz	"errstat: rxcs=%06o rxdb=%06o"<cr><lf>
+         005211    163     164     141  
+         005214    164     072     040  
+         005217    162     170     143  
+         005222    163     075     045  
+         005225    060     066     157  
+         005230    040     162     170  
+         005233    144     142     075  
+         005236    045     060     066  
+         005241    157     015     012  
+         005244    000                  
+     272                                
+     273 005245    155     151     163  200$:	.asciz	"mismatch: index=%-3d exp=%06o rcv=%06o"<cr><lf>
+         005250    155     141     164  
+         005253    143     150     072  
+         005256    040     151     156  
+         005261    144     145     170  
+         005264    075     045     055  
+         005267    063     144     040  
+         005272    145     170     160  
+         005275    075     045     060  
+         005300    066     157     040  
+         005303    162     143     166  
+         005306    075     045     060  
+         005311    066     157     015  
+         005314    012     000          
+     274 005316    143     157     155  201$:	.asciz	"compare buffers ..."<cr><lf>
+         005321    160     141     162  
+         005324    145     040     142  
+         005327    165     146     146  
+         005332    145     162     163  
+         005335    040     056     056  
+         005340    056     015     012  
+         005343    000                  
+     275 005344    167     157     162  202$:	.asciz	"word%d: %3d[%03o](%08b) %3d[%03o](%08b)"<cr><lf>
+         005347    144     045     144  
+         005352    072     040     045  
+         005355    063     144     133  
+         005360    045     060     063  
+         005363    157     135     050  
+         005366    045     060     070  
+         005371    142     051     040  
+         005374    045     063     144  
+         005377    133     045     060  
+         005402    063     157     135  
+         005405    050     045     060  
+         005410    070     142     051  
+         005413    015     012     000  
+     276 005416    143     150     145  203$:	.asciz	"check buffer fill short word counts ..."<cr><lf>
+         005421    143     153     040  
+         005424    142     165     146  
+         005427    146     145     162  
+         005432    040     146     151  
+         005435    154     154     040  
+         005440    163     150     157  
+         005443    162     164     040  
+         005446    167     157     162  
+         005451    144     040     143  
+         005454    157     165     156  
+         005457    164     163     040  
+         005462    056     056     056  
+         005465    015     012     000  
+     277 005470    143     150     145  204$:	.asciz	"check init RXCS and RXES ..."<cr><lf>
+         005473    143     153     040  
+         005476    151     156     151  
+         005501    164     040     122  
+         005504    130     103     123  
+         005507    040     141     156  
+         005512    144     040     122  
+         005515    130     105     123  
+         005520    040     056     056  
+         005523    056     015     012  
+         005526    000                  
+     278 005527    143     150     145  205$:	.asciz	"check buffer FILL and EMPTY ..."<cr><lf>
+         005532    143     153     040  
+         005535    142     165     146  
+         005540    146     145     162  
+         005543    040     106     111  
+         005546    114     114     040  
+         005551    141     156     144  
+         005554    040     105     115  
+         005557    120     124     131  
+         005562    040     056     056  
+         005565    056     015     012  
+         005570    000                  
+     279 005571    143     150     145  206$:	.asciz	"check error status ..."<cr><lf>
+         005574    143     153     040  
+         005577    145     162     162  
+         005602    157     162     040  
+         005605    163     164     141  
+         005610    164     165     163  
+         005613    040     056     056  
+         005616    056     015     012  
+         005621    000                  
+     280 005622    143     150     145  207$:	.asciz	"check buffer empty short word counts ..."<cr><lf>
+         005625    143     153     040  
+         005630    142     165     146  
+         005633    146     145     162  
+         005636    040     145     155  
+         005641    160     164     171  
+         005644    040     163     150  
+         005647    157     162     164  
+         005652    040     167     157  
+         005655    162     144     040  
+         005660    143     157     165  
+         005663    156     164     163  
+         005666    040     056     056  
+         005671    056     015     012  
+         005674    000                  
+     281                                
+     282 005675    160     157     167  300$:	.asciz	"powerup: rxcs=%06o rxdb=%06o"<cr><lf>
+         005700    145     162     165  
+         005703    160     072     040  
+         005706    162     170     143  
+         005711    163     075     045  
+         005714    060     066     157  
+         005717    040     162     170  
+         005722    144     142     075  
+         005725    045     060     066  
+         005730    157     015     012  
+         005733    000                  
+     283 005734    162     145     163  301$:	.asciz	"reset:   rxcs=%06o rxdb=%06o"<cr><lf>
+         005737    145     164     072  
+         005742    040     040     040  
+         005745    162     170     143  
+         005750    163     075     045  
+         005753    060     066     157  
+         005756    040     162     170  
+         005761    144     142     075  
+         005764    045     060     066  
+         005767    157     015     012  
+         005772    000                  
+     284 005773    151     156     151  302$:	.asciz	"init:    rxcs=%06o rxdb=%06o"<cr><lf>
+         005776    164     072     040  
+         006001    040     040     040  
+         006004    162     170     143  
+         006007    163     075     045  
+         006012    060     066     157  
+         006015    040     162     170  
+         006020    144     142     075  
+         006023    045     060     066  
+         006026    157     015     012  
+         006031    000                  
+     285                                	
+     286 006032    104     157     156  400$:	.asciz	"Done!"<cr><lf>
+         006035    145     041     015  
+         006040    012     000          
+     287 006042    105     156     144  401$:	.asciz	"End Loop %d"<cr><lf><cr><lf>
+         006045    040     114     157  
+         006050    157     160     040  
+         006053    045     144     015  
+         006056    012     015     012  
+         006061    000                  
+     288 006062    123     164     141  402$:	.asciz	"Start Loop %d"<cr><lf>
+         006065    162     164     040  
+         006070    114     157     157  
+         006073    160     040     045  
+         006076    144     015     012  
+         006101    000                  
+     289                                
+     290 006102    015     012     122  msg1:	.asciz	<cr><lf>"RX211 buffer write/read v1.0"<cr><lf><cr><lf>
+         006105    130     062     061  
+         006110    061     040     142  
+         006113    165     146     146  
+         006116    145     162     040  
+         006121    167     162     151  
+         006124    164     145     057  
+         006127    162     145     141  
+         006132    144     040     166  
+         006135    061     056     060  
+         006140    015     012     015  
+         006143    012     000          
+     291 006145    015     012     107  msg2:	.asciz	<cr><lf>"Goodbye"<cr><lf>
+         006150    157     157     144  
+         006153    142     171     145  
+         006156    015     012     000  
+     292 006161    000                  	.even
+     293                                
+     294                                ; --------------------------------------------------------------------------------
+     295                                
+     296 006162                         done:	printf	#msg2			; say goodbye
+       1 006162                         	calls	printf #msg2               
+       9 006162 012746  006145          	mov	#msg2,-(sp)
+       2 006166                         	call	printf
+       1 006166 004737  010064          	jsr	pc,printf
+       3 006172 062706  000002          	add	#2,sp
+     297                                
+     298 006176 013700  002002          exit:	mov	$sav42,r0		; check if loaded by XXDP
+     299 006202 001407                  	beq	noxxdp			; br if not
+     300 006204 000005                  	reset				; yes, reset the world
+     301 006206 004710                  $endad:	jsr	pc,(r0)			; return back to XXDP
+     302 006210 000240                  	nop				; standard sequence
+     303 006212 000240                  	nop				;
+     304 006214 000240                  	nop				;
+     305 006216 000137  004000          	jmp	start			; back for more
+     306                                
+     307 006222 005000                  noxxdp:	clr	r0			;
+     308 006224 005300                  10$:	dec	r0			; count
+     309 006226 001376                  	bne	10$			; loop
+     310 006230 000005                  	reset				; zap the world
+     311 006232 012746  000340          	mov	#<7>*bit5,-(sp)		; prio7 in psw
+     312 006236 012746  165144          	mov	#console,-(sp)		; go there
+     313 006242 000002                  	rti				; reload psw
+     314                                
+     315                                ; --------------------------------------------------------------------------------
+     316                                	
+     317                                .sbttl	local routines
+     318                                
+     319                                ; delay
+     320                                
+     321 006244 000240                  delay:	nop				; placeholder
+     322 006246 010046                  	mov	r0,-(sp)		; save
+     323 006250 005000                  	clr	r0			; init counter
+     324 006252 010000                  1$:	mov	r0,r0			; waste time
+     325 006254 005300                  	dec	r0			; count
+     326 006256 001375                  	bne	1$			; loop
+     327 006260 012600                  	mov	(sp)+,r0		; restore
+     328 006262                         	return				; 
+       1 006262 000207                  	rts	pc
+     329                                
+     330                                ; --------------------------------------------------------------------------------
+     331                                ;
+     332                                ; check RXCS and RXES after init/reset
+     333                                ;
+     334                                ; input:	r5	printf string
+     335                                
+     336                                ; output:	r0	RXCS value
+     337                                ;		r1	RXES value
+     338                                
+     339 006264 017700  001202          ckinit:	mov	@rxcs,r0		; get RXCS
+     340 006270 042700  072017          	bic	#rc_wocs,r0		; mask d/c bits
+     341 006274 017701  001174          	mov	@rxdb,r1		; get RXES
+     342 006300 042701  170000          	bic	#rc_woes,r1		; mask d/c bits
+     343                                
+     344 006304                         	printf	r5,r0,r1		; print rxcs and rxdb
+       1 006304                         	calls	printf r5 r0 r1             
+       9 006304 010146                  	mov	r1,-(sp)
+      15 006306 010046                  	mov	r0,-(sp)
+      21 006310 010546                  	mov	r5,-(sp)
+       2 006312                         	call	printf
+       1 006312 004737  010064          	jsr	pc,printf
+       3 006316 062706  000006          	add	#6,sp
+     345 006322                         	return				; done
+       1 006322 000207                  	rts	pc
+     346                                
+     347                                ; --------------------------------------------------------------------------------
+     348                                ;
+     349                                ; check RXCS and RXES after command complete
+     350                                ;
+     351                                ; input:	r5	printf string
+     352                                
+     353                                ; output:	r0	RXCS value
+     354                                ;		r1	RXES value
+     355                                
+     356 006324 017700  001142          ckcses:	mov	@rxcs,r0		; get RXCS
+     357 006330 042700  072017          	bic	#rc_wocs,r0		; mask d/c bits
+     358 006334 017701  001134          	mov	@rxdb,r1		; get RXES
+     359 006340 042701  170000          	bic	#rc_woes,r1		; mask d/c bits
+     360                                
+     361 006344                         	printf	r5,r0,r1		; print rxcs and rxdb
+       1 006344                         	calls	printf r5 r0 r1             
+       9 006344 010146                  	mov	r1,-(sp)
+      15 006346 010046                  	mov	r0,-(sp)
+      21 006350 010546                  	mov	r5,-(sp)
+       2 006352                         	call	printf
+       1 006352 004737  010064          	jsr	pc,printf
+       3 006356 062706  000006          	add	#6,sp
+     362 006362                         	return				; done
+       1 006362 000207                  	rts	pc
+     363                                
+     364                                ; --------------------------------------------------------------------------------
+     365                                ;
+     366                                ; fill buffer with short pattern word count, check for zero extension
+     367                                ; 
+     368                                ; input:	r0	number of fewer words to fill
+     369                                ;
+     370                                ; output:	none
+     371                                	
+     372 006364 010037  006704          ckwcfb:	mov	r0,100$			; short word count
+     373                                
+     374                                	; save registers
+     375                                
+     376 006370 010046                  	mov	r0,-(sp)		; save
+     377 006372 010146                  	mov	r1,-(sp)		;
+     378 006374 010246                  	mov	r2,-(sp)		;
+     379 006376 010346                  	mov	r3,-(sp)		;
+     380 006400 010446                  	mov	r4,-(sp)		;
+     381 006402 010546                  	mov	r5,-(sp)		;
+     382                                	
+     383                                	; set entire pattern buffer to random data
+     384                                
+     385 006404 013700  002014          	mov	count,r0		; word count
+     386 006410 013701  002020          	mov	patptr,r1		; buffer address
+     387 006414 013702  002004          	mov	loops,r2		; seed value
+     388 006420                         	call	filran			; fill with random data
+       1 006420 004737  007434          	jsr	pc,filran
+     389                                	
+     390                                	; fill full sector buffer
+     391                                
+     392 006424 013700  002014          	mov	count,r0		; word count
+     393 006430 013701  002020          	mov	patptr,r1		; pattern address
+     394 006434 013702  002012          	mov	base,r2			; density and unit
+     395 006440                         	call	rxfill			; fill sector buffer
+       1 006440 004737  007574          	jsr	pc,rxfill
+     396                                
+     397                                	; set entire pattern buffer to random data
+     398                                
+     399 006444 013700  002014          	mov	count,r0		; word count
+     400 006450 013701  002020          	mov	patptr,r1		; buffer address
+     401 006454 013702  002004          	mov	loops,r2		; seed value
+     402 006460 063702  006704          	add	100$,r2			; dither
+     403 006464                         	call	filran			; fill with random data
+       1 006464 004737  007434          	jsr	pc,filran
+     404                                	
+     405                                	; fill sector buffer, short word count
+     406                                
+     407 006470 013700  002014          	mov	count,r0		; word count
+     408 006474 163700  006704          	sub	100$,r0			; subtract offset word count
+     409 006500 013701  002020          	mov	patptr,r1		; pattern address
+     410 006504 013702  002012          	mov	base,r2			; density and unit
+     411 006510                         	call	rxfill			; fill sector buffer
+       1 006510 004737  007574          	jsr	pc,rxfill
+     412                                
+     413                                	; zap received buffer
+     414                                
+     415 006514 013700  002014          	mov	count,r0		; word count
+     416 006520 013701  002016          	mov	bufptr,r1		; buffer address
+     417 006524 012702  123456          	mov	#123456,r2		; data
+     418 006530                         	call	filbuf			; fill with constant data
+       1 006530 004737  007420          	jsr	pc,filbuf
+     419                                
+     420                                	; empty sector buffer
+     421                                
+     422 006534 013700  002014          	mov	count,r0		; word count
+     423 006540 013701  002016          	mov	bufptr,r1		; buffer address
+     424 006544 013702  002012          	mov	base,r2			; density and unit
+     425 006550                         	call	rxempt			; empty sector buffer
+       1 006550 004737  007602          	jsr	pc,rxempt
+     426                                
+     427                                	; fix pattern buffer with zeroed words
+     428                                
+     429 006554 013700  006704          	mov	100$,r0			; shorten length by this many words
+     430 006560 013701  002014          	mov	count,r1		; offset to end of buffer
+     431 006564 163701  006704          	sub	100$,r1			; offset start by this many bytes
+     432 006570 006301                  	asl	r1			; convert to bytes
+     433 006572 063701  002020          	add	patptr,r1		; pattern address
+     434 006576 005002                  	clr	r2			; zeroed data
+     435 006600                          	call	filbuf			; fill with constant data
+       1 006600 004737  007420          	jsr	pc,filbuf
+     436                                
+     437                                	; compare buffer expected/received
+     438                                
+     439 006604 013700  002014          	mov	count,r0		; word count
+     440 006610 013701  002016          	mov	bufptr,r1		; buffer pointer
+     441 006614 013702  002020          	mov	patptr,r2		; pattern pointer
+     442 006620 005005                  	clr	r5			; index counter
+     443 006622 012103                  40$:	mov	(r1)+,r3		; get rcv
+     444 006624 012204                  	mov	(r2)+,r4		; get exp
+     445 006626 020304                  	cmp	r3,r4			; compare
+     446 006630 001413                   	beq	41$			; br if match
+     447 006632                          	printf	#200$,100$,r5,r4,r3	; print result on error
+       1 006632                         	calls	printf #200$ 100$ r5 r4 r3           
+       9 006632 010346                  	mov	r3,-(sp)
+      15 006634 010446                  	mov	r4,-(sp)
+      21 006636 010546                  	mov	r5,-(sp)
+      27 006640 013746  006704          	mov	100$,-(sp)
+      33 006644 012746  006706          	mov	#200$,-(sp)
+       2 006650                         	call	printf
+       1 006650 004737  010064          	jsr	pc,printf
+       3 006654 062706  000012          	add	#12,sp
+     448 006660 005205                  41$:	inc	r5			; count
+     449 006662 005300                  	dec	r0			; decr word cound
+     450 006664 001356                  	bne	40$			; loop if more
+     451                                
+     452                                	; restore registers
+     453                                
+     454 006666 012605                  90$:	mov	(sp)+,r5		; restore
+     455 006670 012604                  	mov	(sp)+,r4		;
+     456 006672 012603                  	mov	(sp)+,r3		;
+     457 006674 012602                  	mov	(sp)+,r2		;
+     458 006676 012601                  	mov	(sp)+,r1		;
+     459 006700 012600                  	mov	(sp)+,r0		; 
+     460                                
+     461 006702                         	return				; done
+       1 006702 000207                  	rts	pc
+     462                                
+     463 006704 000000                  100$:	.word	0			; short count
+     464                                
+     465 006706    146     151     154  200$:	.asciz	"fill buffer short count mismatch: short=%-3d index=%-3d exp=%06o rcv=%06o"<cr><lf>
+         006711    154     040     142  
+         006714    165     146     146  
+         006717    145     162     040  
+         006722    163     150     157  
+         006725    162     164     040  
+         006730    143     157     165  
+         006733    156     164     040  
+         006736    155     151     163  
+         006741    155     141     164  
+         006744    143     150     072  
+         006747    040     163     150  
+         006752    157     162     164  
+         006755    075     045     055  
+         006760    063     144     040  
+         006763    151     156     144  
+         006766    145     170     075  
+         006771    045     055     063  
+         006774    144     040     145  
+         006777    170     160     075  
+         007002    045     060     066  
+         007005    157     040     162  
+         007010    143     166     075  
+         007013    045     060     066  
+         007016    157     015     012  
+         007021    000                  
+     466                                	.even
+     467                                
+     468                                ; --------------------------------------------------------------------------------
+     469                                ;
+     470                                ; empty buffer with short pattern word count, check for unchanged words
+     471                                ; 
+     472                                ; input:	r0	number of fewer words to fill
+     473                                ;
+     474                                ; output:	none
+     475                                	
+     476 007022 010037  007300          ckwceb:	mov	r0,100$			; short word count
+     477                                
+     478                                	; save registers
+     479                                
+     480 007026 010046                  	mov	r0,-(sp)		; save
+     481 007030 010146                  	mov	r1,-(sp)		;
+     482 007032 010246                  	mov	r2,-(sp)		;
+     483 007034 010346                  	mov	r3,-(sp)		;
+     484 007036 010446                  	mov	r4,-(sp)		;
+     485 007040 010546                  	mov	r5,-(sp)		;
+     486                                	
+     487                                	; set entire pattern buffer to random data
+     488                                
+     489 007042 013700  002014          	mov	count,r0		; word count
+     490 007046 013701  002020          	mov	patptr,r1		; buffer address
+     491 007052 013702  002004          	mov	loops,r2		; seed value
+     492 007056                         	call	filran			; fill with random data
+       1 007056 004737  007434          	jsr	pc,filran
+     493                                	
+     494                                	; fill full sector buffer
+     495                                
+     496 007062 013700  002014          	mov	count,r0		; word count
+     497 007066 013701  002020          	mov	patptr,r1		; pattern address
+     498 007072 013702  002012          	mov	base,r2			; density and unit
+     499 007076                         	call	rxfill			; fill sector buffer
+       1 007076 004737  007574          	jsr	pc,rxfill
+     500                                
+     501                                	; zap received buffer
+     502                                
+     503 007102 013700  002014          	mov	count,r0		; word count
+     504 007106 013701  002016          	mov	bufptr,r1		; buffer address
+     505 007112 012702  123456          	mov	#123456,r2		; data
+     506 007116                         	call	filbuf			; fill with constant data
+       1 007116 004737  007420          	jsr	pc,filbuf
+     507                                
+     508                                	; empty sector buffer, short word count
+     509                                
+     510 007122 013700  002014          	mov	count,r0		; word count
+     511 007126 163700  007300          	sub	100$,r0			; subtract offset word count
+     512 007132 013701  002016          	mov	bufptr,r1		; buffer address
+     513 007136 013702  002012          	mov	base,r2			; density and unit
+     514 007142                         	call	rxempt			; empty sector buffer
+       1 007142 004737  007602          	jsr	pc,rxempt
+     515                                
+     516                                	; fix pattern buffer with unchanged words
+     517                                
+     518 007146 013700  007300          	mov	100$,r0			; shorten length by this many words
+     519 007152 013701  002014          	mov	count,r1		; offset to end of buffer
+     520 007156 163701  007300          	sub	100$,r1			; offset start by this many bytes
+     521 007162 006301                  	asl	r1			; convert to bytes
+     522 007164 063701  002020          	add	patptr,r1		; pattern address
+     523 007170 012702  123456          	mov	#123456,r2		; unchanged data
+     524 007174                          	call	filbuf			; fill with constant data
+       1 007174 004737  007420          	jsr	pc,filbuf
+     525                                
+     526                                	; compare buffer expected/received
+     527                                
+     528 007200 013700  002014          	mov	count,r0		; word count
+     529 007204 013701  002016          	mov	bufptr,r1		; buffer pointer
+     530 007210 013702  002020          	mov	patptr,r2		; pattern pointer
+     531 007214 005005                  	clr	r5			; index counter
+     532 007216 012103                  40$:	mov	(r1)+,r3		; get rcv
+     533 007220 012204                  	mov	(r2)+,r4		; get exp
+     534 007222 020304                  	cmp	r3,r4			; compare
+     535 007224 001413                    	beq	41$			; br if match
+     536 007226                          	printf	#200$,100$,r5,r4,r3	; print result on error
+       1 007226                         	calls	printf #200$ 100$ r5 r4 r3           
+       9 007226 010346                  	mov	r3,-(sp)
+      15 007230 010446                  	mov	r4,-(sp)
+      21 007232 010546                  	mov	r5,-(sp)
+      27 007234 013746  007300          	mov	100$,-(sp)
+      33 007240 012746  007302          	mov	#200$,-(sp)
+       2 007244                         	call	printf
+       1 007244 004737  010064          	jsr	pc,printf
+       3 007250 062706  000012          	add	#12,sp
+     537 007254 005205                  41$:	inc	r5			; count
+     538 007256 005300                  	dec	r0			; decr word cound
+     539 007260 001356                  	bne	40$			; loop if more
+     540                                
+     541                                	; restore registers
+     542                                
+     543 007262 012605                  90$:	mov	(sp)+,r5		; restore
+     544 007264 012604                  	mov	(sp)+,r4		;
+     545 007266 012603                  	mov	(sp)+,r3		;
+     546 007270 012602                  	mov	(sp)+,r2		;
+     547 007272 012601                  	mov	(sp)+,r1		;
+     548 007274 012600                  	mov	(sp)+,r0		; 
+     549                                
+     550 007276                         	return				; done
+       1 007276 000207                  	rts	pc
+     551                                
+     552 007300 000000                  100$:	.word	0			; short count
+     553                                
+     554 007302    145     155     160  200$:	.asciz	"empty buffer short count mismatch: short=%-3d index=%-3d exp=%06o rcv=%06o"<cr><lf>
+         007305    164     171     040  
+         007310    142     165     146  
+         007313    146     145     162  
+         007316    040     163     150  
+         007321    157     162     164  
+         007324    040     143     157  
+         007327    165     156     164  
+         007332    040     155     151  
+         007335    163     155     141  
+         007340    164     143     150  
+         007343    072     040     163  
+         007346    150     157     162  
+         007351    164     075     045  
+         007354    055     063     144  
+         007357    040     151     156  
+         007362    144     145     170  
+         007365    075     045     055  
+         007370    063     144     040  
+         007373    145     170     160  
+         007376    075     045     060  
+         007401    066     157     040  
+         007404    162     143     166  
+         007407    075     045     060  
+         007412    066     157     015  
+         007415    012     000          
+     555 007417    000                  	.even
+     556                                
+     557                                ; --------------------------------------------------------------------------------
+     558                                ; 
+     559                                ; fill buffer with constant data
+     560                                ; 
+     561                                ; input:	r0	word count
+     562                                ;		r1	buffer address
+     563                                ;		r2	data word
+     564                                ; 
+     565                                ; output:	r0	zero
+     566                                ;		r1	buffer address end + 2
+     567                                ;		r2	data word
+     568                                
+     569 007420 005700                  filbuf:	tst	r0			; check for zero
+     570 007422 001403                  	beq	19$			; br if yes
+     571 007424 010221                  10$:	mov	r2,(r1)+		; zap buffer
+     572 007426 005300                  	dec	r0			; decr word cound
+     573 007430 001375                  	bne	10$			; loop if more
+     574 007432                         19$:	return				;
+       1 007432 000207                  	rts	pc
+     575                                
+     576                                ; --------------------------------------------------------------------------------
+     577                                ; 
+     578                                ; fill buffer with random data
+     579                                ; 
+     580                                ; input:	r0	word count
+     581                                ;		r1	buffer address
+     582                                ;		r2	random seed
+     583                                ; 
+     584                                ; output:	r0	zero
+     585                                ;		r1	buffer address end + 2
+     586                                ;		r2	random seed
+     587                                
+     588 007434 005700                  filran:	tst	r0			; check for zero
+     589 007436 001414                  	beq	19$			; br if yes
+     590 007440 010346                  	mov	r3,-(sp)		; save
+     591 007442 012703  002322          	mov	#1234.,r3		; init value
+     592 007446 060203                  	add	r2,r3			; tweak by loopcount
+     593 007450 070327  000035          10$:	mul	#29.,r3			; 29*value
+     594 007454 062703  001751          	add	#1001.,r3		; 29*value+1001
+     595 007460 010321                  	mov	r3,(r1)+		; zap buffer
+     596 007462 005300                  	dec	r0			; decr word cound
+     597 007464 001371                  	bne	10$			; loop if more
+     598 007466 012603                  	mov	(sp)+,r3		; restore
+     599 007470                         19$:	return				;
+       1 007470 000207                  	rts	pc
+     600                                
+     601                                ; --------------------------------------------------------------------------------
+     602                                	
+     603                                .sbttl	support routines
+     604                                
+     605                                .include "rx/driver.mac"
+       1                                
+       2                                ; --------------------------------------------------------------------------------
+       3                                
+       4                                ; RX211/RX02 device support routines
+       5                                
+       6 007472 177170                  rxcs:	.word	rx$cs			; a(rxcs)
+       7 007474 177172                  rxdb:	.word	rx$db			; a(rxdb)
+       8                                
+       9                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      10                                
+      11                                ; initiate a sector read/write
+      12                                ;
+      13                                ; arguments: r0	= sector address
+      14                                ;            r1	= track address
+      15                                ;	     r2	= density, unit
+      16                                ; 
+      17                                ; return:    r0 = operation status from @rxcs (set cc)
+      18                                ;            r1 = operation status from @rxdb
+      19                                ;            r2	= density, unit, command, go
+      20                                
+      21 007476 052702  000005          rxwr:	bis	#rc_wr+rc_go,r2		; write sector and go
+      22 007502 000403                  	br	rxrdwr			; do read/write sequence
+      23                                
+      24 007504 052702  000007          rxrd:	bis	#rc_rd+rc_go,r2		; read sector and go
+      25 007510 000400                  	br	rxrdwr			; do read/write sequence
+      26                                
+      27 007512 032777  000040  177752  rxrdwr:	bit	#rc_done,@rxcs		; wait for done
+      28 007520 001774                  	beq	rxrdwr			; br if not yet
+      29                                	
+      30 007522 010277  177744          	mov	r2,@rxcs		; execute command
+      31                                	
+      32 007526 032777  100200  177736  1$:	bit	#rc_treq+rc_error,@rxcs	; wait for transfer request or error
+      33 007534 001774                  	beq	1$			; br if not yet
+      34 007536 100411                  	bmi	8$			; br if error
+      35                                	
+      36 007540 010077  177730          	mov	r0,@rxdb		; sector address
+      37                                	
+      38 007544 032777  100200  177720  2$:	bit	#rc_treq+rc_error,@rxcs	; wait for transfer request or error
+      39 007552 001774                  	beq	2$			; br if not yet
+      40 007554 100402                  	bmi	8$			; br if error
+      41                                	
+      42 007556 010177  177712          	mov	r1,@rxdb		; track address
+      43                                	
+      44 007562 032777  100040  177702  8$:	bit	#rc_done+rc_error,@rxcs	; wait for done or error
+      45 007570 001774                  	beq	8$			; br if not yet
+      46                                	
+      47 007572 000523                  9$:	br	rxret			; cleanup
+      48                                
+      49                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      50                                
+      51                                ; initiate a buffer fill/empty
+      52                                ;
+      53                                ; arguments: r0	= word count
+      54                                ;            r1	= buffer address
+      55                                ;	     r2	= density, unit
+      56                                ; 
+      57                                ; return:    r0 = operation status from @rxcs (set cc)
+      58                                ;            r1 = operation status from @rxdb
+      59                                ;            r2	= density, unit, command, go
+      60                                	
+      61 007574 052702  000001          rxfill:	bis	#rc_fill+rc_go,r2	; fill buffer and go
+      62 007600 000403                  	br	rxflem			; do fill/empty sequence
+      63                                
+      64 007602 052702  000003          rxempt:	bis	#rc_empt+rc_go,r2	; empty buffer and go
+      65 007606 000400                  	br	rxflem			; do fill/empty sequence
+      66                                
+      67 007610 032777  000040  177654  rxflem:	bit	#rc_done,@rxcs		; wait for done
+      68 007616 001774                  	beq	rxflem			; br if not yet
+      69                                	
+      70 007620 010277  177646          	mov	r2,@rxcs		; execute command
+      71                                	
+      72 007624 032777  100200  177640  1$:	bit	#rc_treq+rc_error,@rxcs	; wait for transfer request or error
+      73 007632 001774                  	beq	1$			; br if not yet
+      74 007634 100411                  	bmi	8$			; br if error
+      75                                
+      76 007636 010077  177632          	mov	r0,@rxdb		; word count
+      77                                
+      78 007642 032777  100200  177622  2$:	bit	#rc_treq+rc_error,@rxcs	; wait for transfer request or error
+      79 007650 001774                  	beq	2$			; br if not yet
+      80 007652 100402                  	bmi	8$			; br if error
+      81                                	
+      82 007654 010177  177614          	mov	r1,@rxdb		; buffer address
+      83                                	
+      84 007660 032777  100040  177604  8$:	bit	#rc_done+rc_error,@rxcs	; wait for done or error
+      85 007666 001774                  	beq	8$			; br if not yet
+      86                                	
+      87 007670 000464                  9$:	br	rxret			; cleanup
+      88                                
+      89                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      90                                
+      91                                ; read extended error status
+      92                                ;
+      93                                ; arguments: r0	= n/a
+      94                                ;            r1	= buffer address
+      95                                ;	     r2	= density, unit
+      96                                ; 
+      97                                ; return:    r0 = operation status from @rxcs (set cc)
+      98                                ;            r1 = operation status from @rxdb
+      99                                ;            r2	= density, unit, command, go
+     100                                	
+     101 007672 052702  000017          rxrdes:	bis	#rc_rde+rc_go,r2	; read error status and go
+     102                                
+     103 007676 032777  000040  177566  1$:	bit	#rc_done,@rxcs		; wait for done
+     104 007704 001774                  	beq	1$			; br if not yet
+     105                                	
+     106 007706 010277  177560          	mov	r2,@rxcs		; execute command
+     107                                	
+     108 007712 032777  100200  177552  2$:	bit	#rc_treq+rc_error,@rxcs	; wait for transfer request or error
+     109 007720 001774                  	beq	2$			; br if not yet
+     110 007722 100402                  	bmi	8$			; br if error
+     111                                
+     112 007724 010177  177544           	mov	r1,@rxdb		; buffer address
+     113                                	
+     114 007730 032777  100040  177534  8$:	bit	#rc_done+rc_error,@rxcs	; wait for done or error
+     115 007736 001774                  	beq	8$			; br if not yet
+     116                                	
+     117 007740 000440                  9$:	br	rxret			; cleanup
+     118                                
+     119                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     120                                
+     121                                ; set media density
+     122                                ;
+     123                                ; arguments: r0	= n/a
+     124                                ;            r1	= <'I> unlock code
+     125                                ;	     r2	= density, unit
+     126                                ; 
+     127                                ; return:    r0 = operation status from @rxcs (set cc)
+     128                                ;            r1 = operation status from @rxdb
+     129                                ;            r2	= density, unit, command, go
+     130                                
+     131 007742 052702  000011          rxsden:	bis	#rc_sde+rc_go,r2	; set media density and go
+     132                                	
+     133 007746 032777  000040  177516  1$:	bit	#rc_done,@rxcs		; wait for done
+     134 007754 001774                  	beq	1$			; br if not yet
+     135                                
+     136 007756 010277  177510          	mov	r2,@rxcs		; execute command
+     137                                	
+     138 007762 032777  100200  177502  2$:	bit	#rc_treq+rc_error,@rxcs	; wait for transfer request or error
+     139 007770 001774                  	beq	2$			; br if not yet
+     140 007772 100402                  	bmi	8$			; br if error
+     141                                	
+     142 007774 010177  177474          	mov	r1,@rxdb		; unlock code
+     143                                	
+     144 010000 032777  100040  177464  8$:	bit	#rc_done+rc_error,@rxcs	; wait for done or error
+     145 010006 001774                  	beq	8$			; br if not yet
+     146                                	
+     147 010010 000414                  9$:	br	rxret			; cleanup
+     148                                
+     149                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+     150                                
+     151                                ; read status
+     152                                ;
+     153                                ; arguments: r0	= n/a
+     154                                ;            r1	= n/a
+     155                                ;	     r2	= density, unit
+     156                                ; 
+     157                                ; return:    r0 = operation status from @rxcs (set cc)
+     158                                ;            r1 = operation status from @rxdb
+     159                                ;            r2	= density, unit, command, go
+     160                                	
+     161 010012 052702  000013          rxstat:	bis	#rc_rds+rc_go,r2	; read status and go
+     162                                
+     163 010016 032777  000040  177446  1$:	bit	#rc_done,@rxcs		; wait for done
+     164 010024 001774                  	beq	1$			; br if not yet
+     165                                
+     166 010026 010277  177440          	mov	r2,@rxcs		; execute command
+     167                                	
+     168 010032 032777  100040  177432  2$:	bit	#rc_done+rc_error,@rxcs	; wait for done or error
+     169 010040 001774                  	beq	2$			; br if not yet
+     170                                	
+     171 010042 017701  177426          rxret:	mov	@rxdb,r1		; get RXES
+     172 010046 042701  170000          	bic	#rc_woes,r1		; mask d/c bits
+     173 010052 017700  177414          	mov	@rxcs,r0		; get RXCS
+     174 010056 042700  072017          	bic	#rc_wocs,r0		; mask d/c bits
+     175 010062                         	return				; return
+       1 010062 000207                  	rts	pc
+     176                                
+     177                                ; --------------------------------------------------------------------------------
+     178                                
+     178                                
+     606                                
+     607                                .include "mac/printf.mac"
+       1                                ;================================================================================
+       2                                ; printf.mac - printf routines for macro11 diagnostics
+       3                                ; (C) 2009-2016 Donald North. All rights reserved.
+       4                                ;================================================================================
+       5                                
+       6                                .if ndf ttxcsr
+       7                                	
+       8                                	; separate psect (if console registers not defined)
+       9                                	.psect	printf
+      10                                
+      11                                	; external tty references
+      12                                	.globl	ttxcsr, ttxbuf
+      13                                
+      14                                	; standard macro definitions
+      15                                 	.include "mac/stddef.mac"
+      16                                
+      17                                pf.sep	=1 ; flag separate compilation
+      18                                
+      19                                .iff
+      20                                
+      21        000000                  pf.sep	=0 ; flag unified compilation (via include)
+      22                                	
+      23                                .endc
+      24                                ; 
+      25                                ; global registers:
+      26                                ;
+      27                                ;  R5 - frame pointer
+      28                                ;  R4 - argument pointer
+      29                                ;  R3 - format string pointer
+      30                                ;  R2 - current format character
+      31                                ;  R1 - temp
+      32                                ;  R0 - temp
+      33                                ;
+      34                                ; note:	for 11/04-05-10 compatibility, do NOT use SXT/XOR/SOB and MUL/DIV/ASH/ASHC
+      35                                ; 
+      36                                ; offsets from frame pointer (r5):
+      37                                ; 
+      38        000012                  p.sr0	=+10.	; saved r0
+      39        000010                  p.sr1	=+8.	; saved r1
+      40        000006                  p.sr2	=+6.	; saved r2
+      41        000004                  p.sr3	=+4.	; saved r3
+      42        000002                  p.sr4	=+2.	; saved r4
+      43        000000                  p.sr5	=+0.	; saved r5
+      44        177777                  p.flg	=-1.	; format flags (byte)
+      45        177776                  p.fil	=-2.	; fill character (byte)
+      46        177774                  p.wid	=-4.	; format numeric width (word)
+      47        177772                  p.pre	=-6.	; format numeric precision (word)
+      48        177770                  p.len	=-8.	; number of digits generated (word)
+      49        177766                  p.out	=-10.	; addr(char print routine)
+      50        177764                  p.ptr	=-12.	; sprintf output buffer pointer
+      51                                ; 
+      52        000014                  n.last	=+12.	; number of bytes allocated on stack
+      53        000016                  n.args	=+14.	; offset to first argument on stack
+      54                                ; 
+      55                                ; bits in p.flg byte:
+      56                                ; 
+      57        000001                  pf.ljus	=1	; set for left justified ('-' seen)
+      58        000002                  pf.sign	=2	; set for sign requested ('+' seen)
+      59        000004                  pf.altf	=4	; set for alt flag ('#' seen)
+      60        000010                  pf.long	=10	; set for long value (%...l. seen)
+      61        000020                  pf.nega	=20	; set for negative value (msb set)
+      62                                
+      63                                ; --------------------------------------------------------------------------------
+      64                                ;
+      65                                ; printf routine .. 'C' printf(format,arg1,arg2,..,argn) ..  called in 'C' style
+      66                                ;
+      67                                ;	call:	mov	argN,-(sp)
+      68                                ;		...
+      69                                ;		mov	arg2,-(sp)
+      70                                ;		mov	arg1,-(sp)
+      71                                ;		mov	format,-(sp)
+      72                                ;		call	printf
+      73                                ;		add	#2*N,sp
+      74                                ;
+      75 010064 010046                  printf::mov	r0,-(sp)		; save reg
+      76 010066 010146                  	mov	r1,-(sp)		;
+      77 010070 010246                  	mov	r2,-(sp)		;
+      78 010072 010346                  	mov	r3,-(sp)		;
+      79 010074 010446                  	mov	r4,-(sp)		;
+      80 010076 010546                  	mov	r5,-(sp)		;
+      81                                	
+      82 010100 010605                  	mov	sp,r5			; frame pointer
+      83 010102 162706  000014          	sub	#n.last,sp		; reserve space on stack
+      84                                	
+      85 010106 010504                  	mov	r5,r4			; get frame ptr
+      86 010110 062704  000016          	add	#n.args,r4		; offset to first argument
+      87                                	
+      88 010114 012765  010130  177766  	mov	#1$,p.out(r5)		; character output routine
+      89 010122 005065  177764          	clr	p.ptr(r5)		; bufptr not used here
+      90                                	
+      91 010126 000442                  	br	xprintf			; continue
+      92                                
+      93                                	; ---------------------------------------------------------
+      94                                	
+      95                                	; character output to console
+      96                                	
+      97 010130 105737  177564          1$:	tstb	@#ttxcsr		; check if ready
+      98 010134 100375                  	bpl	1$			; not yet
+      99 010136 110037  177566          	movb	r0,@#ttxbuf		; send character
+     100 010142                         	return				; return
+       1 010142 000207                  	rts	pc
+     101                                	
+     102                                ; --------------------------------------------------------------------------------
+     103                                ;
+     104                                ; sprintf routine .. 'C' sprintf(buffer,format,arg1,arg2,..,argn) ..  called in 'C' style
+     105                                ;
+     106                                ;	call:	mov	argN,-(sp)
+     107                                ;		...
+     108                                ;		mov	arg2,-(sp)
+     109                                ;		mov	arg1,-(sp)
+     110                                ;		mov	format,-(sp)
+     111                                ;		mov	buffer,-(sp)
+     112                                ;		call	sprintf
+     113                                ;		add	#2*N,sp
+     114                                ;
+     115 010144 010046                  sprintf::mov	r0,-(sp)		; save reg
+     116 010146 010146                  	mov	r1,-(sp)		;
+     117 010150 010246                  	mov	r2,-(sp)		;
+     118 010152 010346                  	mov	r3,-(sp)		;
+     119 010154 010446                  	mov	r4,-(sp)		;
+     120 010156 010546                  	mov	r5,-(sp)		;
+     121                                	
+     122 010160 010605                  	mov	sp,r5			; frame pointer
+     123 010162 162706  000014          	sub	#n.last,sp		; reserve space on stack
+     124                                	
+     125 010166 010504                  	mov	r5,r4			; get frame ptr
+     126 010170 062704  000016          	add	#n.args,r4		; offset to first argument
+     127                                	
+     128 010174 012765  010210  177766  	mov	#1$,p.out(r5)		; character output routine
+     129 010202 012465  177764          	mov	(r4)+,p.ptr(r5)		; init bufptr from argument
+     130                                	
+     131 010206 000412                  	br	xprintf			; continue
+     132                                
+     133                                	; ---------------------------------------------------------
+     134                                	
+     135                                	; character output to buffer
+     136                                	
+     137 010210 110075  177764          1$:	movb	r0,@p.ptr(r5)		; store character
+     138 010214 005265  177764          	inc	p.ptr(r5)		; bump pointer
+     139 010220 105075  177764          	clrb	@p.ptr(r5)		; null terminate
+     140 010224 016565  177764  000012  	mov	p.ptr(r5),p.sr0(r5)	; return updated ptr in saved r0
+     141 010232                         	return				; return
+       1 010232 000207                  	rts	pc
+     142                                	
+     143                                ; --------------------------------------------------------------------------------
+     144                                
+     145                                	; process main format
+     146                                
+     147 010234 012403                  xprintf:mov	(r4)+,r3		; prime format string pointer
+     148                                
+     149 010236                         1$:	call	900$			; get next format character
+       1 010236 004737  011146          	jsr	pc,900$
+     150 010242 120227  000045          	cmpb	r2,#<'%>		; hit a format flag?
+     151 010246 001430                  	beq	10$			; yes, go process
+     152 010250 120227  000134          	cmpb	r2,#<'\>		; hit an escape flag?
+     153 010254 001404                  	beq	3$			; yes, go process
+     154 010256 010200                  2$:	mov	r2,r0			; char to print
+     155 010260                         	call	@p.out(r5)		; no, just print it
+       1 010260 004775  177766          	jsr	pc,@p.out(r5)
+     156 010264 000764                  	br	1$			; loop
+     157                                
+     158                                	; process escaped character \a .. \z
+     159                                
+     160 010266                         3$:	call	900$			; get the escaped character
+       1 010266 004737  011146          	jsr	pc,900$
+     161 010272 002771                  	blt	2$			; quick exit for [NUL-@] range
+     162 010274 120227  000172          	cmpb	r2,#<'z>		;
+     163 010300 003366                  	bgt	2$			; exit if [{-DEL]
+     164 010302 120227  000141          	cmpb	r2,#<'a>		;
+     165 010306 002005                  	bge	4$			; br if [a-z]	
+     166 010310 120227  000132          	cmpb	r2,#<'Z>		;
+     167 010314 003360                  	bgt	2$			; br if [[-`]
+     168 010316 152702  000040          	bisb	#40,r2			; force to [a-z] range
+     169 010322 116202  011043          4$:	movb	1000$-<'a>(r2),r2	; translate a..z to escaped
+     170 010326 000753                  	br	2$			; go print
+     171                                
+     172                                	; process format flag %[-+]?(0?\d+([.]\d+)?)?[lh]?[iduscpxo]
+     173                                
+     174 010330 112765  000040  177776  10$:	movb	#<' >,p.fil(r5)		; blank fill
+     175 010336 105065  177777          	clrb	p.flg(r5)		; clear flags
+     176 010342 005065  177774          	clr	p.wid(r5)		; init width spec
+     177 010346 005065  177772          	clr	p.pre(r5)		; init precision spec
+     178 010352 005065  177770          	clr	p.len(r5)		; no digits yet
+     179                                
+     180 010356                         11$:	call	900$			; get next format character
+       1 010356 004737  011146          	jsr	pc,900$
+     181 010362 002045                  	bge	40$			; br if [A-DEL]
+     182 010364 120227  000045          	cmpb	r2,#<'%>		; check for '%'
+     183 010370 001732                  	beq	2$			; br if yes
+     184                                
+     185                                	; some character in range [NUL-@]
+     186                                
+     187 010372 120227  000055          	cmpb	r2,#<'->		; check for '-'
+     188 010376 001004                  	bne	12$			; br if not
+     189 010400 152765  000001  177777  	bisb	#pf.ljus,p.flg(r5)	; yes, set a flag
+     190 010406 000763                  	br	11$			; loop
+     191 010410 120227  000053          12$:	cmpb	r2,#<'+>		; check for '+'
+     192 010414 001004                  	bne	13$			; br if not
+     193 010416 152765  000002  177777  	bisb	#pf.sign,p.flg(r5)	; yes, set a flag
+     194 010424 000754                  	br	11$			; loop
+     195 010426 120227  000043          13$:	cmpb	r2,#<'#>		; check for '#'
+     196 010432 001004                  	bne	20$			; br if not
+     197 010434 152765  000004  177777  	bisb	#pf.altr,p.flg(r5)	; yes, set a flag
+     198 010442 000745                  	br	11$			; loop
+     199                                
+     200 010444                         20$:	call	800$			; get a number if present
+       1 010444 004737  011052          	jsr	pc,800$
+     201 010450 010165  177774          	mov	r1,p.wid(r5)		; save number as width
+     202                                
+     203 010454 120227  000056          	cmpb	r2,#<'.>		; check for .
+     204 010460 001006                  	bne	40$			; br if not, should be alpha
+     205 010462                         	call	900$			; get next character
+       1 010462 004737  011146          	jsr	pc,900$
+     206                                
+     207 010466                         	call	800$			; get a number if present
+       1 010466 004737  011052          	jsr	pc,800$
+     208 010472 010165  177772          	mov	r1,p.pre(r5)		; save number as precision
+     209                                
+     210                                	; flag is in range [A-Za-z]
+     211                                
+     212 010476 005000                  40$:	clr	r0			; zap numerics
+     213 010500 005001                  	clr	r1			;
+     214 010502 120227  000101          41$:	cmpb	r2,#<'A>		; check for [:-@]
+     215 010506 002663                  	blt	2$			; br if yes
+     216 010510 120227  000172          	cmpb	r2,#<'z>		; check for [{-DEL]
+     217 010514 003260                  	bgt	2$			; br if yes
+     218 010516 120227  000141          	cmpb	r2,#<'a>		; check for [a-z]
+     219 010522 002003                  	bge	42$			; br if yes
+     220 010524 120227  000132          	cmpb	r2,#<'Z>		; check for [A-Z]
+     221 010530 003252                  	bgt	2$			; br if no
+     222 010532 042702  000040          42$:	bic	#40,r2			; force to [a-z] to [A-Z] range
+     223 010536 012401                  	mov	(r4)+,r1		; get the next value as lsb
+     224 010540 006302                  	asl	r2			; char*2 for word offset
+     225 010542 000172  010344          	jmp	@400$-<2*'A>(r2)	; dispatch
+     226                                
+     227                                400$:	;----	aaaa,bbbb,cccc,dddd,eeee,ffff,gggg,hhhh,iiii,jjjj,kkkk,llll,mmmm
+     228 010546 010632  011036  010676  	.word	401$,470$,420$,430$,401$,401$,401$,401$,430$,401$,401$,405$,401$
+         010554 010716  010632  010632  
+         010562 010632  010632  010716  
+         010570 010632  010632  010646  
+         010576 010632                  
+     229                                	;----	nnnn,oooo,pppp,qqqq,rrrr,ssss,tttt,uuuu,vvvv,wwww,xxxx,yyyy,zzzz
+     230 010600 010632  011006  011006  	.word	401$,450$,450$,401$,401$,410$,401$,440$,401$,401$,460$,401$,401$
+         010606 010632  010632  010664  
+         010614 010632  010772  010632  
+         010622 010632  011022  010632  
+         010630 010632                  
+     231                                
+     232 010632 005744                  401$:	tst	-(r4)			; %<illegal>: backup argument pointer
+     233 010634 005002                  	clr	r2			; zap
+     234 010636 156302  177777          	bisb	-1(r3),r2		; retrieve last character
+     235 010642 000137  010256          	jmp	2$			; just go print
+     236                                
+     237 010646                         405$:	call	900$			; %l: get next character
+       1 010646 004737  011146          	jsr	pc,900$
+     238 010652 152765  000010  177777  	bisb	#pf.long,p.flg(r5)	; indicate longword value
+     239 010660 010100                  	mov	r1,r0			; copy 1st arg to msb
+     240 010662 000707                  	br	41$			; and go parse next flag
+     241                                
+     242 010664 010102                  410$:	mov	r1,r2			; %s: get next arg as string address
+     243 010666                         	call	prtstr			; print as a string
+       1 010666 004737  011606          	jsr	pc,prtstr
+     244 010672 000137  010236          	jmp	1$			; continue at the top
+     245                                
+     246 010676 005046                  420$:	clr	-(sp)			; %c: zap upper byte
+     247 010700 110116                  	movb	r1,(sp)			; insert the character
+     248 010702 010602                  	mov	sp,r2			; point at string
+     249 010704                         	call	prtstr			; print as a string
+       1 010704 004737  011606          	jsr	pc,prtstr
+     250 010710 005726                  	tst	(sp)+			; flush temp string
+     251 010712 000137  010236          	jmp	1$			; continue at the top
+     252                                
+     253 010716 012702  000012          430$:	mov	#10.,r2			; %d,%i: decimal radix
+     254 010722 132765  000010  177777  	bitb	#pf.long,p.flg(r5)	; longword value?
+     255 010730 001004                  	bne	431$			; br if yes
+     256 010732 005000                  	clr	r0			; zap
+     257 010734 005701                  	tst	r1			; no; test lsb sign
+     258 010736 100001                  	bpl	431$			; br if plus/zero
+     259 010740 005100                  	com	r0			; extend -1 to msb
+     260 010742 005700                  431$:	tst	r0			; test msb sign
+     261 010744 002006                  	bge	439$			; br if zero or positive
+     262 010746 005400                  	neg	r0			; negative; make positive
+     263 010750 005401                  	neg	r1			;
+     264 010752 005600                  	sbc	r0			;
+     265 010754 152765  000020  177777  	bisb	#pf.nega,p.flg(r5)	; set flag indicating negative
+     266 010762                         439$:	call	prt32u			; print as unsigned decimal w/sign
+       1 010762 004737  011236          	jsr	pc,prt32u
+     267 010766 000137  010236          	jmp	1$			; continue at the top
+     268                                
+     269 010772 012702  000012          440$:	mov	#10.,r2			; %u: decimal radix
+     270 010776                         	call	prt32u			; print as an unsigned decimal
+       1 010776 004737  011236          	jsr	pc,prt32u
+     271 011002 000137  010236          	jmp	1$			; continue at the top
+     272                                
+     273 011006 012702  000010          450$:	mov	#8.,r2			; %o,%p: octal radix
+     274 011012                         	call	prt32u			; print as an unsigned hex
+       1 011012 004737  011236          	jsr	pc,prt32u
+     275 011016 000137  010236          	jmp	1$			; continue at the top
+     276                                
+     277 011022 012702  000020          460$:	mov	#16.,r2			; %x: hexadecimal radix
+     278 011026                         	call	prt32u			; print as an unsigned hex
+       1 011026 004737  011236          	jsr	pc,prt32u
+     279 011032 000137  010236          	jmp	1$			; continue at the top
+     280                                
+     281 011036 012702  000002          470$:	mov	#2.,r2			; %b: binary radix
+     282 011042                         	call	prt32u			; print as an unsigned binary
+       1 011042 004737  011236          	jsr	pc,prt32u
+     283 011046 000137  010236          	jmp	1$			; continue at the top
+     284                                
+     285                                	; ---------------------------------------------------------
+     286                                	; get a number as '[0-9]+' or '*'
+     287                                
+     288 011052 120227  000052          800$:	cmpb	r2,#<'*>		; check for '*' indirection
+     289 011056 001427                  	beq	880$			; br if yes
+     290 011060 120227  000060          	cmpb	r2,#<'0>		; check for leading '0' character
+     291 011064 001002                  	bne	810$			; br if not
+     292 011066 110265  177776          	movb	r2,p.fil(r5)		; yes, set a flag
+     293 011072 005001                  810$:	clr	r1			; number accumulated here
+     294 011074 120227  000060          820$:	cmpb	r2,#<'0>		; check for '0'
+     295 011100 002421                  	blt	890$			; br if less that a '0'
+     296 011102 120227  000071          	cmpb	r2,#<'9>		; check for '9'
+     297 011106 003016                  	bgt	890$			; br if greater than '9'
+     298 011110 162702  000060          	sub	#<'0>,r2		; offset to range 0..9
+     299 011114 006301                  	asl	r1			; number *= 2.
+     300 011116 010100                  	mov	r1,r0			; (number*2.)
+     301 011120 006300                  	asl	r0			; (number*4.)
+     302 011122 006300                  	asl	r0			; (number*8.)
+     303 011124 060001                  	add	r0,r1			; number = number*8. + number*2.
+     304 011126 060201                  	add	r2,r1			; add in this digit
+     305 011130                         	call	900$			; get next format character
+       1 011130 004737  011146          	jsr	pc,900$
+     306 011134 000757                  	br	820$			; and loop
+     307 011136 012401                  880$:	mov	(r4)+,r1		; get next arg as number
+     308 011140                         	call	900$			; get next character
+       1 011140 004737  011146          	jsr	pc,900$
+     309 011144                         890$:	return				; return
+       1 011144 000207                  	rts	pc
+     310                                
+     311                                	; ---------------------------------------------------------
+     312                                	; get next character (or exit) routine; result in r2
+     313                                
+     314 011146 112302                  900$:	movb	(r3)+,r2		; get next format character
+     315 011150 042702  177600          	bic	#^c177,r2		; 7bit ascii only
+     316 011154 001403                  	beq	990$			; end of string seen
+     317 011156 120227  000101          	cmpb	r2,#<'A>		; check for [A-DEL]
+     318 011162                         	return				; leave CC set with result
+       1 011162 000207                  	rts	pc
+     319                                
+     320 011164 010506                  990$:	mov	r5,sp			; flush frame
+     321 011166 012605                  	mov	(sp)+,r5		; restore reg
+     322 011170 012604                  	mov	(sp)+,r4		;
+     323 011172 012603                  	mov	(sp)+,r3		;
+     324 011174 012602                  	mov	(sp)+,r2		;
+     325 011176 012601                  	mov	(sp)+,r1		;
+     326 011200 012600                  	mov	(sp)+,r0		;
+     327 011202                         	return				; return
+       1 011202 000207                  	rts	pc
+     328                                
+     329                                	; ---------------------------------------------------------
+     330                                	; escaped character table
+     331                                1000$:	;	aaa bbb ccc ddd eee fff ggg hhh iii jjj kkk lll mmm
+     332                                	;	BEL  BS         ESC  FF
+     333 011204    007     010     143  	.byte	007,010,143,144,033,014,147,150,151,152,153,154,155
+         011207    144     033     014  
+         011212    147     150     151  
+         011215    152     153     154  
+         011220    155                  
+     334                                	;	nnn ooo ppp qqq rrr sss ttt uuu vvv www xxx yyy zzz
+     335                                	;	 LF              CR      HT      VT
+     336 011221    012     157     160  	.byte	012,157,160,161,015,163,011,165,013,167,170,172,172
+         011224    161     015     163  
+         011227    011     165     013  
+         011232    167     170     172  
+         011235    172                  
+     337                                	; ---------------------------------------------------------
+     338                                
+     339                                ; --------------------------------------------------------------------------------
+     340                                ;
+     341                                ; digit print routine .. print a 32b value as unsigned digits
+     342                                ;
+     343                                ;	call:	mov	datahi,r0
+     344                                ;		mov	datalo,r1
+     345                                ;		mov	#radix,r2 ; 2. or 8. or 10. or 16.
+     346                                ;		call	prt32u
+     347                                ;
+     348                                ;		r0 - data msb      (not saved)
+     349                                ;		r1 - data lsb      (not saved)
+     350                                ;		r2 - radix         (not saved)
+     351                                ;		r3 - ptr to format     (saved)
+     352                                ;		r4 - ptr to arglist    (saved) [input not used]
+     353                                ;		r5 - ptr to flags      (saved)
+     354                                ;
+     355 011236 010346                  prt32u:	mov	r3,-(sp)		; save regs we use
+     356 011240 010446                  	mov	r4,-(sp)		;
+     357                                
+     358                                	; render all the digits onto the stack (lsd first, msd last)
+     359                                
+     360 011242 005046                  	clr	-(sp)			; zero flag
+     361 011244 010246                  1$:	mov	r2,-(sp)		; radix lsb
+     362 011246 005046                  	clr	-(sp)			;   and msb
+     363 011250 010146                  	mov	r1,-(sp)		; number lsb
+     364 011252 010046                  	mov	r0,-(sp)		;    and msb
+     365 011254                         	call	uldiv			; get quo and rem
+       1 011254 004737  012054          	jsr	pc,uldiv
+     366 011260 016602  000006          	mov	6.(sp),r2		; restore radix from stack
+     367 011264 062706  000010          	add	#8.,sp			; flush args
+     368 011270 062703  000060          	add	#<'0>,r3		; make rem lsb a digit
+     369 011274 020327  000071          	cmp	r3,#<'9>		; still a valid digit?
+     370 011300 003402                  	ble	2$			; br if yes
+     371 011302 062703  000007          	add	#<'A>-<':>,r3		; offset to 'A...'Z range
+     372 011306 010346                  2$:	mov	r3,-(sp)		; save
+     373 011310 005265  177770          	inc	p.len(r5)		; count digits
+     374 011314 005701                  	tst	r1			; any lsb left?
+     375 011316 001352                  	bne	1$			; br if yes
+     376 011320 005700                  	tst	r0			; any msb left?
+     377 011322 001350                  	bne	1$			; br if yes
+     378                                
+     379                                	; check if we generated the minimum number of digits requested
+     380                                
+     381 011324 026565  177770  177772  10$:	cmp	p.len(r5),p.pre(r5)	; compare length to precision
+     382 011332 103005                  	bhis	20$			; br we're OK
+     383 011334 012746  000060          	mov	#<'0>,-(sp)		; nope, add another digit
+     384 011340 005265  177770          	inc	p.len(r5)		; count digits
+     385 011344 000767                  	br	10$			; and loop	
+     386                                
+     387                                	; check for options (#) flag
+     388                                
+     389 011346 132765  000004  177777  20$:	bitb	#pf.altf,p.flg(r5)	; check for options flag
+     390 011354 001422                  	beq	30$			; br if not set
+     391 011356 020227  000020          	cmp	r2,#16.			; radix 16?
+     392 011362 001407                  	beq	21$			; br if yes
+     393 011364 020227  000010          	cmp	r2,#8.			; radix 8?
+     394 011370 001014                  	bne	30$			; br if not
+     395 011372 022716  000060          	cmp	#<'0>,(sp)		; first digit already zero?
+     396 011376 001411                  	beq	30$			; yes, no need to add
+     397 011400 000404                  	br	22$			; no, add a leading zero
+     398 011402 012746  000170          21$:	mov	#<'x>,-(sp)		; add a '0x' prefix
+     399 011406 005265  177770          	inc	p.len(r5)		; count it
+     400 011412 012746  000060          22$:	mov	#<'0>,-(sp)		;
+     401 011416 005265  177770          	inc	p.len(r5)		; count it
+     402                                
+     403                                	; check if we need a sign (+/-/none)
+     404                                
+     405 011422 132765  000020  177777  30$:	bitb	#pf.nega,p.flg(r5)	; was original value negative?
+     406 011430 001403                  	beq	31$			; br if not
+     407 011432 012746  000055          	mov	#<'->,-(sp)		; minus sign
+     408 011436 000406                  	br	32$			;
+     409 011440 132765  000002  177777  31$:	bitb	#pf.sign,p.flg(r5)	; sign always requested?
+     410 011446 001404                  	beq	50$			; br if not
+     411 011450 012746  000053          	mov	#<'+>,-(sp)		; plus sign
+     412 011454 005265  177770          32$:	inc	p.len(r5)		; count all chars generated
+     413                                
+     414                                	; processing for right justification
+     415                                
+     416 011460 132765  000001  177777  50$:	bitb	#pf.ljus,p.flg(r5)	; check left-justify flag
+     417 011466 001020                  	bne	70$			; br if left justified
+     418 011470 116501  177776          	movb	p.fil(r5),r1		; get fill character
+     419 011474 026565  177770  177774  51$:	cmp	p.len(r5),p.wid(r5)	; compare length to width
+     420 011502 103012                  	bhis	70$			; br if we're OK
+     421 011504 011600                  	mov	(sp),r0			; copy last character
+     422 011506 010146                  	mov	r1,-(sp)		; add a fill character
+     423 011510 020100                  	cmp	r1,r0			; check fill/last char order
+     424 011512 101403                  	blos	52$			; br if order OK
+     425 011514 010016                  	mov	r0,(sp)			; copy sign/last char
+     426 011516 010166  000002          	mov	r1,2(sp)		; insert fill after sign
+     427 011522 005265  177770          52$:	inc	p.len(r5)		; count it
+     428 011526 000762                  	br	51$			; loop
+     429                                
+     430                                	; print all digits in order (sign..msd..lsd)
+     431                                
+     432 011530 005001                  70$:	clr	r1			; count characters output
+     433 011532 012600                  71$:	mov	(sp)+,r0		; get a digit
+     434 011534 001404                  	beq	80$			; br if no more
+     435 011536                         	call	@p.out(r5)		; print it
+       1 011536 004775  177766          	jsr	pc,@p.out(r5)
+     436 011542 005201                  	inc	r1			; count it
+     437 011544 000772                  	br	71$			; loop
+     438                                
+     439                                	; processing for left justification
+     440                                
+     441 011546 132765  000001  177777  80$:	bitb	#pf.ljus,p.flg(r5)	; check left-justify flag
+     442 011554 001411                  	beq	90$			; br if is right justified
+     443 011556 012700  000040          	mov	#<' >,r0		; space fill on right
+     444 011562 020165  177774          81$:	cmp	r1,p.wid(r5)		; compare length to width
+     445 011566 103004                  	bhis	90$			; br we're OK
+     446 011570                         	call	@p.out(r5)		; print it
+       1 011570 004775  177766          	jsr	pc,@p.out(r5)
+     447 011574 005201                  	inc	r1			; count characters
+     448 011576 000771                  	br	81$			; and loop	
+     449                                
+     450                                	; and done
+     451                                
+     452 011600 012604                  90$:	mov	(sp)+,r4		; restore regs
+     453 011602 012603                  	mov	(sp)+,r3		;
+     454 011604                         	return				; return
+       1 011604 000207                  	rts	pc
+     455                                
+     456                                ; --------------------------------------------------------------------------------
+     457                                ;
+     458                                ; asciz string print routine
+     459                                ;
+     460                                ;	call:	mov	#strptr,r2
+     461                                ;		call	prtstr
+     462                                ;
+     463                                ;		r0 - temp          (not saved)
+     464                                ;		r1 - temp          (not saved)
+     465                                ;		r2 - ptr to string (not saved)
+     466                                ;		r3 - ptr to format     (saved) [input not used]
+     467                                ;		r4 - ptr to arglist    (saved) [input not used]
+     468                                ;		r5 - ptr to flags      (saved)
+     469                                ;
+     470 011606 010346                  prtstr:	mov	r3,-(sp)		; save regs
+     471 011610 010446                  	mov	r4,-(sp)		;
+     472                                
+     473                                	; compute length of string
+     474                                
+     475 011612 010203                  	mov	r2,r3			; copy ptr to string
+     476 011614 105723                  1$:	tstb	(r3)+			; check a byte
+     477 011616 001376                  	bne	1$			; br if more string
+     478 011620 160203                  	sub	r2,r3			; compute length
+     479 011622 005303                  	dec	r3			; minus the trailing null	
+     480                                
+     481                                	; set precision to length if precision is zero
+     482                                
+     483 011624 005765  177772          	tst	p.pre(r5)		; check requested precision
+     484 011630 001002                  	bne	20$			; br if nonzero
+     485 011632 010365  177772          	mov	r3,p.pre(r5)		; else set to string length
+     486 011636 020365  177772          20$:	cmp	r3,p.pre(r5)		; compare actual length to precision
+     487 011642 101402                  	blos	50$			; br if actual <= precision
+     488 011644 016503  177772          	mov	p.pre(r5),r3		; else set actual to precision
+     489                                
+     490                                	; processing for right justification
+     491                                
+     492 011650 132765  000001  177777  50$:	bitb	#pf.ljus,p.flg(r5)	; check left-justify flag
+     493 011656 001002                  	bne	70$			; br if left justified
+     494 011660                         	call	100$			; do fill
+       1 011660 004737  011726          	jsr	pc,100$
+     495                                
+     496                                	; print string 
+     497                                
+     498 011664 010301                  70$:	mov	r3,r1			; copy length
+     499 011666 001406                  	beq	80$			; br if no characters
+     500 011670 112200                  71$:	movb	(r2)+,r0		; get a character
+     501 011672 001404                  	beq	80$			; br if no characters
+     502 011674                         	call	@p.out(r5)		; print it
+       1 011674 004775  177766          	jsr	pc,@p.out(r5)
+     503 011700 005301                  	dec	r1			; count
+     504 011702 001372                  	bne	71$			; loop
+     505                                
+     506                                	; processing for left justification
+     507                                
+     508 011704 132765  000001  177777  80$:	bitb	#pf.ljus,p.flg(r5)	; check left-justify flag
+     509 011712 001402                  	beq	90$			; br if is right justified
+     510 011714                         	call	100$			; do fill
+       1 011714 004737  011726          	jsr	pc,100$
+     511                                
+     512                                	; and done
+     513                                
+     514 011720 012604                  90$:	mov	(sp)+,r4		; restore
+     515 011722 012603                  	mov	(sp)+,r3		;
+     516 011724                         	return				; return
+       1 011724 000207                  	rts	pc
+     517                                
+     518                                	; ----------------------------------------------------
+     519                                	; generate fill characters
+     520                                
+     521 011726 016501  177774          100$:	mov	p.wid(r5),r1		; requested width
+     522 011732 160301                  	sub	r3,r1			; subtract string width
+     523 011734 101406                  	blos	102$			; br if no fill needed
+     524 011736 116500  177776          	movb	p.fil(r5),r0		; get fill character
+     525 011742                         101$:	call	@p.out(r5)		; print a fill character
+       1 011742 004775  177766          	jsr	pc,@p.out(r5)
+     526 011746 005301                  	dec	r1			; count
+     527 011750 001374                  	bne	101$			; loop
+     528 011752                         102$:	return				; done
+       1 011752 000207                  	rts	pc
+     529                                
+     530                                ; --------------------------------------------------------------------------------
+     531                                
+     532                                .include "mac/muldiv.mac"
+       1                                ;=================================================================================
+       2                                ; muldiv.mac - 32b mul/div routines for macro11 diagnostics
+       3                                ; (C) 2009-2016 Donald North. All rights reserved.
+       4                                ;=================================================================================
+       5                                
+       6                                ; --------------------------------------------------------------------------------
+       7                                ;
+       8                                ; unsigned 32b * 32b => 32b multiplication
+       9                                ; 
+      10                                ; from the 2.9BSD stdio C lib, using simple shift/add algorithm
+      11                                ; 
+      12                                ;	call:	mov	#b.lo,-(sp)
+      13                                ;		mov	#b.hi,-(sp)
+      14                                ;		mov	#a.lo,-(sp)
+      15                                ;		mov	#a.hi,-(sp)
+      16                                ;		call	ulmul
+      17                                ;		add	#8.,sp
+      18                                ;		mov	r1,q.lo
+      19                                ;		mov	r0,q.hi
+      20                                ;
+      21 011754 010246                  ulmul::	mov	r2,-(sp)		; save
+      22 011756 010346                  	mov	r3,-(sp)		;
+      23 011760 010446                  	mov	r4,-(sp)		;
+      24 011762 010546                  	mov	r5,-(sp)		;
+      25                                
+      26 011764 016605  000020          	mov	8.+8.(sp),r5		; b.lo
+      27 011770 016604  000016          	mov	6.+8.(sp),r4		; b.hi
+      28 011774 016603  000014          	mov	4.+8.(sp),r3		; a.lo
+      29 012000 016602  000012          	mov	2.+8.(sp),r2		; a.hi
+      30 012004 005001                  	clr	r1			; q.lo
+      31 012006 005000                  	clr	r0			; q.hi
+      32                                
+      33 012010 000241                  1$:	clc				; shiftin zeroes
+      34 012012 006004                  	ror	r4			; shift multiplier right one
+      35 012014 006005                  	ror	r5			;
+      36 012016 103003                  	bcc	2$			; br if shifted out a zero
+      37 012020 060301                  	add	r3,r1			; else add multiplicand to product
+      38 012022 005500                  	adc	r0			; propagate C
+      39 012024 060200                  	add	r2,r0			;
+      40 012026 006303                  2$:	asl	r3			; shift multiplicant left one
+      41 012030 006102                  	rol	r2			;
+      42 012032 005704                  	tst	r4			; any high multiplier bits left?
+      43 012034 001365                  	bne	1$			; br if yes
+      44 012036 005705                  	tst	r5			; any low multiplier bits left?
+      45 012040 001363                  	bne	1$			; br if yes
+      46                                
+      47 012042 012605                  	mov	(sp)+,r5		; restore
+      48 012044 012604                  	mov	(sp)+,r4		;
+      49 012046 012603                  	mov	(sp)+,r3		;
+      50 012050 012602                  	mov	(sp)+,r2		;
+      51 012052                         	return				; done
+       1 012052 000207                  	rts	pc
+      52                                
+      53                                ; --------------------------------------------------------------------------------
+      54                                ;
+      55                                ; unsigned 32b / 32b => 32b, 32b division with remainder
+      56                                ; 
+      57                                ; from Hennessey & Patterson Appendix A
+      58                                ;
+      59                                ;	call:	mov	#den.lo,-(sp)	; 8.(sp)
+      60                                ;		mov	#den.hi,-(sp)	; 6.(sp)
+      61                                ;		mov	#num.lo,-(sp)	; 4.(sp)
+      62                                ;		mov	#num.hi,-(sp)	; 2.(sp)
+      63                                ;		call	uldiv
+      64                                ;		add	#8.,sp
+      65                                ;		mov	r3,rem.lo
+      66                                ;		mov	r2,rem.hi
+      67                                ;		mov	r1,quo.lo
+      68                                ;		mov	r0,quo.hi
+      69                                ;
+      70 012054 010446                  uldiv::	mov	r4,-(sp)		; save
+      71 012056 010546                  	mov	r5,-(sp)		;
+      72                                
+      73 012060 016601  000010          	mov	4.+4.(sp),r1		; num.lo
+      74 012064 016600  000006          	mov	2.+4.(sp),r0		; num.hi
+      75                                
+      76 012070 005005                  	clr	r5			; tmp.lo
+      77 012072 005004                  	clr	r4			; tmp.hi
+      78                                
+      79 012074 012746  000037          	mov	#31.,-(sp)		; bit count
+      80                                
+      81 012100 006301                  1$:	asl	r1			; (tmp,num) <<= 1
+      82 012102 006100                  	rol	r0			;
+      83 012104 006105                  	rol	r5			;
+      84 012106 006104                  	rol	r4			;
+      85                                
+      86 012110 010503                  	mov	r5,r3			; rem = tmp - den
+      87 012112 010402                  	mov	r4,r2			;
+      88 012114 166603  000016          	sub	8.+6.(sp),r3		;
+      89 012120 005602                  	sbc	r2			;
+      90 012122 166602  000014          	sub	6.+6.(sp),r2		;
+      91                                
+      92 012126 100403                  	bmi	2$			; br if rem < 0
+      93                                
+      94 012130 005201                  	inc	r1			; quo |= 1
+      95 012132 010305                  	mov	r3,r5			; tmp = rem
+      96 012134 010204                  	mov	r2,r4			;
+      97                                
+      98 012136 005316                  2$:	dec	(sp)			; count bits
+      99 012140 002357                  	bge	1$			; loop if more
+     100 012142 005726                  	tst	(sp)+			; flush counter
+     101                                
+     102 012144 005702                  	tst	r2			; test for rem < 0
+     103 012146 002005                  	bge	3$			; br if not
+     104                                
+     105 012150 066603  000014          	add	8.+4.(sp),r3		; rem += den correction
+     106 012154 005502                  	adc	r2			;
+     107 012156 066602  000012          	add	6.+4.(sp),r2		;
+     108                                
+     109 012162 012605                  3$:	mov	(sp)+,r5		; restore
+     110 012164 012604                  	mov	(sp)+,r4		;
+     111 012166                         	return				; done
+       1 012166 000207                  	rts	pc
+     112                                
+     113                                ; --------------------------------------------------------------------------------
+     114                                ;
+     115                                ; signed 32b / 32b => 32b, 32b division with remainder
+     116                                ; 
+     117                                ;	call:	mov	#den.lo,-(sp)	; 8.(sp)
+     118                                ;		mov	#den.hi,-(sp)	; 6.(sp)
+     119                                ;		mov	#num.lo,-(sp)	; 4.(sp)
+     120                                ;		mov	#num.hi,-(sp)	; 2.(sp)
+     121                                ;		call	sldiv
+     122                                ;		add	#8.,sp
+     123                                ;		mov	r3,rem.lo
+     124                                ;		mov	r2,rem.hi
+     125                                ;		mov	r1,quo.lo
+     126                                ;		mov	r0,quo.hi
+     127                                ;
+     128 012170 010446                  sldiv::	mov	r4,-(sp)		; save
+     129                                
+     130 012172 016603  000012          	mov	8.+2.(sp),r3		; den.lo
+     131 012176 016602  000010          	mov	6.+2.(sp),r2		; den.hi
+     132 012202 016601  000006          	mov	4.+2.(sp),r1		; num.lo
+     133 012206 016600  000004          	mov	2.+2.(sp),r0		; num.hi
+     134                                
+     135 012212 005004                  	clr	r4			; pos
+     136                                
+     137 012214 005700                  	tst	r0			; num sign
+     138 012216 002006                  	bge	10$			; br if pos
+     139                                
+     140 012220 005104                  	com	r4			; neg
+     141                                
+     142 012222 005101                  	com	r1			; negate num
+     143 012224 005100                  	com	r0			;
+     144 012226 062701  000001          	add	#1,r1			;
+     145 012232 005500                  	adc	r0			; 
+     146                                
+     147 012234 005702                  10$:	tst	r2			; den sign
+     148 012236 002006                  	bge	20$			; br if pos
+     149                                
+     150 012240 105104                  	comb	r4			; neg
+     151                                
+     152 012242 005103                  	com	r3			; negate den
+     153 012244 005102                  	com	r2			;
+     154 012246 062703  000001          	add	#1,r3			;
+     155 012252 005502                  	adc	r2			; 
+     156                                	
+     157 012254 010346                  20$:	mov	r3,-(sp)		; den.lo
+     158 012256 010246                  	mov	r2,-(sp)		; den.hi
+     159 012260 010146                  	mov	r1,-(sp)		; num.lo
+     160 012262 010046                  	mov	r0,-(sp)		; num.hi
+     161 012264                         	call	uldiv			;
+       1 012264 004737  012054          	jsr	pc,uldiv
+     162 012270 062706  000010          	add	#8.,sp			; 
+     163                                
+     164 012274 005704                  	tst	r4			; invert result
+     165 012276 002005                  	bge	30$			;
+     166                                
+     167 012300 005103                   	com	r3			; negate rem
+     168 012302 005102                  	com	r2			;
+     169 012304 062703  000001          	add	#1,r3			;
+     170 012310 005502                  	adc	r2			; 
+     171                                
+     172 012312 105704                  30$:	tstb	r4			; invert result
+     173 012314 002005                  	bge	40$			;
+     174                                
+     175 012316 005101                  	com	r1			; negate quo
+     176 012320 005100                  	com	r0			;
+     177 012322 062701  000001          	add	#1,r1			;
+     178 012326 005500                  	adc	r0			; 
+     179                                
+     180 012330 012604                  40$:	mov	(sp)+,r4		; restore
+     181 012332                         	return				; done
+       1 012332 000207                  	rts	pc
+     182                                
+     183                                ;================================================================================
+     184                                ; end of muldiv.mac
+     185                                ;================================================================================
+     185                                
+     533                                
+     534                                ; --------------------------------------------------------------------------------
+     535                                
+     536        000000                  .iif ne,pf.sep,	.end
+     537                                
+     538                                ;=================================================================================
+     539                                ; end of printf.mac
+     540                                ;=================================================================================
+     540                                
+     608                                
+     609                                ; --------------------------------------------------------------------------------
+     610                                
+     611                                	.end
+     611                                
+
+
+Symbol table
+
+$$NUM  =000012           204$1  =005470   L       8$8    =007562   L       DELAY  =006244           RC_RDE =000016           
+$$POS  =004000           205$1  =005527   L       8$9    =007660   L       DENSTY =002010           RC_RDS =000012           
+$ENDAD =006206           206$1  =005571   L       80$16  =011546   L       DONE   =006162           RC_RX0 =004000           
+$SAV42 =002002           207$1  =005622   L       80$17  =011704   L       DPYREG =177570 G         RC_SDE =000010           
+.      =******           21$16  =011402   L       800$15 =011052   L       ERRBUF =003400           RC_TRE =000200           
+1$10   =007676   L       22$16  =011412   L       81$16  =011562   L       ERRPTR =002022           RC_UNI =000020           
+1$11   =007746   L       3$15   =010266   L       810$15 =011072   L       EXIT   =006176           RC_WOC =072017           
+1$12   =010016   L       3$19   =012162   L       820$15 =011074   L       FILBUF =007420           RC_WOD =177400           
+1$13   =010130   L       30$16  =011422   L       880$15 =011136   L       FILRAN =007434           RC_WOE =170000           
+1$14   =010210   L       30$20  =012312   L       890$15 =011144   L       LF     =000012           RC_WR  =000004           
+1$15   =010236   L       300$1  =005675   L       9$10   =007740   L       LOOP   =004074           RC_WRD =000014           
+1$16   =011244   L       301$1  =005734   L       9$11   =010010   L       LOOPS  =002004           RE_ACL =000010           
+1$17   =011614   L       302$1  =005773   L       9$8    =007572   L       MSG1   =006102           RE_CER =000001           
+1$18   =012010   L       31$16  =011440   L       9$9    =007670   L       MSG2   =006145           RE_DDA =000100           
+1$19   =012100   L       32$16  =011454   L       90$1   =005034   L       N.ARGS =000016           RE_DDE =000040           
+1$3    =006252   L       32768$0=004020   L       90$16  =011600   L       N.LAST =000014           RE_DER =000020           
+1$8    =007526   L       32768$1=005070   L       90$17  =011720   L       NOXXDP =006222           RE_DON =000004           
+1$9    =007624   L       32769$0=004026   L       90$4   =006666   L       P.FIL  =177776           RE_DRD =000200           
+10$15  =010330   L       32770$0=004044   L       90$5   =007262   L       P.FLG  =177777           RE_NU9 =001000           
+10$16  =011324   L       32771$0=004056   L       900$15 =011146   L       P.LEN  =177770           RE_NXM =004000           
+10$2   =006224   L       4$15   =010322   L       990$15 =011164   L       P.OUT  =177766           RE_PER =000002           
+10$20  =012234   L       40$1   =004440   L       BASE   =002012           P.PRE  =177772           RE_UNI =000400           
+10$6   =007424   L       40$15  =010476   L       BIT0   =000001           P.PTR  =177764           RE_WCO =002000           
+10$7   =007450   L       40$20  =012330   L       BIT00  =000001           P.SR0  =000012           RX$CS  =177170           
+100$1  =005110   L       40$4   =006622   L       BIT01  =000002           P.SR1  =000010           RX$DB  =177172           
+100$17 =011726   L       40$5   =007216   L       BIT02  =000004           P.SR2  =000006           RXCS   =007472           
+100$4  =006704   L       400$1  =006032   L       BIT03  =000010           P.SR3  =000004           RXDB   =007474           
+100$5  =007300   L       400$15 =010546   L       BIT04  =000020           P.SR4  =000002           RXEMPT =007602           
+1000$15=011204   L       401$1  =006042   L       BIT05  =000040           P.SR5  =000000           RXFILL =007574           
+101$1  =005147   L       401$15 =010632   L       BIT06  =000100           P.WID  =177774           RXFLEM =007610           
+101$17 =011742   L       402$1  =006062   L       BIT07  =000200           PATPTR =002020           RXRD   =007504           
+102$1  =005206   L       405$15 =010646   L       BIT08  =000400           PATTRN =002400           RXRDES =007672           
+102$17 =011752   L       41$1   =004472   L       BIT09  =001000           PF.ALT =000004           RXRDWR =007512           
+11$15  =010356   L       41$15  =010502   L       BIT1   =000002           PF.LJU =000001           RXRET  =010042           
+12$15  =010410   L       41$4   =006660   L       BIT10  =002000           PF.LON =000010           RXSDEN =007742           
+13$15  =010426   L       41$5   =007254   L       BIT11  =004000           PF.NEG =000020           RXSTAT =010012           
+19$6   =007432   L       410$15 =010664   L       BIT12  =010000           PF.SEP =000000           RXWR   =007476           
+19$7   =007470   L       42$15  =010532   L       BIT13  =020000           PF.SIG =000002           RX_BPS =000400           
+2$10   =007712   L       420$15 =010676   L       BIT14  =040000           PRINTF =010064 G         RX_SAH =000032           
+2$11   =007762   L       430$15 =010716   L       BIT15  =100000           PRT32U =011236           RX_SAL =000001           
+2$12   =010032   L       431$15 =010742   L       BIT2   =000004           PRTSTR =011606           RX_TAH =000114           
+2$15   =010256   L       439$15 =010762   L       BIT3   =000010           PSW    =177776 G         RX_TAL =000000           
+2$16   =011306   L       440$15 =010772   L       BIT4   =000020           RC_A16 =010000           RX_WPS =000200           
+2$18   =012026   L       450$15 =011006   L       BIT5   =000040           RC_A17 =020000           SLDIV  =012170 G         
+2$19   =012136   L       460$15 =011022   L       BIT6   =000100           RC_ANY =100240           SPRINT =010144 G         
+2$8    =007544   L       470$15 =011036   L       BIT7   =000200           RC_CMD =000016           STACK  =002000           
+2$9    =007642   L       50$16  =011460   L       BIT8   =000400           RC_DEN =000400           START  =004000           
+20$15  =010444   L       50$17  =011650   L       BIT9   =001000           RC_DON =000040           SWIREG =177570 G         
+20$16  =011346   L       51$16  =011474   L       BUFFER =003000           RC_EMP =000002           TST$NO =000001           
+20$17  =011636   L       52$16  =011522   L       BUFPTR =002016           RC_ERR =100000           TTRBUF =177562 G         
+20$20  =012254   L       55$1   =004762   L       CKCSES =006324           RC_FIL =000000           TTRCSR =177560 G         
+200$1  =005245   L       70$16  =011530   L       CKINIT =006264           RC_GO  =000001           TTXBUF =177566 G         
+200$4  =006706   L       70$17  =011664   L       CKWCEB =007022           RC_HEA =001000           TTXCSR =177564 G         
+200$5  =007302   L       71$16  =011532   L       CKWCFB =006364           RC_IEN =000100           ULDIV  =012054 G         
+201$1  =005316   L       71$17  =011670   L       CONSOL =165144 G         RC_INI =040000           ULMUL  =011754 G         
+202$1  =005344   L       8$10   =007730   L       COUNT  =002014           RC_NU1 =002000           UNIT   =002006           
+203$1  =005416   L       8$11   =010000   L       CR     =000015           RC_RD  =000006           XPRINT =010234           
+
+
+Program sections:
+
+. ABS.  012334    000   (RW,I,GBL,ABS,OVR,NOSAV)
+        000000    001   (RW,I,LCL,REL,CON,NOSAV)

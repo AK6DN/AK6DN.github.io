@@ -1,0 +1,8 @@
+Options Indexes
+IndexOrderDefault Ascending Description
+IndexOptions FancyIndexing NameWidth=* DescriptionWidth=* SuppressHTMLPreamble HTMLTable
+IndexStyleSheet /css/PDP-8.css
+IndexIgnore . .htaccess
+
+AddDescription "PDP-8e MAINDEC diagnostic files" MAINDEC
+

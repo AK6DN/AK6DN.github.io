@@ -1,0 +1,11 @@
+Options Indexes
+IndexOptions FancyIndexing NameWidth=* DescriptionWidth=* SuppressHTMLPreamble
+IndexIgnore . .htaccess header.html trailer.html
+HeaderName header.html
+ReadmeName trailer.html
+
+AddDescription "2.11BSD source+binary MSCP 1GB image, PL448, network enabled" 2.11BSD_rq.dsk.zip
+AddDescription "SIMH config file, PDP-11/44,4MB,FPU,MSCP,TMSCP,DZ11,DELUA" cpu1144.ini
+AddDescription "example boot of 2.11BSD image on the SIMH 11/44 system" 2.11BSD_1144_bootlog.txt
+AddDescription "Original 2.11BSD setup guide by Steven Schultz, 1995" 2.11BSD_Setup.pdf
+AddDescription "How to setup and use the SIMH 2.11BSD image" 2.11BSD_README.txt
