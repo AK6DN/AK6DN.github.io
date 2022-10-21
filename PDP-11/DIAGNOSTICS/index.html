@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>AK6DN Home Grown Diagnostic Files</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=ISO-8859-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+<STYLE TYPE="text/css">
+ .HEADER { FONT-SIZE:250%; COLOR:BLACK; FONT-WEIGHT:BOLD; BACKGROUND-COLOR:#EE66AA; }
+ .SUBHEAD { FONT-FAMILY:SANS-SERIF; FONT-SIZE:200%; COLOR:WHITE; FONT-WEIGHT:NORMAL; BACKGROUND-COLOR:#880044; TEXT-DECORATION:NONE; }
+ .TITLE { FONT-SIZE:100%; COLOR:BLACK; FONT-WEIGHT:BOLD; BACKGROUND-COLOR:#CCCCCC; }
+ .ENTRY { FONT-SIZE:90%; COLOR:BLACK; FONT-WEIGHT:NORMAL; BACKGROUND-COLOR:#EEEEEE; }
+</STYLE>
+</HEAD>
+<BODY>
+
+<TABLE WIDTH="100%" BORDER="2" CELLPADDING="1" CELLSPACING="1">
+  <TR>
+    <TH WIDTH="10%">
+      <TABLE WIDTH="100%" BORDER="0" CELLPADDING="1" CELLSPACING="1"><TR>
+      <TD><A HREF="/PDP-11/" CLASS="SUBHEAD">a</A></TD>
+      <TD><A HREF="/PDP-11/" CLASS="SUBHEAD">k</A></TD>
+      <TD><A HREF="/PDP-11/" CLASS="SUBHEAD">6</A></TD>
+      <TD><A HREF="/PDP-11/" CLASS="SUBHEAD">d</A></TD>
+      <TD><A HREF="/PDP-11/" CLASS="SUBHEAD">n</A></TD>
+      </TR></TABLE>
+    </TH>
+    <TH CLASS="HEADER">AK6DN Home Grown Diagnostic Files</TH>
+    <TH WIDTH="10%">
+      <TABLE WIDTH="100%" BORDER="0" CELLPADDING="1" CELLSPACING="1"><TR>
+      <TD><A HREF="/PDP-11/" CLASS="SUBHEAD">a</A></TD>
+      <TD><A HREF="/PDP-11/" CLASS="SUBHEAD">k</A></TD>
+      <TD><A HREF="/PDP-11/" CLASS="SUBHEAD">6</A></TD>
+      <TD><A HREF="/PDP-11/" CLASS="SUBHEAD">d</A></TD>
+      <TD><A HREF="/PDP-11/" CLASS="SUBHEAD">n</A></TD>
+      </TR></TABLE>
+    </TH>
+  </TR>
+</TABLE>
+
+<P STYLE="FONT-SIZE:100%; FONT-WEIGHT:NORMAL; FONT-STYLE:NORMAL">
+This directory contains listings and executables of AK6DN's home grown PDP-11 diagnostics.
+<BR><BR>
+A single TU58 (or RX02) bootable XXDP image is available that contains all the .BIN/.BIC file images.
+It is 11XX_9.DSK (or .RX2) on the TU58 (RX02) disk images page.
+<BR><BR>
+For each diagnostic (eg, MEMX.*) there is a plain text listing (MEMX.LST) of the assembled diagnostic,
+and an executable binary image (either MEMX.BIN or MEMX.BIC, as appropriate).
+<BR><BR>
+Most (but not all) tests can be run under SIMH. When possible, a SIMH control (eg MEMX34.ini) is supplied.
+<BR><BR>
+Recently added is a .tar.gz file of my entire local diagnostics directory with all source and Makefiles
+included for those folks who want to see under the hood or make changes to any source files for their
+own specific needs.
+</P>
+<pre><img src="/icons/blank.gif" alt="Icon "> <a href="?C=N;O=A">Name</a>                    <a href="?C=M;O=A">Last modified</a>      <a href="?C=S;O=A">Size</a>  <a href="?C=D;O=D">Description</a><hr><img src="/icons/back.gif" alt="[PARENTDIR]"> <a href="/PDP-11/">Parent Directory</a>                             -   
+<img src="/icons/compressed.gif" alt="[   ]"> <a href="diagnostics.tar.gz">diagnostics.tar.gz</a>      2020-12-17 19:31  488K  &#1;&#1;&#1;Entire directory contents, including all sources
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="dl11.lst">dl11.lst</a>                2020-12-17 19:26   80K  &#1;&#4;&#1;DL11 serial interface test
+<img src="/icons/binary.gif" alt="[   ]"> <a href="dl11.bin">dl11.bin</a>                2020-12-17 19:26  2.9K  &#1;&#4;&#2;... executable
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="dl11.ini">dl11.ini</a>                2020-12-17 19:26  250   &#1;&#4;&#3;... SIMH control file
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="echo1.lst">echo1.lst</a>               2020-12-17 19:26  4.8K  &#1;&#5;&#1;DL11 console/tu58 serial echo test (polled)
+<img src="/icons/binary.gif" alt="[   ]"> <a href="echo1.bin">echo1.bin</a>               2020-12-17 19:26  1.0K  &#1;&#5;&#2;... executable
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="echo1.ini">echo1.ini</a>               2020-12-17 19:26  305   &#1;&#5;&#3;... SIMH control file
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="echo2.lst">echo2.lst</a>               2020-12-17 19:26   18K  &#1;&#6;&#1;DL11 console/tu58 serial echo test (interrupt)
+<img src="/icons/binary.gif" alt="[   ]"> <a href="echo2.bin">echo2.bin</a>               2020-12-17 19:26  1.5K  &#1;&#6;&#2;... executable
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="echo2.ini">echo2.ini</a>               2020-12-17 19:26  305   &#1;&#6;&#3;... SIMH control file
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="m9313.lst">m9313.lst</a>               2020-12-17 19:26  157K  &#1;&#7;&#1;M9313 module tester
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="m9313.bic">m9313.bic</a>               2020-12-17 19:26  5.8K  &#1;&#7;&#2;... executable
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="m9313.ini">m9313.ini</a>               2020-12-17 19:26   87   &#1;&#7;&#3;... SIMH control file
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="memx.lst">memx.lst</a>                2020-12-17 19:26  165K  &#1;&#8;&#1;Enhanced Memory Test - Extended March C- Algorithm
+<img src="/icons/binary.gif" alt="[   ]"> <a href="memx.bin">memx.bin</a>                2020-12-17 19:26  6.0K  &#1;&#8;&#2;... executable
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="memx24.ini">memx24.ini</a>              2020-12-17 19:26  115   &#1;&#8;&#3;... SIMH control file for 11/24
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="memx34.ini">memx34.ini</a>              2020-12-17 19:26  176   &#1;&#8;&#4;... SIMH control file for 11/34
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="memx44.ini">memx44.ini</a>              2020-12-17 19:26  115   &#1;&#8;&#5;... SIMH control file for 11/44
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="memx45.ini">memx45.ini</a>              2020-12-17 19:26  176   &#1;&#8;&#6;... SIMH control file for 11/45
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="memx70.ini">memx70.ini</a>              2020-12-17 19:26  115   &#1;&#8;&#7;... SIMH control file for 11/70
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="divtst.lst">divtst.lst</a>              2020-12-17 19:26   94K  &#2;&#1;&#1;DIVIDE instruction test
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="divtst.bic">divtst.bic</a>              2020-12-17 19:26  3.8K  &#2;&#1;&#2;... executable
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="divtst.ini">divtst.ini</a>              2020-12-17 19:26   54   &#2;&#1;&#3;... SIMH control file
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="multst.lst">multst.lst</a>              2020-12-17 19:26   88K  &#2;&#2;&#1;MULTIPLY instruction test
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="multst.bic">multst.bic</a>              2020-12-17 19:26  3.5K  &#2;&#2;&#2;... executable
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="multst.ini">multst.ini</a>              2020-12-17 19:26   54   &#2;&#2;&#3;... SIMH control file
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="ashtst.lst">ashtst.lst</a>              2020-12-17 19:26   83K  &#2;&#3;&#1;ASHC instruction test
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="ashtst.bic">ashtst.bic</a>              2020-12-17 19:26  3.7K  &#2;&#3;&#2;... executable
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="ashtst.ini">ashtst.ini</a>              2020-12-17 19:26   54   &#2;&#3;&#3;... SIMH control file
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="cistst.lst">cistst.lst</a>              2020-12-17 19:26  120K  &#2;&#4;&#1;CIS instruction test
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="cistst.bic">cistst.bic</a>              2020-12-17 19:26  4.3K  &#2;&#4;&#2;... executable
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="cistst.ini">cistst.ini</a>              2020-12-17 19:26   59   &#2;&#4;&#3;... SIMH control file
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="prftst.lst">prftst.lst</a>              2020-12-17 19:26   31K  &#2;&#5;&#1;PRINTF routine test
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="prftst.bic">prftst.bic</a>              2020-12-17 19:26  4.0K  &#2;&#5;&#2;... executable
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="prftst.ini">prftst.ini</a>              2020-12-17 19:26   49   &#2;&#5;&#3;... SIMH control file
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="mscp.lst">mscp.lst</a>                2020-12-17 19:26  231K  &#3;&#1;&#1;MSCP disk interface test (tuned for Emulex UC18)
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="mscp.bic">mscp.bic</a>                2020-12-17 19:26   12K  &#3;&#1;&#2;... executable
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="mscp.ini">mscp.ini</a>                2020-12-17 19:26  317   &#3;&#1;&#3;... SIMH control file
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="tmscp.lst">tmscp.lst</a>               2020-12-17 19:26  203K  &#3;&#2;&#1;TMSCP tape interface test (tuned for Emulex UC18)
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="tmscp.bic">tmscp.bic</a>               2020-12-17 19:26   11K  &#3;&#2;&#2;... executable
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="tmscp.ini">tmscp.ini</a>               2020-12-17 19:26  170   &#3;&#2;&#3;... SIMH control file
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="rx02bo.lst">rx02bo.lst</a>              2020-12-17 19:26  4.3K  &#3;&#4;&#1;RX211/RX02 boot test
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="rx02bo.bic">rx02bo.bic</a>              2020-12-17 19:26  112   &#3;&#4;&#2;... executable
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="rx02bo.ini">rx02bo.ini</a>              2020-12-17 19:26  635   &#3;&#4;&#3;... SIMH control file
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="rx02rd.lst">rx02rd.lst</a>              2020-12-17 19:26  113K  &#3;&#5;&#1;RX211/RX02 media read test
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="rx02rd.bic">rx02rd.bic</a>              2020-12-17 19:26  4.7K  &#3;&#5;&#2;... executable
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="rx02rd.ini">rx02rd.ini</a>              2020-12-17 19:26  651   &#3;&#5;&#3;... SIMH control file
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="rx02wr.lst">rx02wr.lst</a>              2020-12-17 19:26  133K  &#3;&#6;&#1;RX211/RX02 media write test
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="rx02wr.bic">rx02wr.bic</a>              2020-12-17 19:26  5.5K  &#3;&#6;&#2;... executable
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="rx02wr.ini">rx02wr.ini</a>              2020-12-17 19:26  651   &#3;&#6;&#3;... SIMH control file
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="rx02xx.lst">rx02xx.lst</a>              2020-12-17 19:26  136K  &#3;&#7;&#1;RX211/RX02 buffer read/write test
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="rx02xx.bic">rx02xx.bic</a>              2020-12-17 19:26  5.5K  &#3;&#7;&#2;... executable
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="rx02xx.ini">rx02xx.ini</a>              2020-12-17 19:26  635   &#3;&#7;&#3;... SIMH control file
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="tu58.lst">tu58.lst</a>                2020-12-17 19:26  182K  &#3;&#8;&#1;TU58 device basic protocol and read/write test
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="tu58.bic">tu58.bic</a>                2020-12-17 19:26  9.9K  &#3;&#8;&#2;... executable
+<img src="/icons/unknown.gif" alt="[   ]"> <a href="tu58.ini">tu58.ini</a>                2020-12-17 19:26  340   &#3;&#8;&#3;... SIMH control file
+<hr></pre>
+<TABLE WIDTH="100%" STYLE="FONT-SIZE:80%; FONT-WEIGHT:NORMAL; FONT-STYLE:ITALIC">
+<TR>
+<TD ALIGN="LEFT">Last updated:  2020-12-17 07:27pm PST</TD>
+<TD ALIGN="RIGHT">By:&nbsp;&nbsp;ak6dn&nbsp;_at_&nbsp;mindspring&nbsp;_dot_&nbsp;com</TD>
+</TR>
+</TABLE>
+<HR>
