@@ -2,7 +2,7 @@ DOS11 format, assume monitor starts at block 23
 Image supports 988 blocks
 16 directory blocks, block 3 thru 18
 4 bitmap blocks, block 19 thru 22
-435 device blocks in use according to the bitmap
+441 device blocks in use according to the bitmap
 
 ENTRY# FILNAM.EXT        DATE          LENGTH  START   VERSION
 
@@ -24,36 +24,37 @@ ENTRY# FILNAM.EXT        DATE          LENGTH  START   VERSION
    16  MM    .SYS       1-MAR-89           3    230     C.0
    17  MS    .SYS       1-MAR-89           4    233     C.0
    18  MU    .SYS       1-MAR-89           4    237     E.0
-   19  ASHTST.BIC      31-DEC-99           8    241
-   20  CISTST.BIC      31-DEC-99           9    249
-   21  DIVTST.BIC      31-DEC-99           8    258
-   22  DL11  .BIN      31-DEC-99           6    266
-   23  ECHO1 .BIN      31-DEC-99           3    272
-   24  ECHO2 .BIN      31-DEC-99           4    275
-   25  M9313 .BIC      31-DEC-99          12    279
-   26  MEMX  .BIN      31-DEC-99          12    291
-   27  MSCP  .BIC      31-DEC-99          25    303
-   28  MULTST.BIC      31-DEC-99           7    328
-   29  PRFTST.BIC      31-DEC-99           9    335
-   30  RX02BO.BIC      31-DEC-99           1    344
-   31  RX02RD.BIC      31-DEC-99          10    345
-   32  RX02WR.BIC      31-DEC-99          12    355
-   33  RX02XX.BIC      31-DEC-99          11    367
-   34  TMSCP .BIC      31-DEC-99          23    378
-   35  TU58  .BIC      31-DEC-99          20    401
-   36  ASHTST.CCC      31-DEC-99           1    421
-   37  CISTST.CCC      31-DEC-99           1    422
-   38  DIVTST.CCC      31-DEC-99           1    423
-   39  M9313 .CCC      31-DEC-99           1    424
-   40  MSCP  .CCC      31-DEC-99           1    425
-   41  MULTST.CCC      31-DEC-99           1    426
-   42  PRFTST.CCC      31-DEC-99           1    427
-   43  RX02BO.CCC      31-DEC-99           1    428
-   44  RX02RD.CCC      31-DEC-99           1    429
-   45  RX02WR.CCC      31-DEC-99           1    430
-   46  RX02XX.CCC      31-DEC-99           1    431
-   47  TMSCP .CCC      31-DEC-99           1    432
-   48  TU58  .CCC      31-DEC-99           1    433
-   49  TEST  .CCC      31-DEC-99           1    434
+   19  ALIGN .BIN      31-DEC-99           5    241
+   20  ASHTST.BIC      31-DEC-99           8    246
+   21  CISTST.BIC      31-DEC-99          10    254
+   22  DIVTST.BIC      31-DEC-99           8    264
+   23  DL11  .BIN      31-DEC-99           6    272
+   24  ECHO1 .BIN      31-DEC-99           3    278
+   25  ECHO2 .BIN      31-DEC-99           4    281
+   26  M9313 .BIC      31-DEC-99          12    285
+   27  MEMX  .BIN      31-DEC-99          12    297
+   28  MSCP  .BIC      31-DEC-99          25    309
+   29  MULTST.BIC      31-DEC-99           7    334
+   30  PRFTST.BIC      31-DEC-99           9    341
+   31  RX02BO.BIC      31-DEC-99           1    350
+   32  RX02RD.BIC      31-DEC-99          10    351
+   33  RX02WR.BIC      31-DEC-99          12    361
+   34  RX02XX.BIC      31-DEC-99          11    373
+   35  TMSCP .BIC      31-DEC-99          23    384
+   36  TU58  .BIC      31-DEC-99          20    407
+   37  ASHTST.CCC      31-DEC-99           1    427
+   38  CISTST.CCC      31-DEC-99           1    428
+   39  DIVTST.CCC      31-DEC-99           1    429
+   40  M9313 .CCC      31-DEC-99           1    430
+   41  MSCP  .CCC      31-DEC-99           1    431
+   42  MULTST.CCC      31-DEC-99           1    432
+   43  PRFTST.CCC      31-DEC-99           1    433
+   44  RX02BO.CCC      31-DEC-99           1    434
+   45  RX02RD.CCC      31-DEC-99           1    435
+   46  RX02WR.CCC      31-DEC-99           1    436
+   47  RX02XX.CCC      31-DEC-99           1    437
+   48  TMSCP .CCC      31-DEC-99           1    438
+   49  TU58  .CCC      31-DEC-99           1    439
+   50  TEST  .CCC      31-DEC-99           1    440
 
-FREE BLOCKS:   553
+FREE BLOCKS:   547

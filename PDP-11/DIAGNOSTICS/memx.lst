@@ -126,7 +126,7 @@
       27        177746                  ccsr	=177746			; cache control register ... cache force miss
       28                                
       29        000000                  pgprg	=0			; first program page
-      30        000004                  pgprgn	=4			; number of 8KB program pages (must be power of two)
+      30        000001                  pgprgn	=1			; number of 8KB program pages
       31        000006                  pgtst	=6			; memory test page
       32        000007                  pgios	=7			; i/o page
       33                                
@@ -183,7 +183,7 @@
       84 002022 000000                  blend:	.word	0			; end   block number for tests
       85 002024 001777                  blmsk:	.word	1777			; 16K device boundary address mask
       86 002026 000000                  protmn:	.word	0			; begin block number of protected space
-      87 002030 000777                  protmx:	.word	<pgprgn*pgszbl>-1	; end block number of protected space
+      87 002030 000177                  protmx:	.word	<pgprgn*pgszbl>-1	; end block number of protected space
       88 002032 000000                  mcrmsk:	.word	0			; bitmask of mcsr's that exist
       89 002034 000000                  flg22b:	.word	0			; set nonzero for 22b system
       90 002036 000000                  errors:	.word	0			; count errors
@@ -198,6 +198,7 @@
       99                                .sbttl	program start
      100                                
      101 002052                         	align	7			; pc alignment
+       9                                .list
      102                                
      103 002200 012706  002000          start:	mov	#stack,sp		; setup a stack
      104 002204 000005                  	reset				; reset the world
@@ -220,10 +221,13 @@
      108                                
      109 002260                         	printf	#msg1			; say hello
        1 002260                         	calls	printf #msg1               
+       8                                .list
        9 002260 012746  007760          	mov	#msg1,-(sp)
+       1                                .list
        2 002264                         	call	printf
        1 002264 004737  011020          	jsr	pc,printf
        3 002270 062706  000002          	add	#2,sp
+      18                                .list
      110                                
      111 002274 005037  002036          	clr	errors			; none yet
      112 002300 005037  002040          	clr	passes			; ditto
@@ -237,10 +241,13 @@
      119                                
      120 002316                         	printf	#70$			; print a message
        1 002316                         	calls	printf #70$               
+       8                                .list
        9 002316 012746  002336          	mov	#70$,-(sp)
+       1                                .list
        2 002322                         	call	printf
        1 002322 004737  011020          	jsr	pc,printf
        3 002326 062706  000002          	add	#2,sp
+      18                                .list
      121 002332 000137  007732          	jmp	exit			; just exit	
      122                                
      123 002336    015     012     124  70$:	.asciz	<cr><lf>"This diagnostic requires memory management"<cr><lf>
@@ -274,7 +281,7 @@
      136 002440 077205                  	sob	r2,1$			; loop over all pairs
      137                                
      138 002442 012701  172300          	mov	#kpdr+<2*pgprg>,r1	; ptr to first base register
-     139 002446 012702  000004          	mov	#pgprgn,r2		; number of program pages
+     139 002446 012702  000001          	mov	#pgprgn,r2		; number of program pages
      140 002452 012703  000000          	mov	#0, r3			; first physical block address
      141 002456 010361  000040          2$:	mov	r3,kpar-kpdr(r1)	; init KPAR[n]
      142 002462 012721  077406          	mov	#pgrw,(r1)+		; init KPDR[n] as r/w page
@@ -335,20 +342,26 @@
      195                                
      196 002712                         	printf	#msg4,r0,membyh,membyl	; format, size in KB, size msb, size lsb
        1 002712                         	calls	printf #msg4 r0 membyh membyl            
+       8                                .list
        9 002712 013746  002014          	mov	membyl,-(sp)
+      14                                .list
       15 002716 013746  002016          	mov	membyh,-(sp)
+      20                                .list
       21 002722 010046                  	mov	r0,-(sp)
-      27 002724 012746  010065          	mov	#msg4,-(sp)
+      26                                .list
+      27 002724 012746  010064          	mov	#msg4,-(sp)
+       1                                .list
        2 002730                         	call	printf
        1 002730 004737  011020          	jsr	pc,printf
        3 002734 062706  000010          	add	#10,sp
+      18                                .list
      197                                
      198 002740 013737  002006  002020  	mov	blmin,blbeg		; min test block number
      199 002746 013737  002012  002022  	mov	membl,blend		; max test block number
      200 002754 005337  002022          	dec	blend			;
      201                                
      202 002760 013737  002006  002026  	mov	blmin, protmn		; begin block number of protected space
-     203 002766 012737  000777  002030  	mov	#<pgprgn*pgszbl>-1,protmx ; end block number of protected space
+     203 002766 012737  000177  002030  	mov	#<pgprgn*pgszbl>-1,protmx ; end block number of protected space
      204                                
      205                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      206                                
@@ -360,10 +373,13 @@
      212 003006 012703  000020          	mov	#16.,r3			; maximum number of registers
      213 003012                         	printf	#msg5a			; memory control register header
        1 003012                         	calls	printf #msg5a               
-       9 003012 012746  010136          	mov	#msg5a,-(sp)
+       8                                .list
+       9 003012 012746  010135          	mov	#msg5a,-(sp)
+       1                                .list
        2 003016                         	call	printf
        1 003016 004737  011020          	jsr	pc,printf
        3 003022 062706  000002          	add	#2,sp
+      18                                .list
      214                                
      215 003026                         1$:	call	adrchk			; check if (r0) exists
        1 003026 004737  010746          	jsr	pc,adrchk
@@ -371,11 +387,15 @@
      217 003034 005010                  	clr	(r0)			; init a csr
      218 003036                         	printf	#msg5b,r0		; print register address
        1 003036                         	calls	printf #msg5b r0              
+       8                                .list
        9 003036 010046                  	mov	r0,-(sp)
-      15 003040 012746  010173          	mov	#msg5b,-(sp)
+      14                                .list
+      15 003040 012746  010172          	mov	#msg5b,-(sp)
+       1                                .list
        2 003044                         	call	printf
        1 003044 004737  011020          	jsr	pc,printf
        3 003050 062706  000004          	add	#4,sp
+      18                                .list
      219 003054 050102                  	bis	r1,r2			; indicate present
      220 003056 006301                  2$:	asl	r1			; shift mask left
      221 003060 062700  000002          	add	#2,r0			; bump pointer
@@ -385,16 +405,22 @@
      225 003072 001006                  	bne	3$			; br if at least one
      226 003074                         	printf	#msg5c			; message about none
        1 003074                         	calls	printf #msg5c               
-       9 003074 012746  010201          	mov	#msg5c,-(sp)
+       8                                .list
+       9 003074 012746  010200          	mov	#msg5c,-(sp)
+       1                                .list
        2 003100                         	call	printf
        1 003100 004737  011020          	jsr	pc,printf
        3 003104 062706  000002          	add	#2,sp
+      18                                .list
      227 003110                         3$:	printf	#crlf			; done
        1 003110                         	calls	printf #crlf               
-       9 003110 012746  010211          	mov	#crlf,-(sp)
+       8                                .list
+       9 003110 012746  010210          	mov	#crlf,-(sp)
+       1                                .list
        2 003114                         	call	printf
        1 003114 004737  011020          	jsr	pc,printf
        3 003120 062706  000002          	add	#2,sp
+      18                                .list
      228                                
      229                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      230                                
@@ -412,6 +438,7 @@
      242                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      243                                
      244 003144                         	test	<constant data patterns>
+       1                                .list
        2                                
        3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
        4                                	.sbttl	Test1 - constant data patterns
@@ -422,14 +449,19 @@
        9 003144 022737  000001  002042  	cmp	#1,testno		; check for sequence error
       10 003152 001401                  	beq	.+4			; OK, skip over halt
       11 003154 000000                  	halt				; FATAL - SEQUENCE ERROR
+      18                                .list
      245                                
      246 003156                         	printf	#70$,testno		; header message
        1 003156                         	calls	printf #70$ testno              
+       8                                .list
        9 003156 013746  002042          	mov	testno,-(sp)
+      14                                .list
       15 003162 012746  003546          	mov	#70$,-(sp)
+       1                                .list
        2 003166                         	call	printf
        1 003166 004737  011020          	jsr	pc,printf
        3 003172 062706  000004          	add	#4,sp
+      18                                .list
      247                                
      248 003176                         	call	disecc			; disable ecc
        1 003176 004737  010370          	jsr	pc,disecc
@@ -440,14 +472,21 @@
      253 003222 011302                  	mov	(r3),r2			; get expected pattern
      254 003224                         	printf	#72$,testno,63$,r2,r2	; subheader message
        1 003224                         	calls	printf #72$ testno 63$ r2 r2           
+       8                                .list
        9 003224 010246                  	mov	r2,-(sp)
+      14                                .list
       15 003226 010246                  	mov	r2,-(sp)
+      20                                .list
       21 003230 013746  003544          	mov	63$,-(sp)
+      26                                .list
       27 003234 013746  002042          	mov	testno,-(sp)
+      32                                .list
       33 003240 012746  003745          	mov	#72$,-(sp)
+       1                                .list
        2 003244                         	call	printf
        1 003244 004737  011020          	jsr	pc,printf
        3 003250 062706  000012          	add	#12,sp
+      18                                .list
      255                                
      256                                	; fill each block with a constant data pattern
      257                                
@@ -499,16 +538,25 @@
        1 003374 004737  010214          	jsr	pc,adrxlt
      301 003400                         	printf	#71$,testno,63$,phyadr+0,phyadr+2,r2,r1 ; format, test, addrhi/lo, exp, rcv
        1 003400                         	calls	printf #71$ testno 63$ phyadr+0 phyadr+2 r2 r1         
+       8                                .list
        9 003400 010146                  	mov	r1,-(sp)
+      14                                .list
       15 003402 010246                  	mov	r2,-(sp)
+      20                                .list
       21 003404 013746  002046          	mov	phyadr+2,-(sp)
+      26                                .list
       27 003410 013746  002044          	mov	phyadr+0,-(sp)
+      32                                .list
       33 003414 013746  003544          	mov	63$,-(sp)
+      38                                .list
       39 003420 013746  002042          	mov	testno,-(sp)
+      44                                .list
       45 003424 012746  003611          	mov	#71$,-(sp)
+       1                                .list
        2 003430                         	call	printf
        1 003430 004737  011020          	jsr	pc,printf
        3 003434 062706  000016          	add	#16,sp
+      18                                .list
      302                                
      303 003440 005237  002036          22$:	inc	errors			; count errors
      304 003444 001775                  	beq	22$			;
@@ -611,6 +659,7 @@
      348                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      349                                
      350 004020                         	test	<unique physical block select test>
+       1                                .list
        2                                
        3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
        4                                	.sbttl	Test2 - unique physical block select test
@@ -621,14 +670,19 @@
        9 004020 022737  000002  002042  	cmp	#2,testno		; check for sequence error
       10 004026 001401                  	beq	.+4			; OK, skip over halt
       11 004030 000000                  	halt				; FATAL - SEQUENCE ERROR
+      18                                .list
      351                                
      352 004032                         	printf	#70$,testno		; header message
        1 004032                         	calls	printf #70$ testno              
+       8                                .list
        9 004032 013746  002042          	mov	testno,-(sp)
+      14                                .list
       15 004036 012746  004256          	mov	#70$,-(sp)
+       1                                .list
        2 004042                         	call	printf
        1 004042 004737  011020          	jsr	pc,printf
        3 004046 062706  000004          	add	#4,sp
+      18                                .list
      353                                
      354 004052                         	call	disecc			; disable ecc
        1 004052 004737  010370          	jsr	pc,disecc
@@ -677,15 +731,23 @@
        1 004162 004737  010214          	jsr	pc,adrxlt
      395 004166                         	printf	#71$,testno,phyadr+0,phyadr+2,r5,r2 ; format, test, addrhi/lo, exp, rcv
        1 004166                         	calls	printf #71$ testno phyadr+0 phyadr+2 r5 r2          
+       8                                .list
        9 004166 010246                  	mov	r2,-(sp)
+      14                                .list
       15 004170 010546                  	mov	r5,-(sp)
+      20                                .list
       21 004172 013746  002046          	mov	phyadr+2,-(sp)
+      26                                .list
       27 004176 013746  002044          	mov	phyadr+0,-(sp)
+      32                                .list
       33 004202 013746  002042          	mov	testno,-(sp)
+      38                                .list
       39 004206 012746  004327          	mov	#71$,-(sp)
+       1                                .list
        2 004212                         	call	printf
        1 004212 004737  011020          	jsr	pc,printf
        3 004216 062706  000014          	add	#14,sp
+      18                                .list
      396                                
      397 004222 005237  002036          22$:	inc	errors			; count errors
      398 004226 001775                  	beq	22$			;
@@ -758,6 +820,7 @@
      420                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      421                                
      422 004474                         	test	<unique physical block address test>
+       1                                .list
        2                                
        3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
        4                                	.sbttl	Test3 - unique physical block address test
@@ -768,14 +831,19 @@
        9 004474 022737  000003  002042  	cmp	#3,testno		; check for sequence error
       10 004502 001401                  	beq	.+4			; OK, skip over halt
       11 004504 000000                  	halt				; FATAL - SEQUENCE ERROR
+      18                                .list
      423                                
      424 004506                         	printf	#70$,testno		; header message
        1 004506                         	calls	printf #70$ testno              
+       8                                .list
        9 004506 013746  002042          	mov	testno,-(sp)
+      14                                .list
       15 004512 012746  004724          	mov	#70$,-(sp)
+       1                                .list
        2 004516                         	call	printf
        1 004516 004737  011020          	jsr	pc,printf
        3 004522 062706  000004          	add	#4,sp
+      18                                .list
      425                                
      426 004526                         	call	disecc			; disable ecc
        1 004526 004737  010370          	jsr	pc,disecc
@@ -827,15 +895,23 @@
        1 004630 004737  010214          	jsr	pc,adrxlt
      471 004634                         	printf	#71$,testno,phyadr+0,phyadr+2,r1,r2 ; format, test, addrhi/lo, exp, rcv
        1 004634                         	calls	printf #71$ testno phyadr+0 phyadr+2 r1 r2          
+       8                                .list
        9 004634 010246                  	mov	r2,-(sp)
+      14                                .list
       15 004636 010146                  	mov	r1,-(sp)
+      20                                .list
       21 004640 013746  002046          	mov	phyadr+2,-(sp)
+      26                                .list
       27 004644 013746  002044          	mov	phyadr+0,-(sp)
+      32                                .list
       33 004650 013746  002042          	mov	testno,-(sp)
+      38                                .list
       39 004654 012746  004776          	mov	#71$,-(sp)
+       1                                .list
        2 004660                         	call	printf
        1 004660 004737  011020          	jsr	pc,printf
        3 004664 062706  000014          	add	#14,sp
+      18                                .list
      472                                
      473 004670 005237  002036          31$:	inc	errors			; count errors
      474 004674 001775                  	beq	31$			;
@@ -908,6 +984,7 @@
      496                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      497                                
      498 005144                         	test	<extended march c- data test>
+       1                                .list
        2                                
        3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
        4                                	.sbttl	Test4 - extended march c- data test
@@ -918,14 +995,19 @@
        9 005144 022737  000004  002042  	cmp	#4,testno		; check for sequence error
       10 005152 001401                  	beq	.+4			; OK, skip over halt
       11 005154 000000                  	halt				; FATAL - SEQUENCE ERROR
+      18                                .list
      499                                
      500 005156                         	printf	#70$,testno		; header message
        1 005156                         	calls	printf #70$ testno              
+       8                                .list
        9 005156 013746  002042          	mov	testno,-(sp)
+      14                                .list
       15 005162 012746  006340          	mov	#70$,-(sp)
+       1                                .list
        2 005166                         	call	printf
        1 005166 004737  011020          	jsr	pc,printf
        3 005172 062706  000004          	add	#4,sp
+      18                                .list
      501                                
      502 005176                         	call	disecc			; disable ecc
        1 005176 004737  010370          	jsr	pc,disecc
@@ -938,11 +1020,15 @@
      509                                
      510 005202                         	printf	#71$,testno		; subheader
        1 005202                         	calls	printf #71$ testno              
+       8                                .list
        9 005202 013746  002042          	mov	testno,-(sp)
+      14                                .list
       15 005206 012746  006410          	mov	#71$,-(sp)
+       1                                .list
        2 005212                         	call	printf
        1 005212 004737  011020          	jsr	pc,printf
        3 005216 062706  000004          	add	#4,sp
+      18                                .list
      511 005222 013705  002020          	mov	blbeg,r5		; starting block number
      512 005226                         100$:	call	adrtst			; check ok to test this block
        1 005226 004737  010344          	jsr	pc,adrtst
@@ -960,11 +1046,15 @@
      524                                
      525 005264                         	printf	#72$,testno		; subheader
        1 005264                         	calls	printf #72$ testno              
+       8                                .list
        9 005264 013746  002042          	mov	testno,-(sp)
+      14                                .list
       15 005270 012746  006471          	mov	#72$,-(sp)
+       1                                .list
        2 005274                         	call	printf
        1 005274 004737  011020          	jsr	pc,printf
        3 005300 062706  000004          	add	#4,sp
+      18                                .list
      526 005304 013705  002020          	mov	blbeg,r5		; starting block number
      527 005310                         110$:	call	adrtst			; check ok to test this block
        1 005310 004737  010344          	jsr	pc,adrtst
@@ -984,16 +1074,25 @@
        1 005356 004737  010214          	jsr	pc,adrxlt
      541 005362                         	printf	#77$,testno,#'b,phyadr+0,phyadr+2,#0,r0 ; format, test, subtest, addrhi/lo, exp, rcv
        1 005362                         	calls	printf #77$ testno #'b phyadr+0 phyadr+2 #0 r0         
+       8                                .list
        9 005362 010046                  	mov	r0,-(sp)
+      14                                .list
       15 005364 012746  000000          	mov	#0,-(sp)
+      20                                .list
       21 005370 013746  002046          	mov	phyadr+2,-(sp)
+      26                                .list
       27 005374 013746  002044          	mov	phyadr+0,-(sp)
+      32                                .list
       33 005400 012746  000142          	mov	#'b,-(sp)
+      38                                .list
       39 005404 013746  002042          	mov	testno,-(sp)
+      44                                .list
       45 005410 012746  007161          	mov	#77$,-(sp)
+       1                                .list
        2 005414                         	call	printf
        1 005414 004737  011020          	jsr	pc,printf
        3 005420 062706  000016          	add	#16,sp
+      18                                .list
      542 005424 005101                  112$:	com	r1			; check one
      543 005426 001427                  	beq	113$			; br if OK
      544 005430 005101                  	com	r1			; restore r1
@@ -1003,16 +1102,25 @@
        1 005440 004737  010214          	jsr	pc,adrxlt
      548 005444                         	printf	#77$,testno,#'b,phyadr+0,phyadr+2,#-1,r1 ; format, test, subtest, addrhi/lo, exp, rcv
        1 005444                         	calls	printf #77$ testno #'b phyadr+0 phyadr+2 #-1 r1         
+       8                                .list
        9 005444 010146                  	mov	r1,-(sp)
+      14                                .list
       15 005446 012746  177777          	mov	#-1,-(sp)
+      20                                .list
       21 005452 013746  002046          	mov	phyadr+2,-(sp)
+      26                                .list
       27 005456 013746  002044          	mov	phyadr+0,-(sp)
+      32                                .list
       33 005462 012746  000142          	mov	#'b,-(sp)
+      38                                .list
       39 005466 013746  002042          	mov	testno,-(sp)
+      44                                .list
       45 005472 012746  007161          	mov	#77$,-(sp)
+       1                                .list
        2 005476                         	call	printf
        1 005476 004737  011020          	jsr	pc,printf
        3 005502 062706  000016          	add	#16,sp
+      18                                .list
      549 005506 077365                  113$:	sob	r3,111$			; loop for block size
      550 005510 005205                  119$:	inc	r5			; incr test block
      551 005512 020537  002022          	cmp	r5,blend		; at the end?
@@ -1022,11 +1130,15 @@
      555                                
      556 005520                         	printf	#73$,testno		; subheader
        1 005520                         	calls	printf #73$ testno              
+       8                                .list
        9 005520 013746  002042          	mov	testno,-(sp)
+      14                                .list
       15 005524 012746  006604          	mov	#73$,-(sp)
+       1                                .list
        2 005530                         	call	printf
        1 005530 004737  011020          	jsr	pc,printf
        3 005534 062706  000004          	add	#4,sp
+      18                                .list
      557 005540 013705  002020          	mov	blbeg,r5		; starting block number
      558 005544                         120$:	call	adrtst			; check ok to test this block
        1 005544 004737  010344          	jsr	pc,adrtst
@@ -1055,16 +1167,25 @@
        1 005606 004737  010214          	jsr	pc,adrxlt
      581 005612                         	printf	#77$,testno,#'c,phyadr+0,phyadr+2,#-1,r0 ; format, test, subtest, addrhi/lo, exp, rcv
        1 005612                         	calls	printf #77$ testno #'c phyadr+0 phyadr+2 #-1 r0         
+       8                                .list
        9 005612 010046                  	mov	r0,-(sp)
+      14                                .list
       15 005614 012746  177777          	mov	#-1,-(sp)
+      20                                .list
       21 005620 013746  002046          	mov	phyadr+2,-(sp)
+      26                                .list
       27 005624 013746  002044          	mov	phyadr+0,-(sp)
+      32                                .list
       33 005630 012746  000143          	mov	#'c,-(sp)
+      38                                .list
       39 005634 013746  002042          	mov	testno,-(sp)
+      44                                .list
       45 005640 012746  007161          	mov	#77$,-(sp)
+       1                                .list
        2 005644                         	call	printf
        1 005644 004737  011020          	jsr	pc,printf
        3 005650 062706  000016          	add	#16,sp
+      18                                .list
      582 005654 077334                  122$:	sob	r3,121$			; loop for block size
      583 005656 005205                  129$:	inc	r5			; incr test block
      584 005660 020537  002022          	cmp	r5,blend		; at the end?
@@ -1074,11 +1195,15 @@
      588                                
      589 005666                         	printf	#74$,testno		; subheader
        1 005666                         	calls	printf #74$ testno              
+       8                                .list
        9 005666 013746  002042          	mov	testno,-(sp)
+      14                                .list
       15 005672 012746  006702          	mov	#74$,-(sp)
+       1                                .list
        2 005676                         	call	printf
        1 005676 004737  011020          	jsr	pc,printf
        3 005702 062706  000004          	add	#4,sp
+      18                                .list
      590 005706 013705  002022          	mov	blend,r5		; ending block number
      591 005712                         130$:	call	adrtst			; check ok to test this block
        1 005712 004737  010344          	jsr	pc,adrtst
@@ -1106,16 +1231,25 @@
        1 005752 004737  010214          	jsr	pc,adrxlt
      613 005756                         	printf	#77$,testno,#'d,phyadr+0,phyadr+2,#0,r0 ; format, test, subtest, addrhi/lo, exp, rcv
        1 005756                         	calls	printf #77$ testno #'d phyadr+0 phyadr+2 #0 r0         
+       8                                .list
        9 005756 010046                  	mov	r0,-(sp)
+      14                                .list
       15 005760 012746  000000          	mov	#0,-(sp)
+      20                                .list
       21 005764 013746  002046          	mov	phyadr+2,-(sp)
+      26                                .list
       27 005770 013746  002044          	mov	phyadr+0,-(sp)
+      32                                .list
       33 005774 012746  000144          	mov	#'d,-(sp)
+      38                                .list
       39 006000 013746  002042          	mov	testno,-(sp)
+      44                                .list
       45 006004 012746  007161          	mov	#77$,-(sp)
+       1                                .list
        2 006010                         	call	printf
        1 006010 004737  011020          	jsr	pc,printf
        3 006014 062706  000016          	add	#16,sp
+      18                                .list
      614 006020 077331                  132$:	sob	r3,131$			; loop for block size
      615 006022 005305                  139$:	dec	r5			; incr test block
      616 006024 020537  002020          	cmp	r5,blbeg		; at the begin
@@ -1125,11 +1259,15 @@
      620                                
      621 006032                         	printf	#75$,testno		; subheader
        1 006032                         	calls	printf #75$ testno              
+       8                                .list
        9 006032 013746  002042          	mov	testno,-(sp)
+      14                                .list
       15 006036 012746  007001          	mov	#75$,-(sp)
+       1                                .list
        2 006042                         	call	printf
        1 006042 004737  011020          	jsr	pc,printf
        3 006046 062706  000004          	add	#4,sp
+      18                                .list
      622 006052 013705  002022          	mov	blend,r5		; ending block number
      623 006056                         140$:	call	adrtst			; check ok to test this block
        1 006056 004737  010344          	jsr	pc,adrtst
@@ -1147,16 +1285,25 @@
        1 006114 004737  010214          	jsr	pc,adrxlt
      635 006120                         	printf	#77$,testno,#'e,phyadr+0,phyadr+2,#-1,r0 ; format, test, subtest, addrhi/lo, exp, rcv
        1 006120                         	calls	printf #77$ testno #'e phyadr+0 phyadr+2 #-1 r0         
+       8                                .list
        9 006120 010046                  	mov	r0,-(sp)
+      14                                .list
       15 006122 012746  177777          	mov	#-1,-(sp)
+      20                                .list
       21 006126 013746  002046          	mov	phyadr+2,-(sp)
+      26                                .list
       27 006132 013746  002044          	mov	phyadr+0,-(sp)
+      32                                .list
       33 006136 012746  000145          	mov	#'e,-(sp)
+      38                                .list
       39 006142 013746  002042          	mov	testno,-(sp)
+      44                                .list
       45 006146 012746  007161          	mov	#77$,-(sp)
+       1                                .list
        2 006152                         	call	printf
        1 006152 004737  011020          	jsr	pc,printf
        3 006156 062706  000016          	add	#16,sp
+      18                                .list
      636 006162 077332                  142$:	sob	r3,141$			; loop for block size
      637 006164 005305                  149$:	dec	r5			; incr test block
      638 006166 020537  002020          	cmp	r5,blbeg		; at the begin
@@ -1166,11 +1313,15 @@
      642                                
      643 006174                         	printf	#76$,testno		; subheader
        1 006174                         	calls	printf #76$ testno              
+       8                                .list
        9 006174 013746  002042          	mov	testno,-(sp)
+      14                                .list
       15 006200 012746  007100          	mov	#76$,-(sp)
+       1                                .list
        2 006204                         	call	printf
        1 006204 004737  011020          	jsr	pc,printf
        3 006210 062706  000004          	add	#4,sp
+      18                                .list
      644 006214 013705  002022          	mov	blend,r5		; ending block number
      645 006220                         150$:	call	adrtst			; check ok to test this block
        1 006220 004737  010344          	jsr	pc,adrtst
@@ -1185,16 +1336,25 @@
        1 006250 004737  010214          	jsr	pc,adrxlt
      654 006254                         	printf	#77$,testno,#'f,phyadr+0,phyadr+2,#0,r0 ; format, test, subtest, addrhi/lo, exp, rcv
        1 006254                         	calls	printf #77$ testno #'f phyadr+0 phyadr+2 #0 r0         
+       8                                .list
        9 006254 010046                  	mov	r0,-(sp)
+      14                                .list
       15 006256 012746  000000          	mov	#0,-(sp)
+      20                                .list
       21 006262 013746  002046          	mov	phyadr+2,-(sp)
+      26                                .list
       27 006266 013746  002044          	mov	phyadr+0,-(sp)
+      32                                .list
       33 006272 012746  000146          	mov	#'f,-(sp)
+      38                                .list
       39 006276 013746  002042          	mov	testno,-(sp)
+      44                                .list
       45 006302 012746  007161          	mov	#77$,-(sp)
+       1                                .list
        2 006306                         	call	printf
        1 006306 004737  011020          	jsr	pc,printf
        3 006312 062706  000016          	add	#16,sp
+      18                                .list
      655 006316 077327                  152$:	sob	r3,151$			; loop for block size
      656 006320 005305                  159$:	dec	r5			; incr test block
      657 006322 020537  002020          	cmp	r5,blbeg		; at the begin
@@ -1389,12 +1549,17 @@
      684 007332 005237  002040          	inc	passes			; count passes
      685 007336                         	printf	#msg3,passes,errors	; format, passcount, errcount
        1 007336                         	calls	printf #msg3 passes errors             
+       8                                .list
        9 007336 013746  002036          	mov	errors,-(sp)
+      14                                .list
       15 007342 013746  002040          	mov	passes,-(sp)
-      21 007346 012746  010031          	mov	#msg3,-(sp)
+      20                                .list
+      21 007346 012746  010030          	mov	#msg3,-(sp)
+       1                                .list
        2 007352                         	call	printf
        1 007352 004737  011020          	jsr	pc,printf
        3 007356 062706  000006          	add	#6,sp
+      18                                .list
      686                                
      687                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      688                                
@@ -1407,11 +1572,11 @@
      695                                
      696                                	; copy current program image space to relocated space
      697                                
-     698 007376 012701  001000          	mov	#pgprgn*pgszbl,r1	; number of blocks to move (power of two)
+     698 007376 012701  000200          	mov	#pgprgn*pgszbl,r1	; number of blocks to move (power of two)
      699 007402 074137  002026          	xor	r1,protmn		; new dest prot range low
      700 007406 074137  002030          	xor	r1,protmx		; new dest prot range high
      701                                
-     702 007412 012701  001000          1$:	mov	#pgprgn*pgszbl,r1	; number of blocks to move (power of two)
+     702 007412 012701  000200          1$:	mov	#pgprgn*pgszbl,r1	; number of blocks to move (power of two)
      703 007416 013737  002026  172354  	mov	protmn,@#tstpar		; starting dest block address
      704 007424 005002                  	clr	r2			; starting source address
      705 007426 012703  000040          10$:	mov	#blszby/2,r3		; number of words to move
@@ -1423,7 +1588,7 @@
      711                                
      712                                	; compare current program image space to relocated space
      713                                
-     714 007450 012701  001000          	mov	#pgprgn*pgszbl,r1	; number of blocks to move (power of two)
+     714 007450 012701  000200          	mov	#pgprgn*pgszbl,r1	; number of blocks to move (power of two)
      715 007454 013737  002026  172354  	mov	protmn,@#tstpar		; starting dest block address
      716 007462 005002                  	clr	r2			; starting source address
      717 007464 012703  000040          20$:	mov	#blszby/2,r3		; number of words to move
@@ -1436,9 +1601,9 @@
      724                                
      725                                	; now relocate program via swapping KPARx contents
      726                                
-     727 007510 012701  001000          	mov	#pgprgn*pgszbl,r1	; number of blocks to move (power of two)
+     727 007510 012701  000200          	mov	#pgprgn*pgszbl,r1	; number of blocks to move (power of two)
      728 007514 012702  172340          	mov	#kpar+<2*pgprg>,r2	; ptr to first base register
-     729 007520 012703  000004          	mov	#pgprgn,r3		; number of program pages
+     729 007520 012703  000001          	mov	#pgprgn,r3		; number of program pages
      730 007524 074122                  30$:	xor	r1,(r2)+		; swap address in KPAR[n]
      731 007526 077302                  	sob	r3,30$			; loop over all pages
      732                                
@@ -1455,14 +1620,21 @@
      743                                
      744 007560                         	printf	#70$,r0,r1,r2,r3	; format, min hi, min lo, max hi, max lo
        1 007560                         	calls	printf #70$ r0 r1 r2 r3           
+       8                                .list
        9 007560 010346                  	mov	r3,-(sp)
+      14                                .list
       15 007562 010246                  	mov	r2,-(sp)
+      20                                .list
       21 007564 010146                  	mov	r1,-(sp)
+      26                                .list
       27 007566 010046                  	mov	r0,-(sp)
+      32                                .list
       33 007570 012746  007606          	mov	#70$,-(sp)
+       1                                .list
        2 007574                         	call	printf
        1 007574 004737  011020          	jsr	pc,printf
        3 007600 062706  000012          	add	#12,sp
+      18                                .list
      745                                
      746 007604 000431                  	br	99$			; next
      747                                
@@ -1506,10 +1678,13 @@
      769                                
      770 007732                         exit:	printf	#msg2			; say goodbye
        1 007732                         	calls	printf #msg2               
-       9 007732 012746  010015          	mov	#msg2,-(sp)
+       8                                .list
+       9 007732 012746  010014          	mov	#msg2,-(sp)
+       1                                .list
        2 007736                         	call	printf
        1 007736 004737  011020          	jsr	pc,printf
        3 007742 062706  000002          	add	#2,sp
+      18                                .list
      771 007746 005000                  	clr	r0			;
      772 007750 077001                  10$:	sob	r0,10$			; some delay
      773 007752 000005                  	reset				; zap the world
@@ -1519,7 +1694,7 @@
      777                                ; 
      778                                ; random status messages
      779                                ; 
-     780 007760    015     012     015  msg1:	.asciz	<cr><lf><cr><lf>"Memory Exerciser v1.32"<cr><lf>
+     780 007760    015     012     015  msg1:	.asciz	<cr><lf><cr><lf>"Memory Exerciser v1.4"<cr><lf>
          007763    012     115     145  
          007766    155     157     162  
          007771    171     040     105  
@@ -1527,53 +1702,53 @@
          007777    143     151     163  
          010002    145     162     040  
          010005    166     061     056  
-         010010    063     062     015  
-         010013    012     000          
-     781 010015    015     012     107  msg2:	.asciz	<cr><lf>"Goodbye"<cr><lf>
-         010020    157     157     144  
-         010023    142     171     145  
-         010026    015     012     000  
-     782 010031    015     012     105  msg3:	.asciz	<cr><lf>"End pass %u. errors %u."<cr><lf>
-         010034    156     144     040  
-         010037    160     141     163  
-         010042    163     040     045  
-         010045    165     056     040  
-         010050    145     162     162  
-         010053    157     162     163  
-         010056    040     045     165  
-         010061    056     015     012  
-         010064    000                  
-     783 010065    015     012     104  msg4:	.asciz	<cr><lf>"Detected memory size is %dKB (%.6lp)"<cr><lf>
-         010070    145     164     145  
-         010073    143     164     145  
-         010076    144     040     155  
-         010101    145     155     157  
-         010104    162     171     040  
-         010107    163     151     172  
-         010112    145     040     151  
-         010115    163     040     045  
-         010120    144     113     102  
-         010123    040     050     045  
-         010126    056     066     154  
-         010131    160     051     015  
-         010134    012     000          
-     784 010136    015     012     115  msg5a:	.asciz	<cr><lf>"Memory Control registers: "
-         010141    145     155     157  
-         010144    162     171     040  
-         010147    103     157     156  
-         010152    164     162     157  
-         010155    154     040     162  
-         010160    145     147     151  
-         010163    163     164     145  
-         010166    162     163     072  
-         010171    040     000          
-     785 010173    040     045     056  msg5b:	.asciz	" %.6o"
-         010176    066     157     000  
-     786 010201    040     074     156  msg5c:	.asciz	" <none>"
-         010204    157     156     145  
-         010207    076     000          
-     787 010211    015     012     000  crlf:	.asciz	<cr><lf>
-     788                                	.even
+         010010    064     015     012  
+         010013    000                  
+     781 010014    015     012     107  msg2:	.asciz	<cr><lf>"Goodbye"<cr><lf>
+         010017    157     157     144  
+         010022    142     171     145  
+         010025    015     012     000  
+     782 010030    015     012     105  msg3:	.asciz	<cr><lf>"End pass %u. errors %u."<cr><lf>
+         010033    156     144     040  
+         010036    160     141     163  
+         010041    163     040     045  
+         010044    165     056     040  
+         010047    145     162     162  
+         010052    157     162     163  
+         010055    040     045     165  
+         010060    056     015     012  
+         010063    000                  
+     783 010064    015     012     104  msg4:	.asciz	<cr><lf>"Detected memory size is %dKB (%.6lp)"<cr><lf>
+         010067    145     164     145  
+         010072    143     164     145  
+         010075    144     040     155  
+         010100    145     155     157  
+         010103    162     171     040  
+         010106    163     151     172  
+         010111    145     040     151  
+         010114    163     040     045  
+         010117    144     113     102  
+         010122    040     050     045  
+         010125    056     066     154  
+         010130    160     051     015  
+         010133    012     000          
+     784 010135    015     012     115  msg5a:	.asciz	<cr><lf>"Memory Control registers: "
+         010140    145     155     157  
+         010143    162     171     040  
+         010146    103     157     156  
+         010151    164     162     157  
+         010154    154     040     162  
+         010157    145     147     151  
+         010162    163     164     145  
+         010165    162     163     072  
+         010170    040     000          
+     785 010172    040     045     056  msg5b:	.asciz	" %.6o"
+         010175    066     157     000  
+     786 010200    040     074     156  msg5c:	.asciz	" <none>"
+         010203    157     156     145  
+         010206    076     000          
+     787 010210    015     012     000  crlf:	.asciz	<cr><lf>
+     788 010213    000                  	.even
      789                                
      790                                ; --------------------------------------------------------------------------------
      791                                ;
@@ -1700,14 +1875,21 @@
      908 010540 050100                  	bis	r1,r0			; merge
      909 010542                         	printf	#71$,r3,r0,#0,r2	; format, csr addr, memory block, expected, received
        1 010542                         	calls	printf #71$ r3 r0 #0 r2           
+       8                                .list
        9 010542 010246                  	mov	r2,-(sp)
+      14                                .list
       15 010544 012746  000000          	mov	#0,-(sp)
+      20                                .list
       21 010550 010046                  	mov	r0,-(sp)
+      26                                .list
       27 010552 010346                  	mov	r3,-(sp)
+      32                                .list
       33 010554 012746  010624          	mov	#71$,-(sp)
+       1                                .list
        2 010560                         	call	printf
        1 010560 004737  011020          	jsr	pc,printf
        3 010564 062706  000012          	add	#12,sp
+      18                                .list
      910                                
      911 010570 005237  002036          18$:	inc	errors			; count errors
      912 010574 001775                  	beq	18$			; not zero
@@ -2579,71 +2761,71 @@
 
 Symbol table
 
-$$NUM  =000012           19$13  =010576   L       440$17 =011726   L       BIT08  =000400           N.LAST =000014           
-$$POS  =000200           2$1    =002456   L       450$17 =011742   L       BIT09  =001000           NOXXDP =007716           
-$ENDAD =007702           2$17   =011212   L       460$17 =011756   L       BIT1   =000002           NUMPAS =002004           
-$SAV42 =002050           2$18   =012242   L       470$17 =011772   L       BIT10  =002000           OPTSWI =002002           
-.      =******           2$2    =002650   L       5$1    =002606   L       BIT11  =004000           P.FIL  =177776           
-1$1    =002430   L       2$20   =012762   L       50$18  =012414   L       BIT12  =010000           P.FLG  =177777           
-1$14   =011002   L       2$21   =013072   L       50$19  =012604   L       BIT13  =020000           P.LEN  =177770           
-1$15   =011064   L       2$3    =003056   L       51$18  =012430   L       BIT14  =040000           P.OUT  =177766           
-1$16   =011144   L       20$10  =010276   L       52$18  =012456   L       BIT15  =100000           P.PRE  =177772           
-1$17   =011172   L       20$11  =010364   L       60$4   =003516   L       BIT2   =000004           P.PTR  =177764           
-1$18   =012200   L       20$12  =010436   L       61$4   =003520   L       BIT3   =000010           P.SR0  =000012           
-1$19   =012550   L       20$13  =010602   L       62$4   =003544   L       BIT4   =000020           P.SR1  =000010           
-1$2    =002624   L       20$17  =011400   L       63$4   =003544   L       BIT5   =000040           P.SR2  =000006           
-1$20   =012744   L       20$18  =012302   L       70$0   =002336   L       BIT6   =000100           P.SR3  =000004           
-1$21   =013034   L       20$19  =012572   L       70$18  =012464   L       BIT7   =000200           P.SR4  =000002           
-1$3    =003026   L       20$22  =013210   L       70$19  =012620   L       BIT8   =000400           P.SR5  =000000           
-1$4    =003216   L       20$4   =003336   L       70$4   =003546   L       BIT9   =001000           P.WID  =177774           
-1$8    =007412   L       20$5   =004124   L       70$5   =004256   L       BLBEG  =002020           PASSES =002040           
-10$12  =010404   L       20$6   =004560   L       70$6   =004724   L       BLEND  =002022           PF.ALT =000004           
-10$13  =010474   L       20$8   =007464   L       70$7   =006340   L       BLMAX  =002010           PF.LJU =000001           
-10$17  =011264   L       21$18  =012336   L       70$8   =007606   L       BLMIN  =002006           PF.LON =000010           
-10$18  =012260   L       21$4   =003360   L       71$13  =010624   L       BLMN   =000000           PF.NEG =000020           
-10$22  =013170   L       21$5   =004146   L       71$18  =012466   L       BLMSK  =002024           PF.SEP =000000           
-10$4   =003260   L       21$8   =007474   L       71$19  =012624   L       BLMX18 =007577           PF.SIG =000002           
-10$5   =004062   L       22$18  =012346   L       71$4   =003611   L       BLMX22 =167777           PGIOS  =000007           
-10$6   =004536   L       22$4   =003440   L       71$5   =004327   L       BLSZBY =000100           PGNONE =077400           
-10$8   =007426   L       22$5   =004222   L       71$6   =004776   L       BLSZIO =000200           PGPRG  =000000           
-10$9   =007750   L       23$4   =003454   L       71$7   =006410   L       BLSZUM =010000           PGPRGN =000004           
-100$19 =012662   L       23$5   =004236   L       72$4   =003745   L       CCSR   =177746           PGRW   =077406           
-100$7  =005226   L       24$4   =003456   L       72$7   =006471   L       CONSOL =165144 G         PGSZBL =000200           
-1000$17=012140   L       24$5   =004240   L       73$7   =006604   L       CR     =000015           PGSZBY =020000           
-101$19 =012676   L       3$17   =011222   L       74$7   =006702   L       CRLF   =010211           PGTST  =000006           
-101$7  =005250   L       3$21   =013116   L       75$7   =007001   L       DISECC =010370           PHYADR =002044           
-102$19 =012706   L       3$3    =003110   L       76$7   =007100   L       DONE   =007672           PRINTF =011020 G         
-109$7  =005254   L       30$10  =010306   L       77$7   =007161   L       DPYREG =177570 G         PROTMN =002026           
-11$17  =011312   L       30$12  =010444   L       80$18  =012502   L       ENBECC =010452           PROTMX =002030           
-11$4   =003302   L       30$13  =010610   L       80$19  =012640   L       ENMMGT =002420           PRT32U =012172           
-11$5   =004104   L       30$18  =012356   L       800$17 =012006   L       ERRORS =002036           PRTSTR =012542           
-11$8   =007436   L       30$22  =013246   L       81$18  =012516   L       EXIT   =007732           PSW    =177776 G         
-110$7  =005310   L       30$6   =004602   L       810$17 =012026   L       FAILS  =000000           SLDIV  =013124 G         
-111$7  =005336   L       30$8   =007524   L       820$17 =012030   L       FLG22B =002034           SPRINT =011100 G         
-112$7  =005424   L       31$18  =012374   L       880$17 =012072   L       KPAR   =172340           STACK  =002000           
-113$7  =005506   L       31$6   =004670   L       890$17 =012100   L       KPDR   =172300           START  =002200           
-119$7  =005510   L       32$18  =012410   L       90$18  =012534   L       LF     =000012           SWIREG =177570 G         
-12$17  =011344   L       32$6   =004704   L       90$19  =012654   L       LOOP   =003134           TEST1  =003144           
-12$4   =003322   L       32768$0=002220   L       900$17 =012102   L       MCR0   =172100           TEST2  =004020           
-12$5   =004110   L       32769$0=002226   L       99$0   =002416   L       MCRDET =002774           TEST3  =004474           
-120$7  =005544   L       32770$0=002244   L       99$4   =004014   L       MCRMSK =002032           TEST4  =005144           
-121$7  =005566   L       32771$0=002256   L       99$5   =004470   L       MEMBL  =002012           TESTNO =002042           
-122$7  =005654   L       34$6   =004706   L       99$6   =005140   L       MEMBYH =002016           TST$NO =000005           
-129$7  =005656   L       4$1    =002564   L       99$7   =007326   L       MEMBYL =002014           TSTMAX =140077           
-13$17  =011362   L       4$17   =011256   L       99$8   =007670   L       MMR0   =177572           TSTMIN =140000           
-130$7  =005712   L       40$10  =010324   L       990$17 =012120   L       MMR1   =177574           TSTPAR =172354           
-131$7  =005740   L       40$17  =011432   L       ADRCHK =010746 G         MMR2   =177576           TSTWC  =000040           
-132$7  =006020   L       40$22  =013264   L       ADRTST =010344           MMR3   =172516           TTRBUF =177562 G         
-139$7  =006022   L       400$17 =011502   L       ADRXLT =010214           MRELOC =007362           TTRCSR =177560 G         
-140$7  =006056   L       401$17 =011566   L       BIT0   =000001           MSG1   =007760           TTXBUF =177566 G         
-141$7  =006100   L       405$17 =011602   L       BIT00  =000001           MSG2   =010015           TTXCSR =177564 G         
-142$7  =006162   L       41$17  =011436   L       BIT01  =000002           MSG3   =010031           ULDIV  =013010 G         
-149$7  =006164   L       410$17 =011620   L       BIT02  =000004           MSG4   =010065           ULMUL  =012710 G         
-150$7  =006220   L       42$17  =011466   L       BIT03  =000010           MSG5A  =010136           XPRINT =011170           
-151$7  =006242   L       420$17 =011632   L       BIT04  =000020           MSG5B  =010173           
-152$7  =006316   L       430$17 =011652   L       BIT05  =000040           MSG5C  =010201           
-159$7  =006320   L       431$17 =011676   L       BIT06  =000100           MSIZER =002614           
-18$13  =010570   L       439$17 =011716   L       BIT07  =000200           N.ARGS =000016           
+$$NUM  = 000012           19$13  = 010576   L       440$17 = 011726   L       BIT08  = 000400           N.LAST = 000014           
+$$POS  = 000200           2$1    = 002456   L       450$17 = 011742   L       BIT09  = 001000           NOXXDP = 007716           
+$ENDAD = 007702           2$17   = 011212   L       460$17 = 011756   L       BIT1   = 000002           NUMPAS = 002004           
+$SAV42 = 002050           2$18   = 012242   L       470$17 = 011772   L       BIT10  = 002000           OPTSWI = 002002           
+.      = 013270           2$2    = 002650   L       5$1    = 002606   L       BIT11  = 004000           P.FIL  = 177776           
+1$1    = 002430   L       2$20   = 012762   L       50$18  = 012414   L       BIT12  = 010000           P.FLG  = 177777           
+1$14   = 011002   L       2$21   = 013072   L       50$19  = 012604   L       BIT13  = 020000           P.LEN  = 177770           
+1$15   = 011064   L       2$3    = 003056   L       51$18  = 012430   L       BIT14  = 040000           P.OUT  = 177766           
+1$16   = 011144   L       20$10  = 010276   L       52$18  = 012456   L       BIT15  = 100000           P.PRE  = 177772           
+1$17   = 011172   L       20$11  = 010364   L       60$4   = 003516   L       BIT2   = 000004           P.PTR  = 177764           
+1$18   = 012200   L       20$12  = 010436   L       61$4   = 003520   L       BIT3   = 000010           P.SR0  = 000012           
+1$19   = 012550   L       20$13  = 010602   L       62$4   = 003544   L       BIT4   = 000020           P.SR1  = 000010           
+1$2    = 002624   L       20$17  = 011400   L       63$4   = 003544   L       BIT5   = 000040           P.SR2  = 000006           
+1$20   = 012744   L       20$18  = 012302   L       70$0   = 002336   L       BIT6   = 000100           P.SR3  = 000004           
+1$21   = 013034   L       20$19  = 012572   L       70$18  = 012464   L       BIT7   = 000200           P.SR4  = 000002           
+1$3    = 003026   L       20$22  = 013210   L       70$19  = 012620   L       BIT8   = 000400           P.SR5  = 000000           
+1$4    = 003216   L       20$4   = 003336   L       70$4   = 003546   L       BIT9   = 001000           P.WID  = 177774           
+1$8    = 007412   L       20$5   = 004124   L       70$5   = 004256   L       BLBEG  = 002020           PASSES = 002040           
+10$12  = 010404   L       20$6   = 004560   L       70$6   = 004724   L       BLEND  = 002022           PF.ALT = 000004           
+10$13  = 010474   L       20$8   = 007464   L       70$7   = 006340   L       BLMAX  = 002010           PF.LJU = 000001           
+10$17  = 011264   L       21$18  = 012336   L       70$8   = 007606   L       BLMIN  = 002006           PF.LON = 000010           
+10$18  = 012260   L       21$4   = 003360   L       71$13  = 010624   L       BLMN   = 000000           PF.NEG = 000020           
+10$22  = 013170   L       21$5   = 004146   L       71$18  = 012466   L       BLMSK  = 002024           PF.SEP = 000000           
+10$4   = 003260   L       21$8   = 007474   L       71$19  = 012624   L       BLMX18 = 007577           PF.SIG = 000002           
+10$5   = 004062   L       22$18  = 012346   L       71$4   = 003611   L       BLMX22 = 167777           PGIOS  = 000007           
+10$6   = 004536   L       22$4   = 003440   L       71$5   = 004327   L       BLSZBY = 000100           PGNONE = 077400           
+10$8   = 007426   L       22$5   = 004222   L       71$6   = 004776   L       BLSZIO = 000200           PGPRG  = 000000           
+10$9   = 007750   L       23$4   = 003454   L       71$7   = 006410   L       BLSZUM = 010000           PGPRGN = 000001           
+100$19 = 012662   L       23$5   = 004236   L       72$4   = 003745   L       CCSR   = 177746           PGRW   = 077406           
+100$7  = 005226   L       24$4   = 003456   L       72$7   = 006471   L       CONSOL = 165144 G         PGSZBL = 000200           
+1000$17= 012140   L       24$5   = 004240   L       73$7   = 006604   L       CR     = 000015           PGSZBY = 020000           
+101$19 = 012676   L       3$17   = 011222   L       74$7   = 006702   L       CRLF   = 010210           PGTST  = 000006           
+101$7  = 005250   L       3$21   = 013116   L       75$7   = 007001   L       DISECC = 010370           PHYADR = 002044           
+102$19 = 012706   L       3$3    = 003110   L       76$7   = 007100   L       DONE   = 007672           PRINTF = 011020 G         
+109$7  = 005254   L       30$10  = 010306   L       77$7   = 007161   L       DPYREG = 177570 G         PROTMN = 002026           
+11$17  = 011312   L       30$12  = 010444   L       80$18  = 012502   L       ENBECC = 010452           PROTMX = 002030           
+11$4   = 003302   L       30$13  = 010610   L       80$19  = 012640   L       ENMMGT = 002420           PRT32U = 012172           
+11$5   = 004104   L       30$18  = 012356   L       800$17 = 012006   L       ERRORS = 002036           PRTSTR = 012542           
+11$8   = 007436   L       30$22  = 013246   L       81$18  = 012516   L       EXIT   = 007732           PSW    = 177776 G         
+110$7  = 005310   L       30$6   = 004602   L       810$17 = 012026   L       FAILS  = 000000           SLDIV  = 013124 G         
+111$7  = 005336   L       30$8   = 007524   L       820$17 = 012030   L       FLG22B = 002034           SPRINT = 011100 G         
+112$7  = 005424   L       31$18  = 012374   L       880$17 = 012072   L       KPAR   = 172340           STACK  = 002000           
+113$7  = 005506   L       31$6   = 004670   L       890$17 = 012100   L       KPDR   = 172300           START  = 002200           
+119$7  = 005510   L       32$18  = 012410   L       90$18  = 012534   L       LF     = 000012           SWIREG = 177570 G         
+12$17  = 011344   L       32$6   = 004704   L       90$19  = 012654   L       LOOP   = 003134           TEST1  = 003144           
+12$4   = 003322   L       32768$0= 002220   L       900$17 = 012102   L       MCR0   = 172100           TEST2  = 004020           
+12$5   = 004110   L       32769$0= 002226   L       99$0   = 002416   L       MCRDET = 002774           TEST3  = 004474           
+120$7  = 005544   L       32770$0= 002244   L       99$4   = 004014   L       MCRMSK = 002032           TEST4  = 005144           
+121$7  = 005566   L       32771$0= 002256   L       99$5   = 004470   L       MEMBL  = 002012           TESTNO = 002042           
+122$7  = 005654   L       34$6   = 004706   L       99$6   = 005140   L       MEMBYH = 002016           TST$NO = 000005           
+129$7  = 005656   L       4$1    = 002564   L       99$7   = 007326   L       MEMBYL = 002014           TSTMAX = 140077           
+13$17  = 011362   L       4$17   = 011256   L       99$8   = 007670   L       MMR0   = 177572           TSTMIN = 140000           
+130$7  = 005712   L       40$10  = 010324   L       990$17 = 012120   L       MMR1   = 177574           TSTPAR = 172354           
+131$7  = 005740   L       40$17  = 011432   L       ADRCHK = 010746 G         MMR2   = 177576           TSTWC  = 000040           
+132$7  = 006020   L       40$22  = 013264   L       ADRTST = 010344           MMR3   = 172516           TTRBUF = 177562 G         
+139$7  = 006022   L       400$17 = 011502   L       ADRXLT = 010214           MRELOC = 007362           TTRCSR = 177560 G         
+140$7  = 006056   L       401$17 = 011566   L       BIT0   = 000001           MSG1   = 007760           TTXBUF = 177566 G         
+141$7  = 006100   L       405$17 = 011602   L       BIT00  = 000001           MSG2   = 010014           TTXCSR = 177564 G         
+142$7  = 006162   L       41$17  = 011436   L       BIT01  = 000002           MSG3   = 010030           ULDIV  = 013010 G         
+149$7  = 006164   L       410$17 = 011620   L       BIT02  = 000004           MSG4   = 010064           ULMUL  = 012710 G         
+150$7  = 006220   L       42$17  = 011466   L       BIT03  = 000010           MSG5A  = 010135           XPRINT = 011170           
+151$7  = 006242   L       420$17 = 011632   L       BIT04  = 000020           MSG5B  = 010172           
+152$7  = 006316   L       430$17 = 011652   L       BIT05  = 000040           MSG5C  = 010200           
+159$7  = 006320   L       431$17 = 011676   L       BIT06  = 000100           MSIZER = 002614           
+18$13  = 010570   L       439$17 = 011716   L       BIT07  = 000200           N.ARGS = 000016           
 
 
 Program sections:
