@@ -169,16 +169,22 @@
       57                                
       58 000060                           	printf	#msg1			; say hello
        1 000060                         	calls	printf #msg1               
+       8                                .list
        9 000060 012746  001506'         	mov	#msg1,-(sp)
+       1                                .list
        2 000064                         	call	printf
        1 000064 004737  000000G         	jsr	pc,printf
        3 000070 062706  000002          	add	#2,sp
+      18                                .list
       59 000074                          	printf	#crlf			;
        1 000074                         	calls	printf #crlf               
+       8                                .list
        9 000074 012746  001421'         	mov	#crlf,-(sp)
+       1                                .list
        2 000100                         	call	printf
        1 000100 004737  000000G         	jsr	pc,printf
        3 000104 062706  000002          	add	#2,sp
+      18                                .list
       60                                
       61 000110 005037  000000'         	clr	passes			;
       62                                
@@ -193,31 +199,49 @@
       71                                	
       72 000154                         	printf	#740$,#710$
        1 000154                         	calls	printf #740$ #710$              
+       8                                .list
        9 000154 012746  001152'         	mov	#710$,-(sp)
+      14                                .list
       15 000160 012746  001407'         	mov	#740$,-(sp)
+       1                                .list
        2 000164                         	call	printf
        1 000164 004737  000000G         	jsr	pc,printf
        3 000170 062706  000004          	add	#4,sp
+      18                                .list
       73 000174                         	printf	#710$,r0,r1,r2,r3,r4,r5,sp,pc
        1 000174                         	calls	printf #710$ r0 r1 r2 r3 r4 r5 sp pc       
+       8                                .list
        9 000174 010746                  	mov	pc,-(sp)
+      14                                .list
       15 000176 010646                  	mov	sp,-(sp)
+      20                                .list
       21 000200 010546                  	mov	r5,-(sp)
+      26                                .list
       27 000202 010446                  	mov	r4,-(sp)
+      32                                .list
       33 000204 010346                  	mov	r3,-(sp)
+      38                                .list
       39 000206 010246                  	mov	r2,-(sp)
+      44                                .list
       45 000210 010146                  	mov	r1,-(sp)
+      50                                .list
       51 000212 010046                  	mov	r0,-(sp)
+      56                                .list
       57 000214 012746  001152'         	mov	#710$,-(sp)
+       1                                .list
        2 000220                         	call	printf
        1 000220 004737  000000G         	jsr	pc,printf
        3 000224 062706  000022          	add	#22,sp
+      18                                .list
       74 000230                         	printf	#crlf
        1 000230                         	calls	printf #crlf               
+       8                                .list
        9 000230 012746  001421'         	mov	#crlf,-(sp)
+       1                                .list
        2 000234                         	call	printf
        1 000234 004737  000000G         	jsr	pc,printf
        3 000240 062706  000002          	add	#2,sp
+      18                                .list
       75                                
       76 000244 020027  010001          	cmp	r0,#10001
       77 000250 001026                  	bne	10$
@@ -250,41 +274,66 @@
      104                                	
      105 000372                         	sprintf	#buffer,#740$,#710$
        1 000372                         	calls	sprintf #buffer #740$ #710$             
+       8                                .list
        9 000372 012746  001152'         	mov	#710$,-(sp)
+      14                                .list
       15 000376 012746  001407'         	mov	#740$,-(sp)
+      20                                .list
       21 000402 012746  000006'         	mov	#buffer,-(sp)
+       1                                .list
        2 000406                         	call	sprintf
        1 000406 004737  000000G         	jsr	pc,sprintf
        3 000412 062706  000006          	add	#6,sp
+      18                                .list
      106 000416                         	sprintf	r0,#710$,r0,r1,r2,r3,r4,r5,sp,pc
        1 000416                         	calls	sprintf r0 #710$ r0 r1 r2 r3 r4 r5 sp pc      
+       8                                .list
        9 000416 010746                  	mov	pc,-(sp)
+      14                                .list
       15 000420 010646                  	mov	sp,-(sp)
+      20                                .list
       21 000422 010546                  	mov	r5,-(sp)
+      26                                .list
       27 000424 010446                  	mov	r4,-(sp)
+      32                                .list
       33 000426 010346                  	mov	r3,-(sp)
+      38                                .list
       39 000430 010246                  	mov	r2,-(sp)
+      44                                .list
       45 000432 010146                  	mov	r1,-(sp)
+      50                                .list
       51 000434 010046                  	mov	r0,-(sp)
+      56                                .list
       57 000436 012746  001152'         	mov	#710$,-(sp)
+      62                                .list
       63 000442 010046                  	mov	r0,-(sp)
+       1                                .list
        2 000444                         	call	sprintf
        1 000444 004737  000000G         	jsr	pc,sprintf
        3 000450 062706  000024          	add	#24,sp
+      18                                .list
      107 000454                         	sprintf	r0,#crlf
        1 000454                         	calls	sprintf r0 #crlf              
+       8                                .list
        9 000454 012746  001421'         	mov	#crlf,-(sp)
+      14                                .list
       15 000460 010046                  	mov	r0,-(sp)
+       1                                .list
        2 000462                         	call	sprintf
        1 000462 004737  000000G         	jsr	pc,sprintf
        3 000466 062706  000004          	add	#4,sp
+      18                                .list
      108 000472                         	printf	#750$,#buffer
        1 000472                         	calls	printf #750$ #buffer              
+       8                                .list
        9 000472 012746  000006'         	mov	#buffer,-(sp)
+      14                                .list
       15 000476 012746  001416'         	mov	#750$,-(sp)
+       1                                .list
        2 000502                         	call	printf
        1 000502 004737  000000G         	jsr	pc,printf
        3 000506 062706  000004          	add	#4,sp
+      18                                .list
      109                                
      110                                	;cmp	r0,#10001
      111                                	;bne	20$
@@ -308,11 +357,15 @@
      129                                	
      130 000572                         	printf	#740$,#730$
        1 000572                         	calls	printf #740$ #730$              
+       8                                .list
        9 000572 012746  001323'         	mov	#730$,-(sp)
+      14                                .list
       15 000576 012746  001407'         	mov	#740$,-(sp)
+       1                                .list
        2 000602                         	call	printf
        1 000602 004737  000000G         	jsr	pc,printf
        3 000606 062706  000004          	add	#4,sp
+      18                                .list
      131 000612 012700  000062          	mov	#50.,r0
      132 000616 010001                  	mov	r0,r1
      133 000620 005401                  	neg	r1
@@ -323,38 +376,59 @@
      138 000632 005302                  	dec	r2
      139 000634                         101$:	printf	#730$,r0,r1,r1,r1,r1,r2,r1,r2,r1,r2,r1
        1 000634                         	calls	printf #730$ r0 r1 r1 r1 r1 r2 r1 r2 r1 r2 r1    
+       8                                .list
        9 000634 010146                  	mov	r1,-(sp)
+      14                                .list
       15 000636 010246                  	mov	r2,-(sp)
+      20                                .list
       21 000640 010146                  	mov	r1,-(sp)
+      26                                .list
       27 000642 010246                  	mov	r2,-(sp)
+      32                                .list
       33 000644 010146                  	mov	r1,-(sp)
+      38                                .list
       39 000646 010246                  	mov	r2,-(sp)
+      44                                .list
       45 000650 010146                  	mov	r1,-(sp)
+      50                                .list
       51 000652 010146                  	mov	r1,-(sp)
+      56                                .list
       57 000654 010146                  	mov	r1,-(sp)
+      62                                .list
       63 000656 010146                  	mov	r1,-(sp)
+      68                                .list
       69 000660 010046                  	mov	r0,-(sp)
+      74                                .list
       75 000662 012746  001323'         	mov	#730$,-(sp)
+       1                                .list
        2 000666                         	call	printf
        1 000666 004737  000000G         	jsr	pc,printf
        3 000672 062706  000030          	add	#30,sp
+      18                                .list
      140 000676 005201                  	inc	r1
      141 000700 005300                  	dec	r0
      142 000702 001350                  	bne	100$
      143                                
      144 000704                         	printf	#crlf
        1 000704                         	calls	printf #crlf               
+       8                                .list
        9 000704 012746  001421'         	mov	#crlf,-(sp)
+       1                                .list
        2 000710                         	call	printf
        1 000710 004737  000000G         	jsr	pc,printf
        3 000714 062706  000002          	add	#2,sp
+      18                                .list
      145 000720                         	printf	#740$,#600$
        1 000720                         	calls	printf #740$ #600$              
+       8                                .list
        9 000720 012746  001042'         	mov	#600$,-(sp)
+      14                                .list
       15 000724 012746  001407'         	mov	#740$,-(sp)
+       1                                .list
        2 000730                         	call	printf
        1 000730 004737  000000G         	jsr	pc,printf
        3 000734 062706  000004          	add	#4,sp
+      18                                .list
      146 000740 012704  000017          	mov	#15.,r4
      147 000744 012701  035141          200$:	mov	#<'a>+<':*bit8>,r1
      148 000750 012702  001114'         	mov	#601$,r2
@@ -368,18 +442,29 @@
      156 000772 012700  001114'         	mov	#601$,r0
      157 000776                         	printf	#600$,r1,r1,r4,r0,r0,r0,r0,r0
        1 000776                         	calls	printf #600$ r1 r1 r4 r0 r0 r0 r0 r0       
+       8                                .list
        9 000776 010046                  	mov	r0,-(sp)
+      14                                .list
       15 001000 010046                  	mov	r0,-(sp)
+      20                                .list
       21 001002 010046                  	mov	r0,-(sp)
+      26                                .list
       27 001004 010046                  	mov	r0,-(sp)
+      32                                .list
       33 001006 010046                  	mov	r0,-(sp)
+      38                                .list
       39 001010 010446                  	mov	r4,-(sp)
+      44                                .list
       45 001012 010146                  	mov	r1,-(sp)
+      50                                .list
       51 001014 010146                  	mov	r1,-(sp)
+      56                                .list
       57 001016 012746  001042'         	mov	#600$,-(sp)
+       1                                .list
        2 001022                         	call	printf
        1 001022 004737  000000G         	jsr	pc,printf
        3 001026 062706  000022          	add	#22,sp
+      18                                .list
      158 001032 005304                  	dec	r4
      159 001034 002343                  	bge	200$
      160                                
@@ -464,10 +549,13 @@
      174                                
      175 001424                         done:	printf	#msg2			; say goodbye
        1 001424                         	calls	printf #msg2               
+       8                                .list
        9 001424 012746  001537'         	mov	#msg2,-(sp)
+       1                                .list
        2 001430                         	call	printf
        1 001430 004737  000000G         	jsr	pc,printf
        3 001434 062706  000002          	add	#2,sp
+      18                                .list
      176                                
      177 001440 013700  000002'         	mov	$sav42,r0		; check if loaded by XXDP
      178 001444 001407                  	beq	noxxdp			; br if not
@@ -506,21 +594,21 @@
 
 Symbol table
 
-$$NUM  =000002           32769$0 000026R  L   004 BIT05  =000040           BIT5   =000040           MSG2    001537R      004 
-$ENDAD  001450R      004 32770$0 000044R  L   004 BIT06  =000100           BIT6   =000100           NOXXDP  001464R      004 
-$SAV42  000002R      003 32771$0 000056R  L   004 BIT07  =000200           BIT7   =000200           PASSES  000000R      003 
-.       ******R      004 600$1   001042R  L   004 BIT08  =000400           BIT8   =000400           PRINTF =****** GX        
-10$1    000326R  L   004 601$1   001114R  L   004 BIT09  =001000           BIT9   =001000           PSW    =177776 G         
-10$2    001466R  L   004 710$1   001152R  L   004 BIT1   =000002           BUFFER  000006R      003 SPRINT =****** GX        
-100$1   000624R  L   004 730$1   001323R  L   004 BIT10  =002000           BUFPTR  000004R      003 STACK   001776R      002 
-101$1   000634R  L   004 740$1   001407R  L   004 BIT11  =004000           CONSOL =165144 G         START   000000RG     004 
-11$1    000330R  L   004 750$1   001416R  L   004 BIT12  =010000           CR     =000015           SWIREG =177570 G         
-20$1    000566R  L   004 BIT0   =000001           BIT13  =020000           CRLF    001421R      004 TST$NO =000001           
-200$1   000744R  L   004 BIT00  =000001           BIT14  =040000           DONE    001424R      004 TTRBUF =177562 G         
-201$1   000760R  L   004 BIT01  =000002           BIT15  =100000           DPYREG =177570 G         TTRCSR =177560 G         
-202$1   000770R  L   004 BIT02  =000004           BIT2   =000004           LF     =000012           TTXBUF =177566 G         
-21$1    000570R  L   004 BIT03  =000010           BIT3   =000010           LOOP    000114R      004 TTXCSR =177564 G         
-32768$0 000020R  L   004 BIT04  =000020           BIT4   =000020           MSG1    001506R      004 
+$$NUM  = 000002           32769$0  000026R  L   004 BIT05  = 000040           BIT5   = 000040           MSG2     001537R      004 
+$ENDAD   001450R      004 32770$0  000044R  L   004 BIT06  = 000100           BIT6   = 000100           NOXXDP   001464R      004 
+$SAV42   000002R      003 32771$0  000056R  L   004 BIT07  = 000200           BIT7   = 000200           PASSES   000000R      003 
+.        001553R      004 600$1    001042R  L   004 BIT08  = 000400           BIT8   = 000400           PRINTF = ****** GX        
+10$1     000326R  L   004 601$1    001114R  L   004 BIT09  = 001000           BIT9   = 001000           PSW    = 177776 G         
+10$2     001466R  L   004 710$1    001152R  L   004 BIT1   = 000002           BUFFER   000006R      003 SPRINT = ****** GX        
+100$1    000624R  L   004 730$1    001323R  L   004 BIT10  = 002000           BUFPTR   000004R      003 STACK    001776R      002 
+101$1    000634R  L   004 740$1    001407R  L   004 BIT11  = 004000           CONSOL = 165144 G         START    000000RG     004 
+11$1     000330R  L   004 750$1    001416R  L   004 BIT12  = 010000           CR     = 000015           SWIREG = 177570 G         
+20$1     000566R  L   004 BIT0   = 000001           BIT13  = 020000           CRLF     001421R      004 TST$NO = 000001           
+200$1    000744R  L   004 BIT00  = 000001           BIT14  = 040000           DONE     001424R      004 TTRBUF = 177562 G         
+201$1    000760R  L   004 BIT01  = 000002           BIT15  = 100000           DPYREG = 177570 G         TTRCSR = 177560 G         
+202$1    000770R  L   004 BIT02  = 000004           BIT2   = 000004           LF     = 000012           TTXBUF = 177566 G         
+21$1     000570R  L   004 BIT03  = 000010           BIT3   = 000010           LOOP     000114R      004 TTXCSR = 177564 G         
+32768$0  000020R  L   004 BIT04  = 000020           BIT4   = 000020           MSG1     001506R      004 
 
 
 Program sections:

@@ -151,7 +151,7 @@
       52 000000                           	.asect				; absolute load image;	
       53                                
       54        000046                  	.=46
-      55 000046 001676'                 	.word	$endad			; address of JSR PC,(R0)
+      55 000046 002000'                 	.word	$endad			; address of JSR PC,(R0)
       56        000052                  	.=52
       57 000052 000000                  	.word	0			; run options
       58                                
@@ -255,10 +255,13 @@
      130                                
      131 000060                         	printf	#msg1			; say hello
        1 000060                         	calls	printf #msg1               
+       8                                .list
        9 000060 012746  000000'         	mov	#msg1,-(sp)
+       1                                .list
        2 000064                         	call	printf
-       1 000064 004737  001734'         	jsr	pc,printf
+       1 000064 004737  002036'         	jsr	pc,printf
        3 000070 062706  000002          	add	#2,sp
+      18                                .list
      132 000074 005037  000002'         	clr	passes			; zap passes
      133 000100 005037  000004'         	clr	testno			; zap tests
      134 000104 012737  000000' 000534' 	mov	#datbeg,savptr		; init data table ptr
@@ -267,7 +270,7 @@
      137 000116 012537  000010'         	mov	(r5)+,opv		; test opcode value
      138 000122                         	jeq	done			; if zero, done
        1 000122 001002                  	bne	32768$
-       2 000124 000137  001652'         	jmp	done
+       2 000124 000137  001754'         	jmp	done
        3                                32768$:
      139 000130 012537  000012'         	mov	(r5)+,opn		; test opcode name
      140                                	
@@ -299,43 +302,73 @@
      166                                
      167 000260                         	printf	#hdr1,testno,opn,opv	; header
        1 000260                         	calls	printf #hdr1 testno opn opv            
+       8                                .list
        9 000260 013746  000010'         	mov	opv,-(sp)
+      14                                .list
       15 000264 013746  000012'         	mov	opn,-(sp)
+      20                                .list
       21 000270 013746  000004'         	mov	testno,-(sp)
+      26                                .list
       27 000274 012746  000053'         	mov	#hdr1,-(sp)
+       1                                .list
        2 000300                         	call	printf
-       1 000300 004737  001734'         	jsr	pc,printf
+       1 000300 004737  002036'         	jsr	pc,printf
        3 000304 062706  000010          	add	#10,sp
+      18                                .list
      168 000310                         	printf	#hdr2,#input,ir0,ir1,ir2,ir3,ir4,ir5,ir6,icc ; input
        1 000310                         	calls	printf #hdr2 #input ir0 ir1 ir2 ir3 ir4 ir5 ir6 icc      
+       8                                .list
        9 000310 013746  000032'         	mov	icc,-(sp)
+      14                                .list
       15 000314 013746  000030'         	mov	ir6,-(sp)
+      20                                .list
       21 000320 013746  000026'         	mov	ir5,-(sp)
+      26                                .list
       27 000324 013746  000024'         	mov	ir4,-(sp)
+      32                                .list
       33 000330 013746  000022'         	mov	ir3,-(sp)
+      38                                .list
       39 000334 013746  000020'         	mov	ir2,-(sp)
+      44                                .list
       45 000340 013746  000016'         	mov	ir1,-(sp)
+      50                                .list
       51 000344 013746  000014'         	mov	ir0,-(sp)
+      56                                .list
       57 000350 012746  000524'         	mov	#input,-(sp)
+      62                                .list
       63 000354 012746  000272'         	mov	#hdr2,-(sp)
+       1                                .list
        2 000360                         	call	printf
-       1 000360 004737  001734'         	jsr	pc,printf
+       1 000360 004737  002036'         	jsr	pc,printf
        3 000364 062706  000024          	add	#24,sp
+      18                                .list
      169 000370                         	printf	#hdr2,#expout,er0,er1,er2,er3,er4,er5,er6,ecc ; expected
        1 000370                         	calls	printf #hdr2 #expout er0 er1 er2 er3 er4 er5 er6 ecc      
+       8                                .list
        9 000370 013746  000052'         	mov	ecc,-(sp)
+      14                                .list
       15 000374 013746  000050'         	mov	er6,-(sp)
+      20                                .list
       21 000400 013746  000046'         	mov	er5,-(sp)
+      26                                .list
       27 000404 013746  000044'         	mov	er4,-(sp)
+      32                                .list
       33 000410 013746  000042'         	mov	er3,-(sp)
+      38                                .list
       39 000414 013746  000040'         	mov	er2,-(sp)
+      44                                .list
       45 000420 013746  000036'         	mov	er1,-(sp)
+      50                                .list
       51 000424 013746  000034'         	mov	er0,-(sp)
+      56                                .list
       57 000430 012746  000536'         	mov	#expout,-(sp)
+      62                                .list
       63 000434 012746  000272'         	mov	#hdr2,-(sp)
+       1                                .list
        2 000440                         	call	printf
-       1 000440 004737  001734'         	jsr	pc,printf
+       1 000440 004737  002036'         	jsr	pc,printf
        3 000444 062706  000024          	add	#24,sp
+      18                                .list
      170                                
      171 000450 013700  000014'         	mov	ir0,r0			; setup
      172 000454 013701  000016'         	mov	ir1,r1			;
@@ -359,178 +392,244 @@
      190                                	
      191 000560                         	printf	#hdr3,#actout		; received
        1 000560                         	calls	printf #hdr3 #actout              
+       8                                .list
        9 000560 012746  000546'         	mov	#actout,-(sp)
+      14                                .list
       15 000564 012746  000364'         	mov	#hdr3,-(sp)
+       1                                .list
        2 000570                         	call	printf
-       1 000570 004737  001734'         	jsr	pc,printf
+       1 000570 004737  002036'         	jsr	pc,printf
        3 000574 062706  000004          	add	#4,sp
+      18                                .list
      192                                	
      193 000600 023737  000034' 000054' 	cmp	er0,rr0			; check r0
      194 000606 001413                  	beq	110$			;
      195 000610                         	printf	#fmt1,rr0		; mismatch
        1 000610                         	calls	printf #fmt1 rr0              
+       8                                .list
        9 000610 013746  000054'         	mov	rr0,-(sp)
+      14                                .list
       15 000614 012746  000422'         	mov	#fmt1,-(sp)
+       1                                .list
        2 000620                         	call	printf
-       1 000620 004737  001734'         	jsr	pc,printf
+       1 000620 004737  002036'         	jsr	pc,printf
        3 000624 062706  000004          	add	#4,sp
+      18                                .list
      196 000630 005237  000006'         	inc	errflg			; error
      197 000634 000406                  	br	111$			;
      198 000636                         110$:	printf	#spa1			; match
        1 000636                         	calls	printf #spa1               
+       8                                .list
        9 000636 012746  000404'         	mov	#spa1,-(sp)
+       1                                .list
        2 000642                         	call	printf
-       1 000642 004737  001734'         	jsr	pc,printf
+       1 000642 004737  002036'         	jsr	pc,printf
        3 000646 062706  000002          	add	#2,sp
+      18                                .list
      199 000652 000240                  111$:	nop				; 
      200                                
      201 000654 023737  000036' 000056' 	cmp	er1,rr1			; check r1
      202 000662 001413                  	beq	120$			;
      203 000664                         	printf	#fmt1,rr1		; mismatch
        1 000664                         	calls	printf #fmt1 rr1              
+       8                                .list
        9 000664 013746  000056'         	mov	rr1,-(sp)
+      14                                .list
       15 000670 012746  000422'         	mov	#fmt1,-(sp)
+       1                                .list
        2 000674                         	call	printf
-       1 000674 004737  001734'         	jsr	pc,printf
+       1 000674 004737  002036'         	jsr	pc,printf
        3 000700 062706  000004          	add	#4,sp
+      18                                .list
      204 000704 005237  000006'         	inc	errflg			; error
      205 000710 000406                  	br	121$			;
      206 000712                         120$:	printf	#spa1			; match
        1 000712                         	calls	printf #spa1               
+       8                                .list
        9 000712 012746  000404'         	mov	#spa1,-(sp)
+       1                                .list
        2 000716                         	call	printf
-       1 000716 004737  001734'         	jsr	pc,printf
+       1 000716 004737  002036'         	jsr	pc,printf
        3 000722 062706  000002          	add	#2,sp
+      18                                .list
      207 000726 000240                  121$:	nop				; 
      208                                
      209 000730 023737  000040' 000060' 	cmp	er2,rr2			; check r2
      210 000736 001413                  	beq	130$			;
      211 000740                         	printf	#fmt1,rr2		; mismatch
        1 000740                         	calls	printf #fmt1 rr2              
+       8                                .list
        9 000740 013746  000060'         	mov	rr2,-(sp)
+      14                                .list
       15 000744 012746  000422'         	mov	#fmt1,-(sp)
+       1                                .list
        2 000750                         	call	printf
-       1 000750 004737  001734'         	jsr	pc,printf
+       1 000750 004737  002036'         	jsr	pc,printf
        3 000754 062706  000004          	add	#4,sp
+      18                                .list
      212 000760 005237  000006'         	inc	errflg			; error
      213 000764 000406                  	br	131$			;
      214 000766                         130$:	printf	#spa1			; match
        1 000766                         	calls	printf #spa1               
+       8                                .list
        9 000766 012746  000404'         	mov	#spa1,-(sp)
+       1                                .list
        2 000772                         	call	printf
-       1 000772 004737  001734'         	jsr	pc,printf
+       1 000772 004737  002036'         	jsr	pc,printf
        3 000776 062706  000002          	add	#2,sp
+      18                                .list
      215 001002 000240                  131$:	nop				; 
      216                                
      217 001004 023737  000042' 000062' 	cmp	er3,rr3			; check r3
      218 001012 001413                  	beq	140$			;
      219 001014                         	printf	#fmt1,rr3		; mismatch
        1 001014                         	calls	printf #fmt1 rr3              
+       8                                .list
        9 001014 013746  000062'         	mov	rr3,-(sp)
+      14                                .list
       15 001020 012746  000422'         	mov	#fmt1,-(sp)
+       1                                .list
        2 001024                         	call	printf
-       1 001024 004737  001734'         	jsr	pc,printf
+       1 001024 004737  002036'         	jsr	pc,printf
        3 001030 062706  000004          	add	#4,sp
+      18                                .list
      220 001034 005237  000006'         	inc	errflg			; error
      221 001040 000406                  	br	141$			;
      222 001042                         140$:	printf	#spa1			; match
        1 001042                         	calls	printf #spa1               
+       8                                .list
        9 001042 012746  000404'         	mov	#spa1,-(sp)
+       1                                .list
        2 001046                         	call	printf
-       1 001046 004737  001734'         	jsr	pc,printf
+       1 001046 004737  002036'         	jsr	pc,printf
        3 001052 062706  000002          	add	#2,sp
+      18                                .list
      223 001056 000240                  141$:	nop				; 
      224                                
      225 001060 023737  000044' 000064' 	cmp	er4,rr4			; check r4
      226 001066 001413                  	beq	150$			;
      227 001070                         	printf	#fmt1,rr4		; mismatch
        1 001070                         	calls	printf #fmt1 rr4              
+       8                                .list
        9 001070 013746  000064'         	mov	rr4,-(sp)
+      14                                .list
       15 001074 012746  000422'         	mov	#fmt1,-(sp)
+       1                                .list
        2 001100                         	call	printf
-       1 001100 004737  001734'         	jsr	pc,printf
+       1 001100 004737  002036'         	jsr	pc,printf
        3 001104 062706  000004          	add	#4,sp
+      18                                .list
      228 001110 005237  000006'         	inc	errflg			; error
      229 001114 000406                  	br	151$			;
      230 001116                         150$:	printf	#spa1			; match
        1 001116                         	calls	printf #spa1               
+       8                                .list
        9 001116 012746  000404'         	mov	#spa1,-(sp)
+       1                                .list
        2 001122                         	call	printf
-       1 001122 004737  001734'         	jsr	pc,printf
+       1 001122 004737  002036'         	jsr	pc,printf
        3 001126 062706  000002          	add	#2,sp
+      18                                .list
      231 001132 000240                  151$:	nop				; 
      232                                
      233 001134 023737  000046' 000066' 	cmp	er5,rr5			; check r5
      234 001142 001413                  	beq	160$			;
      235 001144                         	printf	#fmt1,rr5		; mismatch
        1 001144                         	calls	printf #fmt1 rr5              
+       8                                .list
        9 001144 013746  000066'         	mov	rr5,-(sp)
+      14                                .list
       15 001150 012746  000422'         	mov	#fmt1,-(sp)
+       1                                .list
        2 001154                         	call	printf
-       1 001154 004737  001734'         	jsr	pc,printf
+       1 001154 004737  002036'         	jsr	pc,printf
        3 001160 062706  000004          	add	#4,sp
+      18                                .list
      236 001164 005237  000006'         	inc	errflg			; error
      237 001170 000406                  	br	161$			;
      238 001172                         160$:	printf	#spa1			; match
        1 001172                         	calls	printf #spa1               
+       8                                .list
        9 001172 012746  000404'         	mov	#spa1,-(sp)
+       1                                .list
        2 001176                         	call	printf
-       1 001176 004737  001734'         	jsr	pc,printf
+       1 001176 004737  002036'         	jsr	pc,printf
        3 001202 062706  000002          	add	#2,sp
+      18                                .list
      239 001206 000240                  161$:	nop				; 
      240                                
      241 001210 023737  000050' 000070' 	cmp	er6,rr6			; check r6
      242 001216 001413                  	beq	170$			;
      243 001220                         	printf	#fmt1,rr6		; mismatch
        1 001220                         	calls	printf #fmt1 rr6              
+       8                                .list
        9 001220 013746  000070'         	mov	rr6,-(sp)
+      14                                .list
       15 001224 012746  000422'         	mov	#fmt1,-(sp)
+       1                                .list
        2 001230                         	call	printf
-       1 001230 004737  001734'         	jsr	pc,printf
+       1 001230 004737  002036'         	jsr	pc,printf
        3 001234 062706  000004          	add	#4,sp
+      18                                .list
      244 001240 005237  000006'         	inc	errflg			; error
      245 001244 000406                  	br	171$			;
      246 001246                         170$:	printf	#spa1			; match
        1 001246                         	calls	printf #spa1               
+       8                                .list
        9 001246 012746  000404'         	mov	#spa1,-(sp)
+       1                                .list
        2 001252                         	call	printf
-       1 001252 004737  001734'         	jsr	pc,printf
+       1 001252 004737  002036'         	jsr	pc,printf
        3 001256 062706  000002          	add	#2,sp
+      18                                .list
      247 001262 000240                  171$:	nop				; 
      248                                
      249 001264 023737  000052' 000072' 	cmp	ecc,rcc			; check CC
      250 001272 001413                  	beq	180$			;
      251 001274                         	printf	#fmt2,rcc		; mismatch
        1 001274                         	calls	printf #fmt2 rcc              
+       8                                .list
        9 001274 013746  000072'         	mov	rcc,-(sp)
+      14                                .list
       15 001300 012746  000430'         	mov	#fmt2,-(sp)
+       1                                .list
        2 001304                         	call	printf
-       1 001304 004737  001734'         	jsr	pc,printf
+       1 001304 004737  002036'         	jsr	pc,printf
        3 001310 062706  000004          	add	#4,sp
+      18                                .list
      252 001314 005237  000006'         	inc	errflg			; error
      253 001320 000406                  	br	181$			;
      254 001322                         180$:	printf	#spa2			; match
        1 001322                         	calls	printf #spa2               
+       8                                .list
        9 001322 012746  000414'         	mov	#spa2,-(sp)
+       1                                .list
        2 001326                         	call	printf
-       1 001326 004737  001734'         	jsr	pc,printf
+       1 001326 004737  002036'         	jsr	pc,printf
        3 001332 062706  000002          	add	#2,sp
+      18                                .list
      255 001336 000240                  181$:	nop				; 
      256                                
      257 001340 005737  000006'         	tst	errflg			; errors?
      258 001344 001406                  	beq	190$			;
      259 001346                         	printf	#fmt3			; say error
        1 001346                         	calls	printf #fmt3               
+       8                                .list
        9 001346 012746  000436'         	mov	#fmt3,-(sp)
+       1                                .list
        2 001352                         	call	printf
-       1 001352 004737  001734'         	jsr	pc,printf
+       1 001352 004737  002036'         	jsr	pc,printf
        3 001356 062706  000002          	add	#2,sp
+      18                                .list
      260 001362                         190$:	printf	#fmt4			; crlf
        1 001362                         	calls	printf #fmt4               
+       8                                .list
        9 001362 012746  000453'         	mov	#fmt4,-(sp)
+       1                                .list
        2 001366                         	call	printf
-       1 001366 004737  001734'         	jsr	pc,printf
+       1 001366 004737  002036'         	jsr	pc,printf
        3 001372 062706  000002          	add	#2,sp
+      18                                .list
      261                                
      262 001376 012700  000000          	mov	#0,r0			; type/length
      263 001402 012701  177777          	mov	#-1,r1			; address
@@ -539,12 +638,17 @@
        1 001412 004737  001550'         	jsr	pc,zonprt
      266 001416                         	printf	#fmt6,#source,r2	; print buffer
        1 001416                         	calls	printf #fmt6 #source r2             
+       8                                .list
        9 001416 010246                  	mov	r2,-(sp)
+      14                                .list
       15 001420 012746  000532'         	mov	#source,-(sp)
+      20                                .list
       21 001424 012746  000510'         	mov	#fmt6,-(sp)
+       1                                .list
        2 001430                         	call	printf
-       1 001430 004737  001734'         	jsr	pc,printf
+       1 001430 004737  002036'         	jsr	pc,printf
        3 001434 062706  000006          	add	#6,sp
+      18                                .list
      267                                	
      268 001440 012700  000000          	mov	#0,r0			; type/length
      269 001444 012701  177776          	mov	#-2,r1			; address
@@ -553,12 +657,17 @@
        1 001454 004737  001550'         	jsr	pc,zonprt
      272 001460                         	printf	#fmt6,#expres,r2	; print buffer
        1 001460                         	calls	printf #fmt6 #expres r2             
+       8                                .list
        9 001460 010246                  	mov	r2,-(sp)
+      14                                .list
       15 001462 012746  000556'         	mov	#expres,-(sp)
+      20                                .list
       21 001466 012746  000510'         	mov	#fmt6,-(sp)
+       1                                .list
        2 001472                         	call	printf
-       1 001472 004737  001734'         	jsr	pc,printf
+       1 001472 004737  002036'         	jsr	pc,printf
        3 001476 062706  000006          	add	#6,sp
+      18                                .list
      273                                
      274 001502 012700  000000          	mov	#0,r0			; type/length
      275 001506 012701  177775          	mov	#-3,r1			; address
@@ -567,12 +676,17 @@
        1 001516 004737  001550'         	jsr	pc,zonprt
      278 001522                         	printf	#fmt6,#actres,r2	; print buffer
        1 001522                         	calls	printf #fmt6 #actres r2             
+       8                                .list
        9 001522 010246                  	mov	r2,-(sp)
+      14                                .list
       15 001524 012746  000571'         	mov	#actres,-(sp)
+      20                                .list
       21 001530 012746  000510'         	mov	#fmt6,-(sp)
+       1                                .list
        2 001534                         	call	printf
-       1 001534 004737  001734'         	jsr	pc,printf
+       1 001534 004737  002036'         	jsr	pc,printf
        3 001540 062706  000006          	add	#6,sp
+      18                                .list
      279                                
      280 001544 000137  000112'         	jmp	loop			; loop
      281                                
@@ -586,51 +700,147 @@
      289                                ;	call	zonprt
      290                                
      291 001550                         zonprt:	savreg	r0,r1,r2,r3,r4,r5	; save registers
+       2                                .list
        3 001550 010046                  	mov	r0,-(sp)
+       7                                .list
        8 001552 010146                  	mov	r1,-(sp)
+      12                                .list
       13 001554 010246                  	mov	r2,-(sp)
+      17                                .list
       18 001556 010346                  	mov	r3,-(sp)
+      22                                .list
       23 001560 010446                  	mov	r4,-(sp)
+      27                                .list
       28 001562 010546                  	mov	r5,-(sp)
+       9                                .list
      292                                
      293 001564 105700                  	tstb	r0			; check length
      294 001566 001400                  	beq	900$			; br if zero
      295                                
-     296                                
-     297                                
-     298 001570 062701  000135          900$:	add	#<^x5D>,r1		; sign byte
-     299 001574                         	sprintf	r2,#fmt5,#1001$,#1002$,r1 ; zero length string
+     296                                	; ++++++++++++++++++++++++++++++++++++++++++
+     297                                	; TBD
+     298                                	; ------------------------------------------
+     299                                
+     300 001570 062701  000135          900$:	add	#<^x5D>,r1		; sign byte
+     301 001574                         	sprintf	r2,#fmt5,#1001$,#1002$,r1 ; zero length string
        1 001574                         	calls	sprintf r2 #fmt5 #1001$ #1002$ r1           
+       8                                .list
        9 001574 010146                  	mov	r1,-(sp)
+      14                                .list
       15 001576 012746  001645'         	mov	#1002$,-(sp)
+      20                                .list
       21 001602 012746  001643'         	mov	#1001$,-(sp)
+      26                                .list
       27 001606 012746  000456'         	mov	#fmt5,-(sp)
+      32                                .list
       33 001612 010246                  	mov	r2,-(sp)
+       1                                .list
        2 001614                         	call	sprintf
-       1 001614 004737  002014'         	jsr	pc,sprintf
+       1 001614 004737  002116'         	jsr	pc,sprintf
        3 001620 062706  000012          	add	#12,sp
-     300                                
-     301 001624                         999$:	resreg	r0,r1,r2,r3,r4,r5	; restore registers
+      18                                .list
+     302                                
+     303 001624                         999$:	resreg	r0,r1,r2,r3,r4,r5	; restore registers
+       7                                .list
        8 001624 012605                  	mov	(sp)+,r5
+      12                                .list
       13 001626 012604                  	mov	(sp)+,r4
+      17                                .list
       18 001630 012603                  	mov	(sp)+,r3
+      22                                .list
       23 001632 012602                  	mov	(sp)+,r2
+      27                                .list
       28 001634 012601                  	mov	(sp)+,r1
+      32                                .list
       33 001636 012600                  	mov	(sp)+,r0
-     302 001640                         	return				; done
+       9                                .list
+     304 001640                         	return				; done
        1 001640 000207                  	rts	pc
-     303                                
-     304        001642                  1000$:	.blkb				; saved sign byte
-     305 001643    060     000          1001$:	.asciz	"0"			; ascii zero
-     306 001645    053     000          1002$:	.asciz	"+"			; ascii plus
-     307 001647    055     000          1003$:	.asciz	"-"			; ascii minus
-     308 001651    000                  	.even
-     309                                	
-     310                                ; --------------------------------------------------------------------------------
+     305                                
+     306        001642                  1000$:	.blkb				; saved sign byte
+     307 001643    060     000          1001$:	.asciz	"0"			; ascii zero
+     308 001645    053     000          1002$:	.asciz	"+"			; ascii plus
+     309 001647    055     000          1003$:	.asciz	"-"			; ascii minus
+     310 001651    000                  	.even
      311                                	
-     312 000053                          	.psect	str
+     312                                ; --------------------------------------------------------------------------------
      313                                
-     314 000053    055     055     055  hdr1:	.ascii	"---- TEST %05d --------------------------------------------------------"<cr><lf>
+     314                                ; print a packed decimal string as ascii text
+     315                                
+     316                                ; 	mov	#<src type/len>,r0
+     317                                ; 	mov	#<src addr>,r1
+     318                                ;	mov	#<dst addr>,r2
+     319                                ;	call	pakprt
+     320                                
+     321 001652                         pakprt:	savreg	r0,r1,r2,r3,r4,r5	; save registers
+       2                                .list
+       3 001652 010046                  	mov	r0,-(sp)
+       7                                .list
+       8 001654 010146                  	mov	r1,-(sp)
+      12                                .list
+      13 001656 010246                  	mov	r2,-(sp)
+      17                                .list
+      18 001660 010346                  	mov	r3,-(sp)
+      22                                .list
+      23 001662 010446                  	mov	r4,-(sp)
+      27                                .list
+      28 001664 010546                  	mov	r5,-(sp)
+       9                                .list
+     322                                
+     323 001666 105700                  	tstb	r0			; check length
+     324 001670 001400                  	beq	900$			; br if zero
+     325                                
+     326                                	; ++++++++++++++++++++++++++++++++++++++++++
+     327                                	; TBD
+     328                                	; ------------------------------------------
+     329                                
+     330 001672 062701  000135          900$:	add	#<^x5D>,r1		; sign byte
+     331 001676                         	sprintf	r2,#fmt5,#1001$,#1002$,r1 ; zero length string
+       1 001676                         	calls	sprintf r2 #fmt5 #1001$ #1002$ r1           
+       8                                .list
+       9 001676 010146                  	mov	r1,-(sp)
+      14                                .list
+      15 001700 012746  001747'         	mov	#1002$,-(sp)
+      20                                .list
+      21 001704 012746  001745'         	mov	#1001$,-(sp)
+      26                                .list
+      27 001710 012746  000456'         	mov	#fmt5,-(sp)
+      32                                .list
+      33 001714 010246                  	mov	r2,-(sp)
+       1                                .list
+       2 001716                         	call	sprintf
+       1 001716 004737  002116'         	jsr	pc,sprintf
+       3 001722 062706  000012          	add	#12,sp
+      18                                .list
+     332                                
+     333 001726                         999$:	resreg	r0,r1,r2,r3,r4,r5	; restore registers
+       7                                .list
+       8 001726 012605                  	mov	(sp)+,r5
+      12                                .list
+      13 001730 012604                  	mov	(sp)+,r4
+      17                                .list
+      18 001732 012603                  	mov	(sp)+,r3
+      22                                .list
+      23 001734 012602                  	mov	(sp)+,r2
+      27                                .list
+      28 001736 012601                  	mov	(sp)+,r1
+      32                                .list
+      33 001740 012600                  	mov	(sp)+,r0
+       9                                .list
+     334 001742                         	return				; done
+       1 001742 000207                  	rts	pc
+     335                                
+     336        001744                  1000$:	.blkb				; saved sign byte
+     337 001745    060     000          1001$:	.asciz	"0"			; ascii zero
+     338 001747    053     000          1002$:	.asciz	"+"			; ascii plus
+     339 001751    055     000          1003$:	.asciz	"-"			; ascii minus
+     340 001753    000                  	.even
+     341                                	
+     342                                ; --------------------------------------------------------------------------------
+     343                                	
+     344 000053                          	.psect	str
+     345                                
+     346 000053    055     055     055  hdr1:	.ascii	"---- TEST %05d --------------------------------------------------------"<cr><lf>
          000056    055     040     124  
          000061    105     123     124  
          000064    040     045     060  
@@ -655,7 +865,7 @@
          000155    055     055     055  
          000160    055     055     015  
          000163    012                  
-     315 000164    040     045     055  	.asciz	" %-7s (%.6o)  SL     SA     DL     DA     R,S    FP     SP     NZVC"<cr><lf>
+     347 000164    040     045     055  	.asciz	" %-7s (%.6o)  SL     SA     DL     DA     R,S    FP     SP     NZVC"<cr><lf>
          000167    067     163     040  
          000172    050     045     056  
          000175    066     157     051  
@@ -679,7 +889,7 @@
          000263    116     132     126  
          000266    103     015     012  
          000271    000                  
-     316 000272    040     045     055  hdr2:	.asciz	" %-7s R0-R6,CC/ %.6o %.6o %.6o %.6o %.6o %.6o %.6o %.4b"<cr><lf>
+     348 000272    040     045     055  hdr2:	.asciz	" %-7s R0-R6,CC/ %.6o %.6o %.6o %.6o %.6o %.6o %.6o %.4b"<cr><lf>
          000275    067     163     040  
          000300    122     060     055  
          000303    122     066     054  
@@ -699,30 +909,30 @@
          000355    045     056     064  
          000360    142     015     012  
          000363    000                  
-     317 000364    040     045     055  hdr3:	.asciz	" %-7s R0-R6,CC/"
+     349 000364    040     045     055  hdr3:	.asciz	" %-7s R0-R6,CC/"
          000367    067     163     040  
          000372    122     060     055  
          000375    122     066     054  
          000400    103     103     057  
          000403    000                  
-     318                                
-     319 000404    040     056     056  spa1:	.asciz	" ......"
+     350                                
+     351 000404    040     056     056  spa1:	.asciz	" ......"
          000407    056     056     056  
          000412    056     000          
-     320 000414    040     056     056  spa2:	.asciz	" ...."
+     352 000414    040     056     056  spa2:	.asciz	" ...."
          000417    056     056     000  
-     321                                
-     322 000422    040     045     056  fmt1:	.asciz	" %.6o"
+     353                                
+     354 000422    040     045     056  fmt1:	.asciz	" %.6o"
          000425    066     157     000  
-     323 000430    040     045     056  fmt2:	.asciz	" %.4b"
+     355 000430    040     045     056  fmt2:	.asciz	" %.4b"
          000433    064     142     000  
-     324 000436    040     052     052  fmt3:	.asciz	" ***ERROR***"
+     356 000436    040     052     052  fmt3:	.asciz	" ***ERROR***"
          000441    052     105     122  
          000444    122     117     122  
          000447    052     052     052  
          000452    000                  
-     325 000453    015     012     000  fmt4:	.asciz	<cr><lf>
-     326 000456    045     063     061  fmt5:	.asciz	"%31s %s  SIGN BYTE=(%02X)"
+     357 000453    015     012     000  fmt4:	.asciz	<cr><lf>
+     358 000456    045     063     061  fmt5:	.asciz	"%31s %s  SIGN BYTE=(%02X)"
          000461    163     040     045  
          000464    163     040     040  
          000467    123     111     107  
@@ -731,317 +941,796 @@
          000500    075     050     045  
          000503    060     062     130  
          000506    051     000          
-     327 000510    040     045     055  fmt6:	.asciz	" %-13s %s"<cr><lf>
+     359 000510    040     045     055  fmt6:	.asciz	" %-13s %s"<cr><lf>
          000513    061     063     163  
          000516    040     045     163  
          000521    015     012     000  
-     328                                
-     329 000524    111     116     120  input:	.asciz	"INPUT"
+     360                                
+     361 000524    111     116     120  input:	.asciz	"INPUT"
          000527    125     124     000  
-     330 000532    123     122     103  source:	.asciz	"SRC"
+     362 000532    123     122     103  source:	.asciz	"SRC"
          000535    000                  
-     331 000536    105     130     120  expout:	.asciz	"EXP OUT"
+     363 000536    105     130     120  expout:	.asciz	"EXP OUT"
          000541    040     117     125  
          000544    124     000          
-     332 000546    101     103     124  actout:	.asciz	"ACT OUT"
+     364 000546    101     103     124  actout:	.asciz	"ACT OUT"
          000551    040     117     125  
          000554    124     000          
-     333 000556    105     130     120  expres:	.asciz	"EXP RESULT"
+     365 000556    105     130     120  expres:	.asciz	"EXP RESULT"
          000561    040     122     105  
          000564    123     125     114  
          000567    124     000          
-     334 000571    101     103     124  actres:	.asciz	"ACT RESULT"
+     366 000571    101     103     124  actres:	.asciz	"ACT RESULT"
          000574    040     122     105  
          000577    123     125     114  
          000602    124     000          
-     335                                
-     336                                ; --------------------------------------------------------------------------------
-     337                                	
-     462                                
-     463 000000                         	.psect	tst
-     464                                
-     465 000000 076056                  datbeg:	.word	ashn					; test opcode value
-     466 000002                         	.string	"ASHN"					; test opcode string
+     367                                
+     368                                ; --------------------------------------------------------------------------------
+     369                                	
+     493                                .list
+     494                                
+     495 000000                         	.psect	tst
+     496                                
+     497 000000 076076                  datbeg:	.word	ashp					; test opcode value
+     498 000002                         	.string	"ASHP"					; test opcode string
+       3                                .list
        4 000002 000604'                 	.word	32768$
+       7                                .list
        8 000604                         	.psect	str
-       9 000604    101     123     110  32768$:	.asciz	"ASHN"
-         000607    116     000          
-     467 000004                         	.zoned	dt$nlo - <00350724458>			; r0,r1 ... input
+       9 000604    101     123     110  32768$:	.asciz	"ASHP"
+         000607    120     000          
+      13                                .list
+     499 000004                         	.zoned	dt$nlo - <63053671936>			; r0,r1 ... input
+       4                                .list
        5 000004 030013                  	  .word	dt$nlo+plen
        6 000006 000000'                 	  .word	32768$
+       9                                .list
       10 000000                         	  .psect buf
-       3 000000    175                  32768$:	  .byte	^x7D ; first nlo - 0
-       7 000001    000                  	  .byte	^x00 ; middle
-       7 000002    003                  	  .byte	^x03 ; middle
+       2                                .list
+       3 000000    117                  32768$:	  .byte	^x49+^x06 ; first nlo - 1..9
+       6                                .list
+       7 000001    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000002    000                  	  .byte	^x00 ; middle
+       6                                .list
        7 000003    005                  	  .byte	^x05 ; middle
-       7 000004    000                  	  .byte	^x00 ; middle
-       7 000005    007                  	  .byte	^x07 ; middle
-       7 000006    002                  	  .byte	^x02 ; middle
-       7 000007    004                  	  .byte	^x04 ; middle
-       7 000010    004                  	  .byte	^x04 ; middle
-       7 000011    005                  	  .byte	^x05 ; middle
-       7 000012    010                  	  .byte	^x08 ; last
-     468 000010                         	.zoned	dt$nls + <79999999999999999999998>	; r2,r3 ... output
+       6                                .list
+       7 000004    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000005    006                  	  .byte	^x06 ; middle
+       6                                .list
+       7 000006    007                  	  .byte	^x07 ; middle
+       6                                .list
+       7 000007    001                  	  .byte	^x01 ; middle
+       6                                .list
+       7 000010    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000011    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000012    006                  	  .byte	^x06 ; last
+      90                                .list
+     500 000010                         	.zoned	dt$nls + <79999999999999999999998>	; r2,r3 ... output
+       4                                .list
        5 000010 050027                  	  .word	dt$nls+plen
        6 000012 000014'                 	  .word	32768$
+       9                                .list
       10 000013                         	  .psect buf
+       6                                .list
        7 000013    053                  	  .byte	^x2B ; sign nls +
+       2                                .list
        3 000014    007                  32768$:	  .byte	^x07 ; first
+       6                                .list
        7 000015    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000016    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000017    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000020    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000021    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000022    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000023    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000024    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000025    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000026    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000027    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000030    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000031    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000032    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000033    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000034    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000035    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000036    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000037    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000040    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000041    011                  	  .byte	^x09 ; middle
+       6                                .list
        7 000042    010                  	  .byte	^x08 ; last
-     469 000014 001414  177777          	.word	<3.*bit8>+12., -1			; r4,r5
-     470 000020 000007                  	.word	^b0111					; nzvc
-     471 000022 000000  000000          	.word	0, 0					; r0,r1 ... expected
-     472 000026                         	.zoned	dt$nls - <00350724458000000000000>	; r2,r3 ... expected
+      90                                .list
+     501 000014 001414  177777          	.word	<3.*bit8>+12., -1			; r4,r5
+     502 000020 000017                  	.word	^b1111					; nzvc
+     503 000022 000000  000000          	.word	0, 0					; r0,r1 ... expected
+     504 000026                         	.zoned	dt$nls - <63053671936000000000000>	; r2,r3 ... expected
+       4                                .list
        5 000026 050027                  	  .word	dt$nls+plen
        6 000030 000044'                 	  .word	32768$
+       9                                .list
       10 000043                         	  .psect buf
+       6                                .list
        7 000043    055                  	  .byte	^x2D ; sign nls -
-       3 000044    000                  32768$:	  .byte	^x00 ; first
-       7 000045    000                  	  .byte	^x00 ; middle
-       7 000046    003                  	  .byte	^x03 ; middle
+       2                                .list
+       3 000044    006                  32768$:	  .byte	^x06 ; first
+       6                                .list
+       7 000045    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000046    000                  	  .byte	^x00 ; middle
+       6                                .list
        7 000047    005                  	  .byte	^x05 ; middle
-       7 000050    000                  	  .byte	^x00 ; middle
-       7 000051    007                  	  .byte	^x07 ; middle
-       7 000052    002                  	  .byte	^x02 ; middle
-       7 000053    004                  	  .byte	^x04 ; middle
-       7 000054    004                  	  .byte	^x04 ; middle
-       7 000055    005                  	  .byte	^x05 ; middle
-       7 000056    010                  	  .byte	^x08 ; middle
+       6                                .list
+       7 000050    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000051    006                  	  .byte	^x06 ; middle
+       6                                .list
+       7 000052    007                  	  .byte	^x07 ; middle
+       6                                .list
+       7 000053    001                  	  .byte	^x01 ; middle
+       6                                .list
+       7 000054    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000055    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000056    006                  	  .byte	^x06 ; middle
+       6                                .list
        7 000057    000                  	  .byte	^x00 ; middle
+       6                                .list
        7 000060    000                  	  .byte	^x00 ; middle
+       6                                .list
        7 000061    000                  	  .byte	^x00 ; middle
+       6                                .list
        7 000062    000                  	  .byte	^x00 ; middle
+       6                                .list
        7 000063    000                  	  .byte	^x00 ; middle
+       6                                .list
        7 000064    000                  	  .byte	^x00 ; middle
+       6                                .list
        7 000065    000                  	  .byte	^x00 ; middle
+       6                                .list
        7 000066    000                  	  .byte	^x00 ; middle
+       6                                .list
        7 000067    000                  	  .byte	^x00 ; middle
+       6                                .list
        7 000070    000                  	  .byte	^x00 ; middle
+       6                                .list
        7 000071    000                  	  .byte	^x00 ; middle
+       6                                .list
        7 000072    000                  	  .byte	^x00 ; last
-     473 000032 000000  177777          	.word	0, -1					; r4,r5
-     474 000036 000010                  	.word	^b1000					; nzvc
-     475                                
-     476 000040 000000                  	.word	0					; end of table
-     477                                
-     478                                	; ----------------------------------------
-     479 000042                         	.zoned	dt$nsz + <12345>
-       5 000042 000005                  	  .word	dt$nsz+plen
-       6 000044 000073'                 	  .word	32768$
+      90                                .list
+     505 000032 000000  177777          	.word	0, -1					; r4,r5
+     506 000036 000000                  	.word	^b0000					; nzvc
+     507                                
+     508 000040 076056                  	.word	ashn					; test opcode value
+     509 000042                         	.string	"ASHN"					; test opcode string
+       3                                .list
+       4 000042 000611'                 	.word	32768$
+       7                                .list
+       8 000611                         	.psect	str
+       9 000611    101     123     110  32768$:	.asciz	"ASHN"
+         000614    116     000          
+      13                                .list
+     510 000044                         	.zoned	dt$nlo - <00350724458>			; r0,r1 ... input
+       4                                .list
+       5 000044 030013                  	  .word	dt$nlo+plen
+       6 000046 000073'                 	  .word	32768$
+       9                                .list
       10 000073                         	  .psect buf
-       3 000073    001                  32768$:	  .byte	^x01 ; first
-       7 000074    002                  	  .byte	^x02 ; middle
+       2                                .list
+       3 000073    175                  32768$:	  .byte	^x7D ; first nlo - 0
+       6                                .list
+       7 000074    000                  	  .byte	^x00 ; middle
+       6                                .list
        7 000075    003                  	  .byte	^x03 ; middle
-       7 000076    004                  	  .byte	^x04 ; middle
-       7 000077    065                  	  .byte	^x35 ; last nsz +
-     480                                	; --------------------
-     481 000046                         	.zoned	dt$nsz - <12345>
-       5 000046 000005                  	  .word	dt$nsz+plen
-       6 000050 000100'                 	  .word	32768$
-      10 000100                         	  .psect buf
-       3 000100    001                  32768$:	  .byte	^x01 ; first
+       6                                .list
+       7 000076    005                  	  .byte	^x05 ; middle
+       6                                .list
+       7 000077    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000100    007                  	  .byte	^x07 ; middle
+       6                                .list
        7 000101    002                  	  .byte	^x02 ; middle
-       7 000102    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000102    004                  	  .byte	^x04 ; middle
+       6                                .list
        7 000103    004                  	  .byte	^x04 ; middle
-       7 000104    165                  	  .byte	^x75 ; last nsz -
-     482                                	; ----------------------------------------
-     483 000052                         	.zoned	dt$nuz + <12345>
-       5 000052 010005                  	  .word	dt$nuz+plen
-       6 000054 000105'                 	  .word	32768$
-      10 000105                         	  .psect buf
-       3 000105    001                  32768$:	  .byte	^x01 ; first
-       7 000106    002                  	  .byte	^x02 ; middle
-       7 000107    003                  	  .byte	^x03 ; middle
-       7 000110    004                  	  .byte	^x04 ; middle
-       7 000111    065                  	  .byte	^x35 ; last nuz +/-
-     484                                	; --------------------
-     485 000056                         	.zoned	dt$nuz - <12345>
-       5 000056 010005                  	  .word	dt$nuz+plen
-       6 000060 000112'                 	  .word	32768$
-      10 000112                         	  .psect buf
-       3 000112    001                  32768$:	  .byte	^x01 ; first
-       7 000113    002                  	  .byte	^x02 ; middle
-       7 000114    003                  	  .byte	^x03 ; middle
-       7 000115    004                  	  .byte	^x04 ; middle
-       7 000116    065                  	  .byte	^x35 ; last nuz +/-
-     486                                	; ----------------------------------------
-     487 000062                         	.zoned	dt$nto + <12345>
-       5 000062 020005                  	  .word	dt$nto+plen
-       6 000064 000117'                 	  .word	32768$
-      10 000117                         	  .psect buf
-       3 000117    001                  32768$:	  .byte	^x01 ; first
-       7 000120    002                  	  .byte	^x02 ; middle
-       7 000121    003                  	  .byte	^x03 ; middle
-       7 000122    004                  	  .byte	^x04 ; middle
-       7 000123    105                  	  .byte	^x40+^x05 ; last nto + 1..9
-     488                                	; --------------------
-     489 000066                         	.zoned	dt$nto - <12345>
-       5 000066 020005                  	  .word	dt$nto+plen
-       6 000070 000124'                 	  .word	32768$
-      10 000124                         	  .psect buf
-       3 000124    001                  32768$:	  .byte	^x01 ; first
-       7 000125    002                  	  .byte	^x02 ; middle
-       7 000126    003                  	  .byte	^x03 ; middle
-       7 000127    004                  	  .byte	^x04 ; middle
-       7 000130    116                  	  .byte	^x49+^x05 ; last nto - 1..9
-     490                                	; ----------------------------------------
-     491 000072                         	.zoned	dt$nto + <43210>
-       5 000072 020005                  	  .word	dt$nto+plen
-       6 000074 000131'                 	  .word	32768$
-      10 000131                         	  .psect buf
-       3 000131    004                  32768$:	  .byte	^x04 ; first
-       7 000132    003                  	  .byte	^x03 ; middle
-       7 000133    002                  	  .byte	^x02 ; middle
-       7 000134    001                  	  .byte	^x01 ; middle
-       7 000135    173                  	  .byte	^x7B ; last nto + 0
-     492                                	; --------------------
-     493 000076                         	.zoned	dt$nto - <43210>
-       5 000076 020005                  	  .word	dt$nto+plen
-       6 000100 000136'                 	  .word	32768$
+       6                                .list
+       7 000104    005                  	  .byte	^x05 ; middle
+       6                                .list
+       7 000105    010                  	  .byte	^x08 ; last
+      90                                .list
+     511 000050                         	.zoned	dt$nls + <79999999999999999999998>	; r2,r3 ... output
+       4                                .list
+       5 000050 050027                  	  .word	dt$nls+plen
+       6 000052 000107'                 	  .word	32768$
+       9                                .list
+      10 000106                         	  .psect buf
+       6                                .list
+       7 000106    053                  	  .byte	^x2B ; sign nls +
+       2                                .list
+       3 000107    007                  32768$:	  .byte	^x07 ; first
+       6                                .list
+       7 000110    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000111    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000112    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000113    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000114    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000115    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000116    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000117    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000120    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000121    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000122    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000123    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000124    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000125    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000126    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000127    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000130    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000131    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000132    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000133    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000134    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000135    010                  	  .byte	^x08 ; last
+      90                                .list
+     512 000054 001414  177777          	.word	<3.*bit8>+12., -1			; r4,r5
+     513 000060 000007                  	.word	^b0111					; nzvc
+     514 000062 000000  000000          	.word	0, 0					; r0,r1 ... expected
+     515 000066                         	.zoned	dt$nls - <00350724458000000000000>	; r2,r3 ... expected
+       4                                .list
+       5 000066 050027                  	  .word	dt$nls+plen
+       6 000070 000137'                 	  .word	32768$
+       9                                .list
       10 000136                         	  .psect buf
-       3 000136    004                  32768$:	  .byte	^x04 ; first
-       7 000137    003                  	  .byte	^x03 ; middle
-       7 000140    002                  	  .byte	^x02 ; middle
-       7 000141    001                  	  .byte	^x01 ; middle
-       7 000142    175                  	  .byte	^x7D ; last nto - 0
-     494                                	; ----------------------------------------
-     495 000102                         	.zoned	dt$nlo + <12345>
-       5 000102 030005                  	  .word	dt$nlo+plen
-       6 000104 000143'                 	  .word	32768$
-      10 000143                         	  .psect buf
-       3 000143    101                  32768$:	  .byte	^x40+^x01 ; first nlo + 1..9
-       7 000144    002                  	  .byte	^x02 ; middle
-       7 000145    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000136    055                  	  .byte	^x2D ; sign nls -
+       2                                .list
+       3 000137    000                  32768$:	  .byte	^x00 ; first
+       6                                .list
+       7 000140    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000141    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000142    005                  	  .byte	^x05 ; middle
+       6                                .list
+       7 000143    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000144    007                  	  .byte	^x07 ; middle
+       6                                .list
+       7 000145    002                  	  .byte	^x02 ; middle
+       6                                .list
        7 000146    004                  	  .byte	^x04 ; middle
-       7 000147    005                  	  .byte	^x05 ; last
-     496                                	; --------------------
-     497 000106                         	.zoned	dt$nlo - <12345>
-       5 000106 030005                  	  .word	dt$nlo+plen
-       6 000110 000150'                 	  .word	32768$
-      10 000150                         	  .psect buf
-       3 000150    112                  32768$:	  .byte	^x49+^x01 ; first nlo - 1..9
-       7 000151    002                  	  .byte	^x02 ; middle
-       7 000152    003                  	  .byte	^x03 ; middle
-       7 000153    004                  	  .byte	^x04 ; middle
-       7 000154    005                  	  .byte	^x05 ; last
-     498                                	; ----------------------------------------
-     499 000112                         	.zoned	dt$nlo + <01234>
-       5 000112 030005                  	  .word	dt$nlo+plen
-       6 000114 000155'                 	  .word	32768$
-      10 000155                         	  .psect buf
-       3 000155    173                  32768$:	  .byte	^x7B ; first nlo + 0
-       7 000156    001                  	  .byte	^x01 ; middle
-       7 000157    002                  	  .byte	^x02 ; middle
-       7 000160    003                  	  .byte	^x03 ; middle
-       7 000161    004                  	  .byte	^x04 ; last
-     500                                	; --------------------
-     501 000116                         	.zoned	dt$nlo - <01234>
-       5 000116 030005                  	  .word	dt$nlo+plen
-       6 000120 000162'                 	  .word	32768$
-      10 000162                         	  .psect buf
-       3 000162    175                  32768$:	  .byte	^x7D ; first nlo - 0
-       7 000163    001                  	  .byte	^x01 ; middle
-       7 000164    002                  	  .byte	^x02 ; middle
-       7 000165    003                  	  .byte	^x03 ; middle
-       7 000166    004                  	  .byte	^x04 ; last
-     502                                	; ----------------------------------------
-     503 000122                         	.zoned	dt$nts + <12345>
-       5 000122 040005                  	  .word	dt$nts+plen
-       6 000124 000167'                 	  .word	32768$
-      10 000167                         	  .psect buf
-       3 000167    001                  32768$:	  .byte	^x01 ; first
-       7 000170    002                  	  .byte	^x02 ; middle
-       7 000171    003                  	  .byte	^x03 ; middle
-       7 000172    004                  	  .byte	^x04 ; middle
-       7 000173    005                  	  .byte	^x05 ; last
-       7 000174    053                  	  .byte	^x2B ; sign nts +
-     504                                	; --------------------
-     505 000126                         	.zoned	dt$nts - <12345>
-       5 000126 040005                  	  .word	dt$nts+plen
-       6 000130 000175'                 	  .word	32768$
-      10 000175                         	  .psect buf
-       3 000175    001                  32768$:	  .byte	^x01 ; first
-       7 000176    002                  	  .byte	^x02 ; middle
-       7 000177    003                  	  .byte	^x03 ; middle
-       7 000200    004                  	  .byte	^x04 ; middle
-       7 000201    005                  	  .byte	^x05 ; last
-       7 000202    055                  	  .byte	^x2D ; sign nts -
-     506                                	; ----------------------------------------
-     507 000132                         	.zoned	dt$nls + <12345>
-       5 000132 050005                  	  .word	dt$nls+plen
-       6 000134 000204'                 	  .word	32768$
-      10 000203                         	  .psect buf
-       7 000203    053                  	  .byte	^x2B ; sign nls +
-       3 000204    001                  32768$:	  .byte	^x01 ; first
-       7 000205    002                  	  .byte	^x02 ; middle
-       7 000206    003                  	  .byte	^x03 ; middle
-       7 000207    004                  	  .byte	^x04 ; middle
-       7 000210    005                  	  .byte	^x05 ; last
-     508                                	; --------------------
-     509 000136                         	.zoned	dt$nls - <12345>
-       5 000136 050005                  	  .word	dt$nls+plen
-       6 000140 000212'                 	  .word	32768$
-      10 000211                         	  .psect buf
-       7 000211    055                  	  .byte	^x2D ; sign nls -
-       3 000212    001                  32768$:	  .byte	^x01 ; first
-       7 000213    002                  	  .byte	^x02 ; middle
-       7 000214    003                  	  .byte	^x03 ; middle
-       7 000215    004                  	  .byte	^x04 ; middle
-       7 000216    005                  	  .byte	^x05 ; last
-     510                                	; ----------------------------------------
-     511                                
-     512                                ; --------------------------------------------------------------------------------
-     513                                
-     514 001652                         	.psect	prg
-     515                                
-     516 001652                         done::	printf	#msg2			; say goodbye
-       1 001652                         	calls	printf #msg2               
-       9 001652 012746  000037'         	mov	#msg2,-(sp)
-       2 001656                         	call	printf
-       1 001656 004737  001734'         	jsr	pc,printf
-       3 001662 062706  000002          	add	#2,sp
-     517                                
-     518 001666 013700  000000'         	mov	$sav42,r0		; check if loaded by XXDP
-     519 001672 001407                  	beq	noxxdp			; br if not
-     520 001674 000005                  	reset				; yes, reset the world
-     521 001676 004710                  $endad:	jsr	pc,(r0)			; return back to XXDP
-     522 001700 000240                  	nop				; standard sequence
-     523 001702 000240                  	nop				;
-     524 001704 000240                  	nop				;
-     525 001706 000137  000112'         	jmp	loop			; back for more
-     526                                
-     527 001712 005000                  noxxdp:	clr	r0			;
-     528 001714 005300                  10$:	dec	r0			; 
-     529 001716 001376                  	bne	10$			; some delay
-     530 001720 000005                  	reset				; zap the world
-     531 001722 012746  000340          	mov	#<7>*bit5,-(sp)		; prio7 in psw
-     532 001726 012746  165144          	mov	#console,-(sp)		; go there
-     533 001732 000002                  	rti				; reload psw
-     534                                
-     535                                ; --------------------------------------------------------------------------------
-     536                                
-     537                                .include "mac/printf.mac"
+       6                                .list
+       7 000147    004                  	  .byte	^x04 ; middle
+       6                                .list
+       7 000150    005                  	  .byte	^x05 ; middle
+       6                                .list
+       7 000151    010                  	  .byte	^x08 ; middle
+       6                                .list
+       7 000152    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000153    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000154    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000155    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000156    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000157    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000160    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000161    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000162    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000163    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000164    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000165    000                  	  .byte	^x00 ; last
+      90                                .list
+     516 000072 000000  177777          	.word	0, -1					; r4,r5
+     517 000076 000010                  	.word	^b1000					; nzvc
+     518                                
+     519 000100 076056                  	.word	ashn					; test opcode value
+     520 000102                         	.string	"ASHN"					; test opcode string
+       3                                .list
+       4 000102 000616'                 	.word	32768$
+       7                                .list
+       8 000616                         	.psect	str
+       9 000616    101     123     110  32768$:	.asciz	"ASHN"
+         000621    116     000          
+      13                                .list
+     521 000104                         	.zoned	dt$nlo - <01>				; r0,r1 ... input
+       4                                .list
+       5 000104 030002                  	  .word	dt$nlo+plen
+       6 000106 000166'                 	  .word	32768$
+       9                                .list
+      10 000166                         	  .psect buf
+       2                                .list
+       3 000166    175                  32768$:	  .byte	^x7D ; first nlo - 0
+       6                                .list
+       7 000167    001                  	  .byte	^x01 ; last
+      90                                .list
+     522 000110                         	.zoned	dt$nls + <79999999999999999999998>	; r2,r3 ... output
+       4                                .list
+       5 000110 050027                  	  .word	dt$nls+plen
+       6 000112 000171'                 	  .word	32768$
+       9                                .list
+      10 000170                         	  .psect buf
+       6                                .list
+       7 000170    053                  	  .byte	^x2B ; sign nls +
+       2                                .list
+       3 000171    007                  32768$:	  .byte	^x07 ; first
+       6                                .list
+       7 000172    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000173    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000174    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000175    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000176    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000177    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000200    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000201    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000202    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000203    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000204    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000205    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000206    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000207    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000210    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000211    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000212    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000213    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000214    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000215    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000216    011                  	  .byte	^x09 ; middle
+       6                                .list
+       7 000217    010                  	  .byte	^x08 ; last
+      90                                .list
+     523 000114 001414  177777          	.word	<3.*bit8>+12., -1			; r4,r5
+     524 000120 000017                  	.word	^b1111					; nzvc
+     525 000122 000000  000000          	.word	0, 0					; r0,r1 ... expected
+     526 000126                         	.zoned	dt$nls - <01000000000000>		; r2,r3 ... expected
+       4                                .list
+       5 000126 050016                  	  .word	dt$nls+plen
+       6 000130 000221'                 	  .word	32768$
+       9                                .list
+      10 000220                         	  .psect buf
+       6                                .list
+       7 000220    055                  	  .byte	^x2D ; sign nls -
+       2                                .list
+       3 000221    000                  32768$:	  .byte	^x00 ; first
+       6                                .list
+       7 000222    001                  	  .byte	^x01 ; middle
+       6                                .list
+       7 000223    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000224    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000225    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000226    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000227    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000230    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000231    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000232    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000233    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000234    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000235    000                  	  .byte	^x00 ; middle
+       6                                .list
+       7 000236    000                  	  .byte	^x00 ; last
+      90                                .list
+     527 000132 000000  177777          	.word	0, -1					; r4,r5
+     528 000136 000000                  	.word	^b0000					; nzvc
+     529                                
+     530 000140 000000                   	.word	<0>					; end of table
+     531                                
+     532                                	; ----------------------------------------
+     533 000142                         	.zoned	dt$nsz + <12345>
+       4                                .list
+       5 000142 000005                  	  .word	dt$nsz+plen
+       6 000144 000237'                 	  .word	32768$
+       9                                .list
+      10 000237                         	  .psect buf
+       2                                .list
+       3 000237    001                  32768$:	  .byte	^x01 ; first
+       6                                .list
+       7 000240    002                  	  .byte	^x02 ; middle
+       6                                .list
+       7 000241    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000242    004                  	  .byte	^x04 ; middle
+       6                                .list
+       7 000243    065                  	  .byte	^x35 ; last nsz +
+      90                                .list
+     534                                	; --------------------
+     535 000146                         	.zoned	dt$nsz - <12345>
+       4                                .list
+       5 000146 000005                  	  .word	dt$nsz+plen
+       6 000150 000244'                 	  .word	32768$
+       9                                .list
+      10 000244                         	  .psect buf
+       2                                .list
+       3 000244    001                  32768$:	  .byte	^x01 ; first
+       6                                .list
+       7 000245    002                  	  .byte	^x02 ; middle
+       6                                .list
+       7 000246    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000247    004                  	  .byte	^x04 ; middle
+       6                                .list
+       7 000250    165                  	  .byte	^x75 ; last nsz -
+      90                                .list
+     536                                	; ----------------------------------------
+     537 000152                         	.zoned	dt$nuz + <12345>
+       4                                .list
+       5 000152 010005                  	  .word	dt$nuz+plen
+       6 000154 000251'                 	  .word	32768$
+       9                                .list
+      10 000251                         	  .psect buf
+       2                                .list
+       3 000251    001                  32768$:	  .byte	^x01 ; first
+       6                                .list
+       7 000252    002                  	  .byte	^x02 ; middle
+       6                                .list
+       7 000253    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000254    004                  	  .byte	^x04 ; middle
+       6                                .list
+       7 000255    065                  	  .byte	^x35 ; last nuz +/-
+      90                                .list
+     538                                	; --------------------
+     539 000156                         	.zoned	dt$nuz - <12345>
+       4                                .list
+       5 000156 010005                  	  .word	dt$nuz+plen
+       6 000160 000256'                 	  .word	32768$
+       9                                .list
+      10 000256                         	  .psect buf
+       2                                .list
+       3 000256    001                  32768$:	  .byte	^x01 ; first
+       6                                .list
+       7 000257    002                  	  .byte	^x02 ; middle
+       6                                .list
+       7 000260    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000261    004                  	  .byte	^x04 ; middle
+       6                                .list
+       7 000262    065                  	  .byte	^x35 ; last nuz +/-
+      90                                .list
+     540                                	; ----------------------------------------
+     541 000162                         	.zoned	dt$nto + <12345>
+       4                                .list
+       5 000162 020005                  	  .word	dt$nto+plen
+       6 000164 000263'                 	  .word	32768$
+       9                                .list
+      10 000263                         	  .psect buf
+       2                                .list
+       3 000263    001                  32768$:	  .byte	^x01 ; first
+       6                                .list
+       7 000264    002                  	  .byte	^x02 ; middle
+       6                                .list
+       7 000265    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000266    004                  	  .byte	^x04 ; middle
+       6                                .list
+       7 000267    105                  	  .byte	^x40+^x05 ; last nto + 1..9
+      90                                .list
+     542                                	; --------------------
+     543 000166                         	.zoned	dt$nto - <12345>
+       4                                .list
+       5 000166 020005                  	  .word	dt$nto+plen
+       6 000170 000270'                 	  .word	32768$
+       9                                .list
+      10 000270                         	  .psect buf
+       2                                .list
+       3 000270    001                  32768$:	  .byte	^x01 ; first
+       6                                .list
+       7 000271    002                  	  .byte	^x02 ; middle
+       6                                .list
+       7 000272    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000273    004                  	  .byte	^x04 ; middle
+       6                                .list
+       7 000274    116                  	  .byte	^x49+^x05 ; last nto - 1..9
+      90                                .list
+     544                                	; ----------------------------------------
+     545 000172                         	.zoned	dt$nto + <43210>
+       4                                .list
+       5 000172 020005                  	  .word	dt$nto+plen
+       6 000174 000275'                 	  .word	32768$
+       9                                .list
+      10 000275                         	  .psect buf
+       2                                .list
+       3 000275    004                  32768$:	  .byte	^x04 ; first
+       6                                .list
+       7 000276    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000277    002                  	  .byte	^x02 ; middle
+       6                                .list
+       7 000300    001                  	  .byte	^x01 ; middle
+       6                                .list
+       7 000301    173                  	  .byte	^x7B ; last nto + 0
+      90                                .list
+     546                                	; --------------------
+     547 000176                         	.zoned	dt$nto - <43210>
+       4                                .list
+       5 000176 020005                  	  .word	dt$nto+plen
+       6 000200 000302'                 	  .word	32768$
+       9                                .list
+      10 000302                         	  .psect buf
+       2                                .list
+       3 000302    004                  32768$:	  .byte	^x04 ; first
+       6                                .list
+       7 000303    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000304    002                  	  .byte	^x02 ; middle
+       6                                .list
+       7 000305    001                  	  .byte	^x01 ; middle
+       6                                .list
+       7 000306    175                  	  .byte	^x7D ; last nto - 0
+      90                                .list
+     548                                	; ----------------------------------------
+     549 000202                         	.zoned	dt$nlo + <12345>
+       4                                .list
+       5 000202 030005                  	  .word	dt$nlo+plen
+       6 000204 000307'                 	  .word	32768$
+       9                                .list
+      10 000307                         	  .psect buf
+       2                                .list
+       3 000307    101                  32768$:	  .byte	^x40+^x01 ; first nlo + 1..9
+       6                                .list
+       7 000310    002                  	  .byte	^x02 ; middle
+       6                                .list
+       7 000311    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000312    004                  	  .byte	^x04 ; middle
+       6                                .list
+       7 000313    005                  	  .byte	^x05 ; last
+      90                                .list
+     550                                	; --------------------
+     551 000206                         	.zoned	dt$nlo - <12345>
+       4                                .list
+       5 000206 030005                  	  .word	dt$nlo+plen
+       6 000210 000314'                 	  .word	32768$
+       9                                .list
+      10 000314                         	  .psect buf
+       2                                .list
+       3 000314    112                  32768$:	  .byte	^x49+^x01 ; first nlo - 1..9
+       6                                .list
+       7 000315    002                  	  .byte	^x02 ; middle
+       6                                .list
+       7 000316    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000317    004                  	  .byte	^x04 ; middle
+       6                                .list
+       7 000320    005                  	  .byte	^x05 ; last
+      90                                .list
+     552                                	; ----------------------------------------
+     553 000212                         	.zoned	dt$nlo + <01234>
+       4                                .list
+       5 000212 030005                  	  .word	dt$nlo+plen
+       6 000214 000321'                 	  .word	32768$
+       9                                .list
+      10 000321                         	  .psect buf
+       2                                .list
+       3 000321    173                  32768$:	  .byte	^x7B ; first nlo + 0
+       6                                .list
+       7 000322    001                  	  .byte	^x01 ; middle
+       6                                .list
+       7 000323    002                  	  .byte	^x02 ; middle
+       6                                .list
+       7 000324    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000325    004                  	  .byte	^x04 ; last
+      90                                .list
+     554                                	; --------------------
+     555 000216                         	.zoned	dt$nlo - <01234>
+       4                                .list
+       5 000216 030005                  	  .word	dt$nlo+plen
+       6 000220 000326'                 	  .word	32768$
+       9                                .list
+      10 000326                         	  .psect buf
+       2                                .list
+       3 000326    175                  32768$:	  .byte	^x7D ; first nlo - 0
+       6                                .list
+       7 000327    001                  	  .byte	^x01 ; middle
+       6                                .list
+       7 000330    002                  	  .byte	^x02 ; middle
+       6                                .list
+       7 000331    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000332    004                  	  .byte	^x04 ; last
+      90                                .list
+     556                                	; ----------------------------------------
+     557 000222                         	.zoned	dt$nts + <12345>
+       4                                .list
+       5 000222 040005                  	  .word	dt$nts+plen
+       6 000224 000333'                 	  .word	32768$
+       9                                .list
+      10 000333                         	  .psect buf
+       2                                .list
+       3 000333    001                  32768$:	  .byte	^x01 ; first
+       6                                .list
+       7 000334    002                  	  .byte	^x02 ; middle
+       6                                .list
+       7 000335    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000336    004                  	  .byte	^x04 ; middle
+       6                                .list
+       7 000337    005                  	  .byte	^x05 ; last
+       6                                .list
+       7 000340    053                  	  .byte	^x2B ; sign nts +
+      90                                .list
+     558                                	; --------------------
+     559 000226                         	.zoned	dt$nts - <12345>
+       4                                .list
+       5 000226 040005                  	  .word	dt$nts+plen
+       6 000230 000341'                 	  .word	32768$
+       9                                .list
+      10 000341                         	  .psect buf
+       2                                .list
+       3 000341    001                  32768$:	  .byte	^x01 ; first
+       6                                .list
+       7 000342    002                  	  .byte	^x02 ; middle
+       6                                .list
+       7 000343    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000344    004                  	  .byte	^x04 ; middle
+       6                                .list
+       7 000345    005                  	  .byte	^x05 ; last
+       6                                .list
+       7 000346    055                  	  .byte	^x2D ; sign nts -
+      90                                .list
+     560                                	; ----------------------------------------
+     561 000232                         	.zoned	dt$nls + <12345>
+       4                                .list
+       5 000232 050005                  	  .word	dt$nls+plen
+       6 000234 000350'                 	  .word	32768$
+       9                                .list
+      10 000347                         	  .psect buf
+       6                                .list
+       7 000347    053                  	  .byte	^x2B ; sign nls +
+       2                                .list
+       3 000350    001                  32768$:	  .byte	^x01 ; first
+       6                                .list
+       7 000351    002                  	  .byte	^x02 ; middle
+       6                                .list
+       7 000352    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000353    004                  	  .byte	^x04 ; middle
+       6                                .list
+       7 000354    005                  	  .byte	^x05 ; last
+      90                                .list
+     562                                	; --------------------
+     563 000236                         	.zoned	dt$nls - <12345>
+       4                                .list
+       5 000236 050005                  	  .word	dt$nls+plen
+       6 000240 000356'                 	  .word	32768$
+       9                                .list
+      10 000355                         	  .psect buf
+       6                                .list
+       7 000355    055                  	  .byte	^x2D ; sign nls -
+       2                                .list
+       3 000356    001                  32768$:	  .byte	^x01 ; first
+       6                                .list
+       7 000357    002                  	  .byte	^x02 ; middle
+       6                                .list
+       7 000360    003                  	  .byte	^x03 ; middle
+       6                                .list
+       7 000361    004                  	  .byte	^x04 ; middle
+       6                                .list
+       7 000362    005                  	  .byte	^x05 ; last
+      90                                .list
+     564                                	; ----------------------------------------
+     565                                
+     566                                ; --------------------------------------------------------------------------------
+     567                                
+     568 001754                         	.psect	prg
+     569                                
+     570 001754                         done::	printf	#msg2			; say goodbye
+       1 001754                         	calls	printf #msg2               
+       8                                .list
+       9 001754 012746  000037'         	mov	#msg2,-(sp)
+       1                                .list
+       2 001760                         	call	printf
+       1 001760 004737  002036'         	jsr	pc,printf
+       3 001764 062706  000002          	add	#2,sp
+      18                                .list
+     571                                
+     572 001770 013700  000000'         	mov	$sav42,r0		; check if loaded by XXDP
+     573 001774 001407                  	beq	noxxdp			; br if not
+     574 001776 000005                  	reset				; yes, reset the world
+     575 002000 004710                  $endad:	jsr	pc,(r0)			; return back to XXDP
+     576 002002 000240                  	nop				; standard sequence
+     577 002004 000240                  	nop				;
+     578 002006 000240                  	nop				;
+     579 002010 000137  000112'         	jmp	loop			; back for more
+     580                                
+     581 002014 005000                  noxxdp:	clr	r0			;
+     582 002016 005300                  10$:	dec	r0			; 
+     583 002020 001376                  	bne	10$			; some delay
+     584 002022 000005                  	reset				; zap the world
+     585 002024 012746  000340          	mov	#<7>*bit5,-(sp)		; prio7 in psw
+     586 002030 012746  165144          	mov	#console,-(sp)		; go there
+     587 002034 000002                  	rti				; reload psw
+     588                                
+     589                                ; --------------------------------------------------------------------------------
+     590                                
+     591                                .include "mac/printf.mac"
        1                                ;================================================================================
        2                                ; printf.mac - printf routines for macro11 diagnostics
        3                                ; (C) 2009-2016 Donald North. All rights reserved.
@@ -1116,33 +1805,33 @@
       72                                ;		call	printf
       73                                ;		add	#2*N,sp
       74                                ;
-      75 001734 010046                  printf::mov	r0,-(sp)		; save reg
-      76 001736 010146                  	mov	r1,-(sp)		;
-      77 001740 010246                  	mov	r2,-(sp)		;
-      78 001742 010346                  	mov	r3,-(sp)		;
-      79 001744 010446                  	mov	r4,-(sp)		;
-      80 001746 010546                  	mov	r5,-(sp)		;
+      75 002036 010046                  printf::mov	r0,-(sp)		; save reg
+      76 002040 010146                  	mov	r1,-(sp)		;
+      77 002042 010246                  	mov	r2,-(sp)		;
+      78 002044 010346                  	mov	r3,-(sp)		;
+      79 002046 010446                  	mov	r4,-(sp)		;
+      80 002050 010546                  	mov	r5,-(sp)		;
       81                                	
-      82 001750 010605                  	mov	sp,r5			; frame pointer
-      83 001752 162706  000014          	sub	#n.last,sp		; reserve space on stack
+      82 002052 010605                  	mov	sp,r5			; frame pointer
+      83 002054 162706  000014          	sub	#n.last,sp		; reserve space on stack
       84                                	
-      85 001756 010504                  	mov	r5,r4			; get frame ptr
-      86 001760 062704  000016          	add	#n.args,r4		; offset to first argument
+      85 002060 010504                  	mov	r5,r4			; get frame ptr
+      86 002062 062704  000016          	add	#n.args,r4		; offset to first argument
       87                                	
-      88 001764 012765  002000' 177766  	mov	#1$,p.out(r5)		; character output routine
-      89 001772 005065  177764          	clr	p.ptr(r5)		; bufptr not used here
+      88 002066 012765  002102' 177766  	mov	#1$,p.out(r5)		; character output routine
+      89 002074 005065  177764          	clr	p.ptr(r5)		; bufptr not used here
       90                                	
-      91 001776 000442                  	br	xprintf			; continue
+      91 002100 000442                  	br	xprintf			; continue
       92                                
       93                                	; ---------------------------------------------------------
       94                                	
       95                                	; character output to console
       96                                	
-      97 002000 105737  177564          1$:	tstb	@#ttxcsr		; check if ready
-      98 002004 100375                  	bpl	1$			; not yet
-      99 002006 110037  177566          	movb	r0,@#ttxbuf		; send character
-     100 002012                         	return				; return
-       1 002012 000207                  	rts	pc
+      97 002102 105737  177564          1$:	tstb	@#ttxcsr		; check if ready
+      98 002106 100375                  	bpl	1$			; not yet
+      99 002110 110037  177566          	movb	r0,@#ttxbuf		; send character
+     100 002114                         	return				; return
+       1 002114 000207                  	rts	pc
      101                                	
      102                                ; --------------------------------------------------------------------------------
      103                                ;
@@ -1157,265 +1846,265 @@
      112                                ;		call	sprintf
      113                                ;		add	#2*N,sp
      114                                ;
-     115 002014 010046                  sprintf::mov	r0,-(sp)		; save reg
-     116 002016 010146                  	mov	r1,-(sp)		;
-     117 002020 010246                  	mov	r2,-(sp)		;
-     118 002022 010346                  	mov	r3,-(sp)		;
-     119 002024 010446                  	mov	r4,-(sp)		;
-     120 002026 010546                  	mov	r5,-(sp)		;
+     115 002116 010046                  sprintf::mov	r0,-(sp)		; save reg
+     116 002120 010146                  	mov	r1,-(sp)		;
+     117 002122 010246                  	mov	r2,-(sp)		;
+     118 002124 010346                  	mov	r3,-(sp)		;
+     119 002126 010446                  	mov	r4,-(sp)		;
+     120 002130 010546                  	mov	r5,-(sp)		;
      121                                	
-     122 002030 010605                  	mov	sp,r5			; frame pointer
-     123 002032 162706  000014          	sub	#n.last,sp		; reserve space on stack
+     122 002132 010605                  	mov	sp,r5			; frame pointer
+     123 002134 162706  000014          	sub	#n.last,sp		; reserve space on stack
      124                                	
-     125 002036 010504                  	mov	r5,r4			; get frame ptr
-     126 002040 062704  000016          	add	#n.args,r4		; offset to first argument
+     125 002140 010504                  	mov	r5,r4			; get frame ptr
+     126 002142 062704  000016          	add	#n.args,r4		; offset to first argument
      127                                	
-     128 002044 012765  002060' 177766  	mov	#1$,p.out(r5)		; character output routine
-     129 002052 012465  177764          	mov	(r4)+,p.ptr(r5)		; init bufptr from argument
+     128 002146 012765  002162' 177766  	mov	#1$,p.out(r5)		; character output routine
+     129 002154 012465  177764          	mov	(r4)+,p.ptr(r5)		; init bufptr from argument
      130                                	
-     131 002056 000412                  	br	xprintf			; continue
+     131 002160 000412                  	br	xprintf			; continue
      132                                
      133                                	; ---------------------------------------------------------
      134                                	
      135                                	; character output to buffer
      136                                	
-     137 002060 110075  177764          1$:	movb	r0,@p.ptr(r5)		; store character
-     138 002064 005265  177764          	inc	p.ptr(r5)		; bump pointer
-     139 002070 105075  177764          	clrb	@p.ptr(r5)		; null terminate
-     140 002074 016565  177764  000012  	mov	p.ptr(r5),p.sr0(r5)	; return updated ptr in saved r0
-     141 002102                         	return				; return
-       1 002102 000207                  	rts	pc
+     137 002162 110075  177764          1$:	movb	r0,@p.ptr(r5)		; store character
+     138 002166 005265  177764          	inc	p.ptr(r5)		; bump pointer
+     139 002172 105075  177764          	clrb	@p.ptr(r5)		; null terminate
+     140 002176 016565  177764  000012  	mov	p.ptr(r5),p.sr0(r5)	; return updated ptr in saved r0
+     141 002204                         	return				; return
+       1 002204 000207                  	rts	pc
      142                                	
      143                                ; --------------------------------------------------------------------------------
      144                                
      145                                	; process main format
      146                                
-     147 002104 012403                  xprintf:mov	(r4)+,r3		; prime format string pointer
+     147 002206 012403                  xprintf:mov	(r4)+,r3		; prime format string pointer
      148                                
-     149 002106                         1$:	call	900$			; get next format character
-       1 002106 004737  003016'         	jsr	pc,900$
-     150 002112 120227  000045          	cmpb	r2,#<'%>		; hit a format flag?
-     151 002116 001430                  	beq	10$			; yes, go process
-     152 002120 120227  000134          	cmpb	r2,#<'\>		; hit an escape flag?
-     153 002124 001404                  	beq	3$			; yes, go process
-     154 002126 010200                  2$:	mov	r2,r0			; char to print
-     155 002130                         	call	@p.out(r5)		; no, just print it
-       1 002130 004775  177766          	jsr	pc,@p.out(r5)
-     156 002134 000764                  	br	1$			; loop
+     149 002210                         1$:	call	900$			; get next format character
+       1 002210 004737  003120'         	jsr	pc,900$
+     150 002214 120227  000045          	cmpb	r2,#<'%>		; hit a format flag?
+     151 002220 001430                  	beq	10$			; yes, go process
+     152 002222 120227  000134          	cmpb	r2,#<'\>		; hit an escape flag?
+     153 002226 001404                  	beq	3$			; yes, go process
+     154 002230 010200                  2$:	mov	r2,r0			; char to print
+     155 002232                         	call	@p.out(r5)		; no, just print it
+       1 002232 004775  177766          	jsr	pc,@p.out(r5)
+     156 002236 000764                  	br	1$			; loop
      157                                
      158                                	; process escaped character \a .. \z
      159                                
-     160 002136                         3$:	call	900$			; get the escaped character
-       1 002136 004737  003016'         	jsr	pc,900$
-     161 002142 002771                  	blt	2$			; quick exit for [NUL-@] range
-     162 002144 120227  000172          	cmpb	r2,#<'z>		;
-     163 002150 003366                  	bgt	2$			; exit if [{-DEL]
-     164 002152 120227  000141          	cmpb	r2,#<'a>		;
-     165 002156 002005                  	bge	4$			; br if [a-z]	
-     166 002160 120227  000132          	cmpb	r2,#<'Z>		;
-     167 002164 003360                  	bgt	2$			; br if [[-`]
-     168 002166 152702  000040          	bisb	#40,r2			; force to [a-z] range
-     169 002172 116202  002713'         4$:	movb	1000$-<'a>(r2),r2	; translate a..z to escaped
-     170 002176 000753                  	br	2$			; go print
+     160 002240                         3$:	call	900$			; get the escaped character
+       1 002240 004737  003120'         	jsr	pc,900$
+     161 002244 002771                  	blt	2$			; quick exit for [NUL-@] range
+     162 002246 120227  000172          	cmpb	r2,#<'z>		;
+     163 002252 003366                  	bgt	2$			; exit if [{-DEL]
+     164 002254 120227  000141          	cmpb	r2,#<'a>		;
+     165 002260 002005                  	bge	4$			; br if [a-z]	
+     166 002262 120227  000132          	cmpb	r2,#<'Z>		;
+     167 002266 003360                  	bgt	2$			; br if [[-`]
+     168 002270 152702  000040          	bisb	#40,r2			; force to [a-z] range
+     169 002274 116202  003015'         4$:	movb	1000$-<'a>(r2),r2	; translate a..z to escaped
+     170 002300 000753                  	br	2$			; go print
      171                                
      172                                	; process format flag %[-+]?(0?\d+([.]\d+)?)?[lh]?[iduscpxo]
      173                                
-     174 002200 112765  000040  177776  10$:	movb	#<' >,p.fil(r5)		; blank fill
-     175 002206 105065  177777          	clrb	p.flg(r5)		; clear flags
-     176 002212 005065  177774          	clr	p.wid(r5)		; init width spec
-     177 002216 005065  177772          	clr	p.pre(r5)		; init precision spec
-     178 002222 005065  177770          	clr	p.len(r5)		; no digits yet
+     174 002302 112765  000040  177776  10$:	movb	#<' >,p.fil(r5)		; blank fill
+     175 002310 105065  177777          	clrb	p.flg(r5)		; clear flags
+     176 002314 005065  177774          	clr	p.wid(r5)		; init width spec
+     177 002320 005065  177772          	clr	p.pre(r5)		; init precision spec
+     178 002324 005065  177770          	clr	p.len(r5)		; no digits yet
      179                                
-     180 002226                         11$:	call	900$			; get next format character
-       1 002226 004737  003016'         	jsr	pc,900$
-     181 002232 002045                  	bge	40$			; br if [A-DEL]
-     182 002234 120227  000045          	cmpb	r2,#<'%>		; check for '%'
-     183 002240 001732                  	beq	2$			; br if yes
+     180 002330                         11$:	call	900$			; get next format character
+       1 002330 004737  003120'         	jsr	pc,900$
+     181 002334 002045                  	bge	40$			; br if [A-DEL]
+     182 002336 120227  000045          	cmpb	r2,#<'%>		; check for '%'
+     183 002342 001732                  	beq	2$			; br if yes
      184                                
      185                                	; some character in range [NUL-@]
      186                                
-     187 002242 120227  000055          	cmpb	r2,#<'->		; check for '-'
-     188 002246 001004                  	bne	12$			; br if not
-     189 002250 152765  000001  177777  	bisb	#pf.ljus,p.flg(r5)	; yes, set a flag
-     190 002256 000763                  	br	11$			; loop
-     191 002260 120227  000053          12$:	cmpb	r2,#<'+>		; check for '+'
-     192 002264 001004                  	bne	13$			; br if not
-     193 002266 152765  000002  177777  	bisb	#pf.sign,p.flg(r5)	; yes, set a flag
-     194 002274 000754                  	br	11$			; loop
-     195 002276 120227  000043          13$:	cmpb	r2,#<'#>		; check for '#'
-     196 002302 001004                  	bne	20$			; br if not
-     197 002304 152765  000004  177777  	bisb	#pf.altr,p.flg(r5)	; yes, set a flag
-     198 002312 000745                  	br	11$			; loop
+     187 002344 120227  000055          	cmpb	r2,#<'->		; check for '-'
+     188 002350 001004                  	bne	12$			; br if not
+     189 002352 152765  000001  177777  	bisb	#pf.ljus,p.flg(r5)	; yes, set a flag
+     190 002360 000763                  	br	11$			; loop
+     191 002362 120227  000053          12$:	cmpb	r2,#<'+>		; check for '+'
+     192 002366 001004                  	bne	13$			; br if not
+     193 002370 152765  000002  177777  	bisb	#pf.sign,p.flg(r5)	; yes, set a flag
+     194 002376 000754                  	br	11$			; loop
+     195 002400 120227  000043          13$:	cmpb	r2,#<'#>		; check for '#'
+     196 002404 001004                  	bne	20$			; br if not
+     197 002406 152765  000004  177777  	bisb	#pf.altr,p.flg(r5)	; yes, set a flag
+     198 002414 000745                  	br	11$			; loop
      199                                
-     200 002314                         20$:	call	800$			; get a number if present
-       1 002314 004737  002722'         	jsr	pc,800$
-     201 002320 010165  177774          	mov	r1,p.wid(r5)		; save number as width
+     200 002416                         20$:	call	800$			; get a number if present
+       1 002416 004737  003024'         	jsr	pc,800$
+     201 002422 010165  177774          	mov	r1,p.wid(r5)		; save number as width
      202                                
-     203 002324 120227  000056          	cmpb	r2,#<'.>		; check for .
-     204 002330 001006                  	bne	40$			; br if not, should be alpha
-     205 002332                         	call	900$			; get next character
-       1 002332 004737  003016'         	jsr	pc,900$
+     203 002426 120227  000056          	cmpb	r2,#<'.>		; check for .
+     204 002432 001006                  	bne	40$			; br if not, should be alpha
+     205 002434                         	call	900$			; get next character
+       1 002434 004737  003120'         	jsr	pc,900$
      206                                
-     207 002336                         	call	800$			; get a number if present
-       1 002336 004737  002722'         	jsr	pc,800$
-     208 002342 010165  177772          	mov	r1,p.pre(r5)		; save number as precision
+     207 002440                         	call	800$			; get a number if present
+       1 002440 004737  003024'         	jsr	pc,800$
+     208 002444 010165  177772          	mov	r1,p.pre(r5)		; save number as precision
      209                                
      210                                	; flag is in range [A-Za-z]
      211                                
-     212 002346 005000                  40$:	clr	r0			; zap numerics
-     213 002350 005001                  	clr	r1			;
-     214 002352 120227  000101          41$:	cmpb	r2,#<'A>		; check for [:-@]
-     215 002356 002663                  	blt	2$			; br if yes
-     216 002360 120227  000172          	cmpb	r2,#<'z>		; check for [{-DEL]
-     217 002364 003260                  	bgt	2$			; br if yes
-     218 002366 120227  000141          	cmpb	r2,#<'a>		; check for [a-z]
-     219 002372 002003                  	bge	42$			; br if yes
-     220 002374 120227  000132          	cmpb	r2,#<'Z>		; check for [A-Z]
-     221 002400 003252                  	bgt	2$			; br if no
-     222 002402 042702  000040          42$:	bic	#40,r2			; force to [a-z] to [A-Z] range
-     223 002406 012401                  	mov	(r4)+,r1		; get the next value as lsb
-     224 002410 006302                  	asl	r2			; char*2 for word offset
-     225 002412 000172  002214'         	jmp	@400$-<2*'A>(r2)	; dispatch
+     212 002450 005000                  40$:	clr	r0			; zap numerics
+     213 002452 005001                  	clr	r1			;
+     214 002454 120227  000101          41$:	cmpb	r2,#<'A>		; check for [:-@]
+     215 002460 002663                  	blt	2$			; br if yes
+     216 002462 120227  000172          	cmpb	r2,#<'z>		; check for [{-DEL]
+     217 002466 003260                  	bgt	2$			; br if yes
+     218 002470 120227  000141          	cmpb	r2,#<'a>		; check for [a-z]
+     219 002474 002003                  	bge	42$			; br if yes
+     220 002476 120227  000132          	cmpb	r2,#<'Z>		; check for [A-Z]
+     221 002502 003252                  	bgt	2$			; br if no
+     222 002504 042702  000040          42$:	bic	#40,r2			; force to [a-z] to [A-Z] range
+     223 002510 012401                  	mov	(r4)+,r1		; get the next value as lsb
+     224 002512 006302                  	asl	r2			; char*2 for word offset
+     225 002514 000172  002316'         	jmp	@400$-<2*'A>(r2)	; dispatch
      226                                
      227                                400$:	;----	aaaa,bbbb,cccc,dddd,eeee,ffff,gggg,hhhh,iiii,jjjj,kkkk,llll,mmmm
-     228 002416 002502' 002706' 002546' 	.word	401$,470$,420$,430$,401$,401$,401$,401$,430$,401$,401$,405$,401$
-         002424 002566' 002502' 002502' 
-         002432 002502' 002502' 002566' 
-         002440 002502' 002502' 002516' 
-         002446 002502'                 
+     228 002520 002604' 003010' 002650' 	.word	401$,470$,420$,430$,401$,401$,401$,401$,430$,401$,401$,405$,401$
+         002526 002670' 002604' 002604' 
+         002534 002604' 002604' 002670' 
+         002542 002604' 002604' 002620' 
+         002550 002604'                 
      229                                	;----	nnnn,oooo,pppp,qqqq,rrrr,ssss,tttt,uuuu,vvvv,wwww,xxxx,yyyy,zzzz
-     230 002450 002502' 002656' 002656' 	.word	401$,450$,450$,401$,401$,410$,401$,440$,401$,401$,460$,401$,401$
-         002456 002502' 002502' 002534' 
-         002464 002502' 002642' 002502' 
-         002472 002502' 002672' 002502' 
-         002500 002502'                 
+     230 002552 002604' 002760' 002760' 	.word	401$,450$,450$,401$,401$,410$,401$,440$,401$,401$,460$,401$,401$
+         002560 002604' 002604' 002636' 
+         002566 002604' 002744' 002604' 
+         002574 002604' 002774' 002604' 
+         002602 002604'                 
      231                                
-     232 002502 005744                  401$:	tst	-(r4)			; %<illegal>: backup argument pointer
-     233 002504 005002                  	clr	r2			; zap
-     234 002506 156302  177777          	bisb	-1(r3),r2		; retrieve last character
-     235 002512 000137  002126'         	jmp	2$			; just go print
+     232 002604 005744                  401$:	tst	-(r4)			; %<illegal>: backup argument pointer
+     233 002606 005002                  	clr	r2			; zap
+     234 002610 156302  177777          	bisb	-1(r3),r2		; retrieve last character
+     235 002614 000137  002230'         	jmp	2$			; just go print
      236                                
-     237 002516                         405$:	call	900$			; %l: get next character
-       1 002516 004737  003016'         	jsr	pc,900$
-     238 002522 152765  000010  177777  	bisb	#pf.long,p.flg(r5)	; indicate longword value
-     239 002530 010100                  	mov	r1,r0			; copy 1st arg to msb
-     240 002532 000707                  	br	41$			; and go parse next flag
+     237 002620                         405$:	call	900$			; %l: get next character
+       1 002620 004737  003120'         	jsr	pc,900$
+     238 002624 152765  000010  177777  	bisb	#pf.long,p.flg(r5)	; indicate longword value
+     239 002632 010100                  	mov	r1,r0			; copy 1st arg to msb
+     240 002634 000707                  	br	41$			; and go parse next flag
      241                                
-     242 002534 010102                  410$:	mov	r1,r2			; %s: get next arg as string address
-     243 002536                         	call	prtstr			; print as a string
-       1 002536 004737  003456'         	jsr	pc,prtstr
-     244 002542 000137  002106'         	jmp	1$			; continue at the top
+     242 002636 010102                  410$:	mov	r1,r2			; %s: get next arg as string address
+     243 002640                         	call	prtstr			; print as a string
+       1 002640 004737  003560'         	jsr	pc,prtstr
+     244 002644 000137  002210'         	jmp	1$			; continue at the top
      245                                
-     246 002546 005046                  420$:	clr	-(sp)			; %c: zap upper byte
-     247 002550 110116                  	movb	r1,(sp)			; insert the character
-     248 002552 010602                  	mov	sp,r2			; point at string
-     249 002554                         	call	prtstr			; print as a string
-       1 002554 004737  003456'         	jsr	pc,prtstr
-     250 002560 005726                  	tst	(sp)+			; flush temp string
-     251 002562 000137  002106'         	jmp	1$			; continue at the top
+     246 002650 005046                  420$:	clr	-(sp)			; %c: zap upper byte
+     247 002652 110116                  	movb	r1,(sp)			; insert the character
+     248 002654 010602                  	mov	sp,r2			; point at string
+     249 002656                         	call	prtstr			; print as a string
+       1 002656 004737  003560'         	jsr	pc,prtstr
+     250 002662 005726                  	tst	(sp)+			; flush temp string
+     251 002664 000137  002210'         	jmp	1$			; continue at the top
      252                                
-     253 002566 012702  000012          430$:	mov	#10.,r2			; %d,%i: decimal radix
-     254 002572 132765  000010  177777  	bitb	#pf.long,p.flg(r5)	; longword value?
-     255 002600 001004                  	bne	431$			; br if yes
-     256 002602 005000                  	clr	r0			; zap
-     257 002604 005701                  	tst	r1			; no; test lsb sign
-     258 002606 100001                  	bpl	431$			; br if plus/zero
-     259 002610 005100                  	com	r0			; extend -1 to msb
-     260 002612 005700                  431$:	tst	r0			; test msb sign
-     261 002614 002006                  	bge	439$			; br if zero or positive
-     262 002616 005400                  	neg	r0			; negative; make positive
-     263 002620 005401                  	neg	r1			;
-     264 002622 005600                  	sbc	r0			;
-     265 002624 152765  000020  177777  	bisb	#pf.nega,p.flg(r5)	; set flag indicating negative
-     266 002632                         439$:	call	prt32u			; print as unsigned decimal w/sign
-       1 002632 004737  003106'         	jsr	pc,prt32u
-     267 002636 000137  002106'         	jmp	1$			; continue at the top
+     253 002670 012702  000012          430$:	mov	#10.,r2			; %d,%i: decimal radix
+     254 002674 132765  000010  177777  	bitb	#pf.long,p.flg(r5)	; longword value?
+     255 002702 001004                  	bne	431$			; br if yes
+     256 002704 005000                  	clr	r0			; zap
+     257 002706 005701                  	tst	r1			; no; test lsb sign
+     258 002710 100001                  	bpl	431$			; br if plus/zero
+     259 002712 005100                  	com	r0			; extend -1 to msb
+     260 002714 005700                  431$:	tst	r0			; test msb sign
+     261 002716 002006                  	bge	439$			; br if zero or positive
+     262 002720 005400                  	neg	r0			; negative; make positive
+     263 002722 005401                  	neg	r1			;
+     264 002724 005600                  	sbc	r0			;
+     265 002726 152765  000020  177777  	bisb	#pf.nega,p.flg(r5)	; set flag indicating negative
+     266 002734                         439$:	call	prt32u			; print as unsigned decimal w/sign
+       1 002734 004737  003210'         	jsr	pc,prt32u
+     267 002740 000137  002210'         	jmp	1$			; continue at the top
      268                                
-     269 002642 012702  000012          440$:	mov	#10.,r2			; %u: decimal radix
-     270 002646                         	call	prt32u			; print as an unsigned decimal
-       1 002646 004737  003106'         	jsr	pc,prt32u
-     271 002652 000137  002106'         	jmp	1$			; continue at the top
+     269 002744 012702  000012          440$:	mov	#10.,r2			; %u: decimal radix
+     270 002750                         	call	prt32u			; print as an unsigned decimal
+       1 002750 004737  003210'         	jsr	pc,prt32u
+     271 002754 000137  002210'         	jmp	1$			; continue at the top
      272                                
-     273 002656 012702  000010          450$:	mov	#8.,r2			; %o,%p: octal radix
-     274 002662                         	call	prt32u			; print as an unsigned hex
-       1 002662 004737  003106'         	jsr	pc,prt32u
-     275 002666 000137  002106'         	jmp	1$			; continue at the top
+     273 002760 012702  000010          450$:	mov	#8.,r2			; %o,%p: octal radix
+     274 002764                         	call	prt32u			; print as an unsigned hex
+       1 002764 004737  003210'         	jsr	pc,prt32u
+     275 002770 000137  002210'         	jmp	1$			; continue at the top
      276                                
-     277 002672 012702  000020          460$:	mov	#16.,r2			; %x: hexadecimal radix
-     278 002676                         	call	prt32u			; print as an unsigned hex
-       1 002676 004737  003106'         	jsr	pc,prt32u
-     279 002702 000137  002106'         	jmp	1$			; continue at the top
+     277 002774 012702  000020          460$:	mov	#16.,r2			; %x: hexadecimal radix
+     278 003000                         	call	prt32u			; print as an unsigned hex
+       1 003000 004737  003210'         	jsr	pc,prt32u
+     279 003004 000137  002210'         	jmp	1$			; continue at the top
      280                                
-     281 002706 012702  000002          470$:	mov	#2.,r2			; %b: binary radix
-     282 002712                         	call	prt32u			; print as an unsigned binary
-       1 002712 004737  003106'         	jsr	pc,prt32u
-     283 002716 000137  002106'         	jmp	1$			; continue at the top
+     281 003010 012702  000002          470$:	mov	#2.,r2			; %b: binary radix
+     282 003014                         	call	prt32u			; print as an unsigned binary
+       1 003014 004737  003210'         	jsr	pc,prt32u
+     283 003020 000137  002210'         	jmp	1$			; continue at the top
      284                                
      285                                	; ---------------------------------------------------------
      286                                	; get a number as '[0-9]+' or '*'
      287                                
-     288 002722 120227  000052          800$:	cmpb	r2,#<'*>		; check for '*' indirection
-     289 002726 001427                  	beq	880$			; br if yes
-     290 002730 120227  000060          	cmpb	r2,#<'0>		; check for leading '0' character
-     291 002734 001002                  	bne	810$			; br if not
-     292 002736 110265  177776          	movb	r2,p.fil(r5)		; yes, set a flag
-     293 002742 005001                  810$:	clr	r1			; number accumulated here
-     294 002744 120227  000060          820$:	cmpb	r2,#<'0>		; check for '0'
-     295 002750 002421                  	blt	890$			; br if less that a '0'
-     296 002752 120227  000071          	cmpb	r2,#<'9>		; check for '9'
-     297 002756 003016                  	bgt	890$			; br if greater than '9'
-     298 002760 162702  000060          	sub	#<'0>,r2		; offset to range 0..9
-     299 002764 006301                  	asl	r1			; number *= 2.
-     300 002766 010100                  	mov	r1,r0			; (number*2.)
-     301 002770 006300                  	asl	r0			; (number*4.)
-     302 002772 006300                  	asl	r0			; (number*8.)
-     303 002774 060001                  	add	r0,r1			; number = number*8. + number*2.
-     304 002776 060201                  	add	r2,r1			; add in this digit
-     305 003000                         	call	900$			; get next format character
-       1 003000 004737  003016'         	jsr	pc,900$
-     306 003004 000757                  	br	820$			; and loop
-     307 003006 012401                  880$:	mov	(r4)+,r1		; get next arg as number
-     308 003010                         	call	900$			; get next character
-       1 003010 004737  003016'         	jsr	pc,900$
-     309 003014                         890$:	return				; return
-       1 003014 000207                  	rts	pc
+     288 003024 120227  000052          800$:	cmpb	r2,#<'*>		; check for '*' indirection
+     289 003030 001427                  	beq	880$			; br if yes
+     290 003032 120227  000060          	cmpb	r2,#<'0>		; check for leading '0' character
+     291 003036 001002                  	bne	810$			; br if not
+     292 003040 110265  177776          	movb	r2,p.fil(r5)		; yes, set a flag
+     293 003044 005001                  810$:	clr	r1			; number accumulated here
+     294 003046 120227  000060          820$:	cmpb	r2,#<'0>		; check for '0'
+     295 003052 002421                  	blt	890$			; br if less that a '0'
+     296 003054 120227  000071          	cmpb	r2,#<'9>		; check for '9'
+     297 003060 003016                  	bgt	890$			; br if greater than '9'
+     298 003062 162702  000060          	sub	#<'0>,r2		; offset to range 0..9
+     299 003066 006301                  	asl	r1			; number *= 2.
+     300 003070 010100                  	mov	r1,r0			; (number*2.)
+     301 003072 006300                  	asl	r0			; (number*4.)
+     302 003074 006300                  	asl	r0			; (number*8.)
+     303 003076 060001                  	add	r0,r1			; number = number*8. + number*2.
+     304 003100 060201                  	add	r2,r1			; add in this digit
+     305 003102                         	call	900$			; get next format character
+       1 003102 004737  003120'         	jsr	pc,900$
+     306 003106 000757                  	br	820$			; and loop
+     307 003110 012401                  880$:	mov	(r4)+,r1		; get next arg as number
+     308 003112                         	call	900$			; get next character
+       1 003112 004737  003120'         	jsr	pc,900$
+     309 003116                         890$:	return				; return
+       1 003116 000207                  	rts	pc
      310                                
      311                                	; ---------------------------------------------------------
      312                                	; get next character (or exit) routine; result in r2
      313                                
-     314 003016 112302                  900$:	movb	(r3)+,r2		; get next format character
-     315 003020 042702  177600          	bic	#^c177,r2		; 7bit ascii only
-     316 003024 001403                  	beq	990$			; end of string seen
-     317 003026 120227  000101          	cmpb	r2,#<'A>		; check for [A-DEL]
-     318 003032                         	return				; leave CC set with result
-       1 003032 000207                  	rts	pc
+     314 003120 112302                  900$:	movb	(r3)+,r2		; get next format character
+     315 003122 042702  177600          	bic	#^c177,r2		; 7bit ascii only
+     316 003126 001403                  	beq	990$			; end of string seen
+     317 003130 120227  000101          	cmpb	r2,#<'A>		; check for [A-DEL]
+     318 003134                         	return				; leave CC set with result
+       1 003134 000207                  	rts	pc
      319                                
-     320 003034 010506                  990$:	mov	r5,sp			; flush frame
-     321 003036 012605                  	mov	(sp)+,r5		; restore reg
-     322 003040 012604                  	mov	(sp)+,r4		;
-     323 003042 012603                  	mov	(sp)+,r3		;
-     324 003044 012602                  	mov	(sp)+,r2		;
-     325 003046 012601                  	mov	(sp)+,r1		;
-     326 003050 012600                  	mov	(sp)+,r0		;
-     327 003052                         	return				; return
-       1 003052 000207                  	rts	pc
+     320 003136 010506                  990$:	mov	r5,sp			; flush frame
+     321 003140 012605                  	mov	(sp)+,r5		; restore reg
+     322 003142 012604                  	mov	(sp)+,r4		;
+     323 003144 012603                  	mov	(sp)+,r3		;
+     324 003146 012602                  	mov	(sp)+,r2		;
+     325 003150 012601                  	mov	(sp)+,r1		;
+     326 003152 012600                  	mov	(sp)+,r0		;
+     327 003154                         	return				; return
+       1 003154 000207                  	rts	pc
      328                                
      329                                	; ---------------------------------------------------------
      330                                	; escaped character table
      331                                1000$:	;	aaa bbb ccc ddd eee fff ggg hhh iii jjj kkk lll mmm
      332                                	;	BEL  BS         ESC  FF
-     333 003054    007     010     143  	.byte	007,010,143,144,033,014,147,150,151,152,153,154,155
-         003057    144     033     014  
-         003062    147     150     151  
-         003065    152     153     154  
-         003070    155                  
+     333 003156    007     010     143  	.byte	007,010,143,144,033,014,147,150,151,152,153,154,155
+         003161    144     033     014  
+         003164    147     150     151  
+         003167    152     153     154  
+         003172    155                  
      334                                	;	nnn ooo ppp qqq rrr sss ttt uuu vvv www xxx yyy zzz
      335                                	;	 LF              CR      HT      VT
-     336 003071    012     157     160  	.byte	012,157,160,161,015,163,011,165,013,167,170,172,172
-         003074    161     015     163  
-         003077    011     165     013  
-         003102    167     170     172  
-         003105    172                  
+     336 003173    012     157     160  	.byte	012,157,160,161,015,163,011,165,013,167,170,172,172
+         003176    161     015     163  
+         003201    011     165     013  
+         003204    167     170     172  
+         003207    172                  
      337                                	; ---------------------------------------------------------
      338                                
      339                                ; --------------------------------------------------------------------------------
@@ -1434,110 +2123,110 @@
      352                                ;		r4 - ptr to arglist    (saved) [input not used]
      353                                ;		r5 - ptr to flags      (saved)
      354                                ;
-     355 003106 010346                  prt32u:	mov	r3,-(sp)		; save regs we use
-     356 003110 010446                  	mov	r4,-(sp)		;
+     355 003210 010346                  prt32u:	mov	r3,-(sp)		; save regs we use
+     356 003212 010446                  	mov	r4,-(sp)		;
      357                                
      358                                	; render all the digits onto the stack (lsd first, msd last)
      359                                
-     360 003112 005046                  	clr	-(sp)			; zero flag
-     361 003114 010246                  1$:	mov	r2,-(sp)		; radix lsb
-     362 003116 005046                  	clr	-(sp)			;   and msb
-     363 003120 010146                  	mov	r1,-(sp)		; number lsb
-     364 003122 010046                  	mov	r0,-(sp)		;    and msb
-     365 003124                         	call	uldiv			; get quo and rem
-       1 003124 004737  003724'         	jsr	pc,uldiv
-     366 003130 016602  000006          	mov	6.(sp),r2		; restore radix from stack
-     367 003134 062706  000010          	add	#8.,sp			; flush args
-     368 003140 062703  000060          	add	#<'0>,r3		; make rem lsb a digit
-     369 003144 020327  000071          	cmp	r3,#<'9>		; still a valid digit?
-     370 003150 003402                  	ble	2$			; br if yes
-     371 003152 062703  000007          	add	#<'A>-<':>,r3		; offset to 'A...'Z range
-     372 003156 010346                  2$:	mov	r3,-(sp)		; save
-     373 003160 005265  177770          	inc	p.len(r5)		; count digits
-     374 003164 005701                  	tst	r1			; any lsb left?
-     375 003166 001352                  	bne	1$			; br if yes
-     376 003170 005700                  	tst	r0			; any msb left?
-     377 003172 001350                  	bne	1$			; br if yes
+     360 003214 005046                  	clr	-(sp)			; zero flag
+     361 003216 010246                  1$:	mov	r2,-(sp)		; radix lsb
+     362 003220 005046                  	clr	-(sp)			;   and msb
+     363 003222 010146                  	mov	r1,-(sp)		; number lsb
+     364 003224 010046                  	mov	r0,-(sp)		;    and msb
+     365 003226                         	call	uldiv			; get quo and rem
+       1 003226 004737  004026'         	jsr	pc,uldiv
+     366 003232 016602  000006          	mov	6.(sp),r2		; restore radix from stack
+     367 003236 062706  000010          	add	#8.,sp			; flush args
+     368 003242 062703  000060          	add	#<'0>,r3		; make rem lsb a digit
+     369 003246 020327  000071          	cmp	r3,#<'9>		; still a valid digit?
+     370 003252 003402                  	ble	2$			; br if yes
+     371 003254 062703  000007          	add	#<'A>-<':>,r3		; offset to 'A...'Z range
+     372 003260 010346                  2$:	mov	r3,-(sp)		; save
+     373 003262 005265  177770          	inc	p.len(r5)		; count digits
+     374 003266 005701                  	tst	r1			; any lsb left?
+     375 003270 001352                  	bne	1$			; br if yes
+     376 003272 005700                  	tst	r0			; any msb left?
+     377 003274 001350                  	bne	1$			; br if yes
      378                                
      379                                	; check if we generated the minimum number of digits requested
      380                                
-     381 003174 026565  177770  177772  10$:	cmp	p.len(r5),p.pre(r5)	; compare length to precision
-     382 003202 103005                  	bhis	20$			; br we're OK
-     383 003204 012746  000060          	mov	#<'0>,-(sp)		; nope, add another digit
-     384 003210 005265  177770          	inc	p.len(r5)		; count digits
-     385 003214 000767                  	br	10$			; and loop	
+     381 003276 026565  177770  177772  10$:	cmp	p.len(r5),p.pre(r5)	; compare length to precision
+     382 003304 103005                  	bhis	20$			; br we're OK
+     383 003306 012746  000060          	mov	#<'0>,-(sp)		; nope, add another digit
+     384 003312 005265  177770          	inc	p.len(r5)		; count digits
+     385 003316 000767                  	br	10$			; and loop	
      386                                
      387                                	; check for options (#) flag
      388                                
-     389 003216 132765  000004  177777  20$:	bitb	#pf.altf,p.flg(r5)	; check for options flag
-     390 003224 001422                  	beq	30$			; br if not set
-     391 003226 020227  000020          	cmp	r2,#16.			; radix 16?
-     392 003232 001407                  	beq	21$			; br if yes
-     393 003234 020227  000010          	cmp	r2,#8.			; radix 8?
-     394 003240 001014                  	bne	30$			; br if not
-     395 003242 022716  000060          	cmp	#<'0>,(sp)		; first digit already zero?
-     396 003246 001411                  	beq	30$			; yes, no need to add
-     397 003250 000404                  	br	22$			; no, add a leading zero
-     398 003252 012746  000170          21$:	mov	#<'x>,-(sp)		; add a '0x' prefix
-     399 003256 005265  177770          	inc	p.len(r5)		; count it
-     400 003262 012746  000060          22$:	mov	#<'0>,-(sp)		;
-     401 003266 005265  177770          	inc	p.len(r5)		; count it
+     389 003320 132765  000004  177777  20$:	bitb	#pf.altf,p.flg(r5)	; check for options flag
+     390 003326 001422                  	beq	30$			; br if not set
+     391 003330 020227  000020          	cmp	r2,#16.			; radix 16?
+     392 003334 001407                  	beq	21$			; br if yes
+     393 003336 020227  000010          	cmp	r2,#8.			; radix 8?
+     394 003342 001014                  	bne	30$			; br if not
+     395 003344 022716  000060          	cmp	#<'0>,(sp)		; first digit already zero?
+     396 003350 001411                  	beq	30$			; yes, no need to add
+     397 003352 000404                  	br	22$			; no, add a leading zero
+     398 003354 012746  000170          21$:	mov	#<'x>,-(sp)		; add a '0x' prefix
+     399 003360 005265  177770          	inc	p.len(r5)		; count it
+     400 003364 012746  000060          22$:	mov	#<'0>,-(sp)		;
+     401 003370 005265  177770          	inc	p.len(r5)		; count it
      402                                
      403                                	; check if we need a sign (+/-/none)
      404                                
-     405 003272 132765  000020  177777  30$:	bitb	#pf.nega,p.flg(r5)	; was original value negative?
-     406 003300 001403                  	beq	31$			; br if not
-     407 003302 012746  000055          	mov	#<'->,-(sp)		; minus sign
-     408 003306 000406                  	br	32$			;
-     409 003310 132765  000002  177777  31$:	bitb	#pf.sign,p.flg(r5)	; sign always requested?
-     410 003316 001404                  	beq	50$			; br if not
-     411 003320 012746  000053          	mov	#<'+>,-(sp)		; plus sign
-     412 003324 005265  177770          32$:	inc	p.len(r5)		; count all chars generated
+     405 003374 132765  000020  177777  30$:	bitb	#pf.nega,p.flg(r5)	; was original value negative?
+     406 003402 001403                  	beq	31$			; br if not
+     407 003404 012746  000055          	mov	#<'->,-(sp)		; minus sign
+     408 003410 000406                  	br	32$			;
+     409 003412 132765  000002  177777  31$:	bitb	#pf.sign,p.flg(r5)	; sign always requested?
+     410 003420 001404                  	beq	50$			; br if not
+     411 003422 012746  000053          	mov	#<'+>,-(sp)		; plus sign
+     412 003426 005265  177770          32$:	inc	p.len(r5)		; count all chars generated
      413                                
      414                                	; processing for right justification
      415                                
-     416 003330 132765  000001  177777  50$:	bitb	#pf.ljus,p.flg(r5)	; check left-justify flag
-     417 003336 001020                  	bne	70$			; br if left justified
-     418 003340 116501  177776          	movb	p.fil(r5),r1		; get fill character
-     419 003344 026565  177770  177774  51$:	cmp	p.len(r5),p.wid(r5)	; compare length to width
-     420 003352 103012                  	bhis	70$			; br if we're OK
-     421 003354 011600                  	mov	(sp),r0			; copy last character
-     422 003356 010146                  	mov	r1,-(sp)		; add a fill character
-     423 003360 020100                  	cmp	r1,r0			; check fill/last char order
-     424 003362 101403                  	blos	52$			; br if order OK
-     425 003364 010016                  	mov	r0,(sp)			; copy sign/last char
-     426 003366 010166  000002          	mov	r1,2(sp)		; insert fill after sign
-     427 003372 005265  177770          52$:	inc	p.len(r5)		; count it
-     428 003376 000762                  	br	51$			; loop
+     416 003432 132765  000001  177777  50$:	bitb	#pf.ljus,p.flg(r5)	; check left-justify flag
+     417 003440 001020                  	bne	70$			; br if left justified
+     418 003442 116501  177776          	movb	p.fil(r5),r1		; get fill character
+     419 003446 026565  177770  177774  51$:	cmp	p.len(r5),p.wid(r5)	; compare length to width
+     420 003454 103012                  	bhis	70$			; br if we're OK
+     421 003456 011600                  	mov	(sp),r0			; copy last character
+     422 003460 010146                  	mov	r1,-(sp)		; add a fill character
+     423 003462 020100                  	cmp	r1,r0			; check fill/last char order
+     424 003464 101403                  	blos	52$			; br if order OK
+     425 003466 010016                  	mov	r0,(sp)			; copy sign/last char
+     426 003470 010166  000002          	mov	r1,2(sp)		; insert fill after sign
+     427 003474 005265  177770          52$:	inc	p.len(r5)		; count it
+     428 003500 000762                  	br	51$			; loop
      429                                
      430                                	; print all digits in order (sign..msd..lsd)
      431                                
-     432 003400 005001                  70$:	clr	r1			; count characters output
-     433 003402 012600                  71$:	mov	(sp)+,r0		; get a digit
-     434 003404 001404                  	beq	80$			; br if no more
-     435 003406                         	call	@p.out(r5)		; print it
-       1 003406 004775  177766          	jsr	pc,@p.out(r5)
-     436 003412 005201                  	inc	r1			; count it
-     437 003414 000772                  	br	71$			; loop
+     432 003502 005001                  70$:	clr	r1			; count characters output
+     433 003504 012600                  71$:	mov	(sp)+,r0		; get a digit
+     434 003506 001404                  	beq	80$			; br if no more
+     435 003510                         	call	@p.out(r5)		; print it
+       1 003510 004775  177766          	jsr	pc,@p.out(r5)
+     436 003514 005201                  	inc	r1			; count it
+     437 003516 000772                  	br	71$			; loop
      438                                
      439                                	; processing for left justification
      440                                
-     441 003416 132765  000001  177777  80$:	bitb	#pf.ljus,p.flg(r5)	; check left-justify flag
-     442 003424 001411                  	beq	90$			; br if is right justified
-     443 003426 012700  000040          	mov	#<' >,r0		; space fill on right
-     444 003432 020165  177774          81$:	cmp	r1,p.wid(r5)		; compare length to width
-     445 003436 103004                  	bhis	90$			; br we're OK
-     446 003440                         	call	@p.out(r5)		; print it
-       1 003440 004775  177766          	jsr	pc,@p.out(r5)
-     447 003444 005201                  	inc	r1			; count characters
-     448 003446 000771                  	br	81$			; and loop	
+     441 003520 132765  000001  177777  80$:	bitb	#pf.ljus,p.flg(r5)	; check left-justify flag
+     442 003526 001411                  	beq	90$			; br if is right justified
+     443 003530 012700  000040          	mov	#<' >,r0		; space fill on right
+     444 003534 020165  177774          81$:	cmp	r1,p.wid(r5)		; compare length to width
+     445 003540 103004                  	bhis	90$			; br we're OK
+     446 003542                         	call	@p.out(r5)		; print it
+       1 003542 004775  177766          	jsr	pc,@p.out(r5)
+     447 003546 005201                  	inc	r1			; count characters
+     448 003550 000771                  	br	81$			; and loop	
      449                                
      450                                	; and done
      451                                
-     452 003450 012604                  90$:	mov	(sp)+,r4		; restore regs
-     453 003452 012603                  	mov	(sp)+,r3		;
-     454 003454                         	return				; return
-       1 003454 000207                  	rts	pc
+     452 003552 012604                  90$:	mov	(sp)+,r4		; restore regs
+     453 003554 012603                  	mov	(sp)+,r3		;
+     454 003556                         	return				; return
+       1 003556 000207                  	rts	pc
      455                                
      456                                ; --------------------------------------------------------------------------------
      457                                ;
@@ -1553,71 +2242,71 @@
      467                                ;		r4 - ptr to arglist    (saved) [input not used]
      468                                ;		r5 - ptr to flags      (saved)
      469                                ;
-     470 003456 010346                  prtstr:	mov	r3,-(sp)		; save regs
-     471 003460 010446                  	mov	r4,-(sp)		;
+     470 003560 010346                  prtstr:	mov	r3,-(sp)		; save regs
+     471 003562 010446                  	mov	r4,-(sp)		;
      472                                
      473                                	; compute length of string
      474                                
-     475 003462 010203                  	mov	r2,r3			; copy ptr to string
-     476 003464 105723                  1$:	tstb	(r3)+			; check a byte
-     477 003466 001376                  	bne	1$			; br if more string
-     478 003470 160203                  	sub	r2,r3			; compute length
-     479 003472 005303                  	dec	r3			; minus the trailing null	
+     475 003564 010203                  	mov	r2,r3			; copy ptr to string
+     476 003566 105723                  1$:	tstb	(r3)+			; check a byte
+     477 003570 001376                  	bne	1$			; br if more string
+     478 003572 160203                  	sub	r2,r3			; compute length
+     479 003574 005303                  	dec	r3			; minus the trailing null	
      480                                
      481                                	; set precision to length if precision is zero
      482                                
-     483 003474 005765  177772          	tst	p.pre(r5)		; check requested precision
-     484 003500 001002                  	bne	20$			; br if nonzero
-     485 003502 010365  177772          	mov	r3,p.pre(r5)		; else set to string length
-     486 003506 020365  177772          20$:	cmp	r3,p.pre(r5)		; compare actual length to precision
-     487 003512 101402                  	blos	50$			; br if actual <= precision
-     488 003514 016503  177772          	mov	p.pre(r5),r3		; else set actual to precision
+     483 003576 005765  177772          	tst	p.pre(r5)		; check requested precision
+     484 003602 001002                  	bne	20$			; br if nonzero
+     485 003604 010365  177772          	mov	r3,p.pre(r5)		; else set to string length
+     486 003610 020365  177772          20$:	cmp	r3,p.pre(r5)		; compare actual length to precision
+     487 003614 101402                  	blos	50$			; br if actual <= precision
+     488 003616 016503  177772          	mov	p.pre(r5),r3		; else set actual to precision
      489                                
      490                                	; processing for right justification
      491                                
-     492 003520 132765  000001  177777  50$:	bitb	#pf.ljus,p.flg(r5)	; check left-justify flag
-     493 003526 001002                  	bne	70$			; br if left justified
-     494 003530                         	call	100$			; do fill
-       1 003530 004737  003576'         	jsr	pc,100$
+     492 003622 132765  000001  177777  50$:	bitb	#pf.ljus,p.flg(r5)	; check left-justify flag
+     493 003630 001002                  	bne	70$			; br if left justified
+     494 003632                         	call	100$			; do fill
+       1 003632 004737  003700'         	jsr	pc,100$
      495                                
      496                                	; print string 
      497                                
-     498 003534 010301                  70$:	mov	r3,r1			; copy length
-     499 003536 001406                  	beq	80$			; br if no characters
-     500 003540 112200                  71$:	movb	(r2)+,r0		; get a character
-     501 003542 001404                  	beq	80$			; br if no characters
-     502 003544                         	call	@p.out(r5)		; print it
-       1 003544 004775  177766          	jsr	pc,@p.out(r5)
-     503 003550 005301                  	dec	r1			; count
-     504 003552 001372                  	bne	71$			; loop
+     498 003636 010301                  70$:	mov	r3,r1			; copy length
+     499 003640 001406                  	beq	80$			; br if no characters
+     500 003642 112200                  71$:	movb	(r2)+,r0		; get a character
+     501 003644 001404                  	beq	80$			; br if no characters
+     502 003646                         	call	@p.out(r5)		; print it
+       1 003646 004775  177766          	jsr	pc,@p.out(r5)
+     503 003652 005301                  	dec	r1			; count
+     504 003654 001372                  	bne	71$			; loop
      505                                
      506                                	; processing for left justification
      507                                
-     508 003554 132765  000001  177777  80$:	bitb	#pf.ljus,p.flg(r5)	; check left-justify flag
-     509 003562 001402                  	beq	90$			; br if is right justified
-     510 003564                         	call	100$			; do fill
-       1 003564 004737  003576'         	jsr	pc,100$
+     508 003656 132765  000001  177777  80$:	bitb	#pf.ljus,p.flg(r5)	; check left-justify flag
+     509 003664 001402                  	beq	90$			; br if is right justified
+     510 003666                         	call	100$			; do fill
+       1 003666 004737  003700'         	jsr	pc,100$
      511                                
      512                                	; and done
      513                                
-     514 003570 012604                  90$:	mov	(sp)+,r4		; restore
-     515 003572 012603                  	mov	(sp)+,r3		;
-     516 003574                         	return				; return
-       1 003574 000207                  	rts	pc
+     514 003672 012604                  90$:	mov	(sp)+,r4		; restore
+     515 003674 012603                  	mov	(sp)+,r3		;
+     516 003676                         	return				; return
+       1 003676 000207                  	rts	pc
      517                                
      518                                	; ----------------------------------------------------
      519                                	; generate fill characters
      520                                
-     521 003576 016501  177774          100$:	mov	p.wid(r5),r1		; requested width
-     522 003602 160301                  	sub	r3,r1			; subtract string width
-     523 003604 101406                  	blos	102$			; br if no fill needed
-     524 003606 116500  177776          	movb	p.fil(r5),r0		; get fill character
-     525 003612                         101$:	call	@p.out(r5)		; print a fill character
-       1 003612 004775  177766          	jsr	pc,@p.out(r5)
-     526 003616 005301                  	dec	r1			; count
-     527 003620 001374                  	bne	101$			; loop
-     528 003622                         102$:	return				; done
-       1 003622 000207                  	rts	pc
+     521 003700 016501  177774          100$:	mov	p.wid(r5),r1		; requested width
+     522 003704 160301                  	sub	r3,r1			; subtract string width
+     523 003706 101406                  	blos	102$			; br if no fill needed
+     524 003710 116500  177776          	movb	p.fil(r5),r0		; get fill character
+     525 003714                         101$:	call	@p.out(r5)		; print a fill character
+       1 003714 004775  177766          	jsr	pc,@p.out(r5)
+     526 003720 005301                  	dec	r1			; count
+     527 003722 001374                  	bne	101$			; loop
+     528 003724                         102$:	return				; done
+       1 003724 000207                  	rts	pc
      529                                
      530                                ; --------------------------------------------------------------------------------
      531                                
@@ -1642,38 +2331,38 @@
       18                                ;		mov	r1,q.lo
       19                                ;		mov	r0,q.hi
       20                                ;
-      21 003624 010246                  ulmul::	mov	r2,-(sp)		; save
-      22 003626 010346                  	mov	r3,-(sp)		;
-      23 003630 010446                  	mov	r4,-(sp)		;
-      24 003632 010546                  	mov	r5,-(sp)		;
+      21 003726 010246                  ulmul::	mov	r2,-(sp)		; save
+      22 003730 010346                  	mov	r3,-(sp)		;
+      23 003732 010446                  	mov	r4,-(sp)		;
+      24 003734 010546                  	mov	r5,-(sp)		;
       25                                
-      26 003634 016605  000020          	mov	8.+8.(sp),r5		; b.lo
-      27 003640 016604  000016          	mov	6.+8.(sp),r4		; b.hi
-      28 003644 016603  000014          	mov	4.+8.(sp),r3		; a.lo
-      29 003650 016602  000012          	mov	2.+8.(sp),r2		; a.hi
-      30 003654 005001                  	clr	r1			; q.lo
-      31 003656 005000                  	clr	r0			; q.hi
+      26 003736 016605  000020          	mov	8.+8.(sp),r5		; b.lo
+      27 003742 016604  000016          	mov	6.+8.(sp),r4		; b.hi
+      28 003746 016603  000014          	mov	4.+8.(sp),r3		; a.lo
+      29 003752 016602  000012          	mov	2.+8.(sp),r2		; a.hi
+      30 003756 005001                  	clr	r1			; q.lo
+      31 003760 005000                  	clr	r0			; q.hi
       32                                
-      33 003660 000241                  1$:	clc				; shiftin zeroes
-      34 003662 006004                  	ror	r4			; shift multiplier right one
-      35 003664 006005                  	ror	r5			;
-      36 003666 103003                  	bcc	2$			; br if shifted out a zero
-      37 003670 060301                  	add	r3,r1			; else add multiplicand to product
-      38 003672 005500                  	adc	r0			; propagate C
-      39 003674 060200                  	add	r2,r0			;
-      40 003676 006303                  2$:	asl	r3			; shift multiplicant left one
-      41 003700 006102                  	rol	r2			;
-      42 003702 005704                  	tst	r4			; any high multiplier bits left?
-      43 003704 001365                  	bne	1$			; br if yes
-      44 003706 005705                  	tst	r5			; any low multiplier bits left?
-      45 003710 001363                  	bne	1$			; br if yes
+      33 003762 000241                  1$:	clc				; shiftin zeroes
+      34 003764 006004                  	ror	r4			; shift multiplier right one
+      35 003766 006005                  	ror	r5			;
+      36 003770 103003                  	bcc	2$			; br if shifted out a zero
+      37 003772 060301                  	add	r3,r1			; else add multiplicand to product
+      38 003774 005500                  	adc	r0			; propagate C
+      39 003776 060200                  	add	r2,r0			;
+      40 004000 006303                  2$:	asl	r3			; shift multiplicant left one
+      41 004002 006102                  	rol	r2			;
+      42 004004 005704                  	tst	r4			; any high multiplier bits left?
+      43 004006 001365                  	bne	1$			; br if yes
+      44 004010 005705                  	tst	r5			; any low multiplier bits left?
+      45 004012 001363                  	bne	1$			; br if yes
       46                                
-      47 003712 012605                  	mov	(sp)+,r5		; restore
-      48 003714 012604                  	mov	(sp)+,r4		;
-      49 003716 012603                  	mov	(sp)+,r3		;
-      50 003720 012602                  	mov	(sp)+,r2		;
-      51 003722                         	return				; done
-       1 003722 000207                  	rts	pc
+      47 004014 012605                  	mov	(sp)+,r5		; restore
+      48 004016 012604                  	mov	(sp)+,r4		;
+      49 004020 012603                  	mov	(sp)+,r3		;
+      50 004022 012602                  	mov	(sp)+,r2		;
+      51 004024                         	return				; done
+       1 004024 000207                  	rts	pc
       52                                
       53                                ; --------------------------------------------------------------------------------
       54                                ;
@@ -1692,49 +2381,49 @@
       67                                ;		mov	r1,quo.lo
       68                                ;		mov	r0,quo.hi
       69                                ;
-      70 003724 010446                  uldiv::	mov	r4,-(sp)		; save
-      71 003726 010546                  	mov	r5,-(sp)		;
+      70 004026 010446                  uldiv::	mov	r4,-(sp)		; save
+      71 004030 010546                  	mov	r5,-(sp)		;
       72                                
-      73 003730 016601  000010          	mov	4.+4.(sp),r1		; num.lo
-      74 003734 016600  000006          	mov	2.+4.(sp),r0		; num.hi
+      73 004032 016601  000010          	mov	4.+4.(sp),r1		; num.lo
+      74 004036 016600  000006          	mov	2.+4.(sp),r0		; num.hi
       75                                
-      76 003740 005005                  	clr	r5			; tmp.lo
-      77 003742 005004                  	clr	r4			; tmp.hi
+      76 004042 005005                  	clr	r5			; tmp.lo
+      77 004044 005004                  	clr	r4			; tmp.hi
       78                                
-      79 003744 012746  000037          	mov	#31.,-(sp)		; bit count
+      79 004046 012746  000037          	mov	#31.,-(sp)		; bit count
       80                                
-      81 003750 006301                  1$:	asl	r1			; (tmp,num) <<= 1
-      82 003752 006100                  	rol	r0			;
-      83 003754 006105                  	rol	r5			;
-      84 003756 006104                  	rol	r4			;
+      81 004052 006301                  1$:	asl	r1			; (tmp,num) <<= 1
+      82 004054 006100                  	rol	r0			;
+      83 004056 006105                  	rol	r5			;
+      84 004060 006104                  	rol	r4			;
       85                                
-      86 003760 010503                  	mov	r5,r3			; rem = tmp - den
-      87 003762 010402                  	mov	r4,r2			;
-      88 003764 166603  000016          	sub	8.+6.(sp),r3		;
-      89 003770 005602                  	sbc	r2			;
-      90 003772 166602  000014          	sub	6.+6.(sp),r2		;
+      86 004062 010503                  	mov	r5,r3			; rem = tmp - den
+      87 004064 010402                  	mov	r4,r2			;
+      88 004066 166603  000016          	sub	8.+6.(sp),r3		;
+      89 004072 005602                  	sbc	r2			;
+      90 004074 166602  000014          	sub	6.+6.(sp),r2		;
       91                                
-      92 003776 100403                  	bmi	2$			; br if rem < 0
+      92 004100 100403                  	bmi	2$			; br if rem < 0
       93                                
-      94 004000 005201                  	inc	r1			; quo |= 1
-      95 004002 010305                  	mov	r3,r5			; tmp = rem
-      96 004004 010204                  	mov	r2,r4			;
+      94 004102 005201                  	inc	r1			; quo |= 1
+      95 004104 010305                  	mov	r3,r5			; tmp = rem
+      96 004106 010204                  	mov	r2,r4			;
       97                                
-      98 004006 005316                  2$:	dec	(sp)			; count bits
-      99 004010 002357                  	bge	1$			; loop if more
-     100 004012 005726                  	tst	(sp)+			; flush counter
+      98 004110 005316                  2$:	dec	(sp)			; count bits
+      99 004112 002357                  	bge	1$			; loop if more
+     100 004114 005726                  	tst	(sp)+			; flush counter
      101                                
-     102 004014 005702                  	tst	r2			; test for rem < 0
-     103 004016 002005                  	bge	3$			; br if not
+     102 004116 005702                  	tst	r2			; test for rem < 0
+     103 004120 002005                  	bge	3$			; br if not
      104                                
-     105 004020 066603  000014          	add	8.+4.(sp),r3		; rem += den correction
-     106 004024 005502                  	adc	r2			;
-     107 004026 066602  000012          	add	6.+4.(sp),r2		;
+     105 004122 066603  000014          	add	8.+4.(sp),r3		; rem += den correction
+     106 004126 005502                  	adc	r2			;
+     107 004130 066602  000012          	add	6.+4.(sp),r2		;
      108                                
-     109 004032 012605                  3$:	mov	(sp)+,r5		; restore
-     110 004034 012604                  	mov	(sp)+,r4		;
-     111 004036                         	return				; done
-       1 004036 000207                  	rts	pc
+     109 004134 012605                  3$:	mov	(sp)+,r5		; restore
+     110 004136 012604                  	mov	(sp)+,r4		;
+     111 004140                         	return				; done
+       1 004140 000207                  	rts	pc
      112                                
      113                                ; --------------------------------------------------------------------------------
      114                                ;
@@ -1751,62 +2440,62 @@
      125                                ;		mov	r1,quo.lo
      126                                ;		mov	r0,quo.hi
      127                                ;
-     128 004040 010446                  sldiv::	mov	r4,-(sp)		; save
+     128 004142 010446                  sldiv::	mov	r4,-(sp)		; save
      129                                
-     130 004042 016603  000012          	mov	8.+2.(sp),r3		; den.lo
-     131 004046 016602  000010          	mov	6.+2.(sp),r2		; den.hi
-     132 004052 016601  000006          	mov	4.+2.(sp),r1		; num.lo
-     133 004056 016600  000004          	mov	2.+2.(sp),r0		; num.hi
+     130 004144 016603  000012          	mov	8.+2.(sp),r3		; den.lo
+     131 004150 016602  000010          	mov	6.+2.(sp),r2		; den.hi
+     132 004154 016601  000006          	mov	4.+2.(sp),r1		; num.lo
+     133 004160 016600  000004          	mov	2.+2.(sp),r0		; num.hi
      134                                
-     135 004062 005004                  	clr	r4			; pos
+     135 004164 005004                  	clr	r4			; pos
      136                                
-     137 004064 005700                  	tst	r0			; num sign
-     138 004066 002006                  	bge	10$			; br if pos
+     137 004166 005700                  	tst	r0			; num sign
+     138 004170 002006                  	bge	10$			; br if pos
      139                                
-     140 004070 005104                  	com	r4			; neg
+     140 004172 005104                  	com	r4			; neg
      141                                
-     142 004072 005101                  	com	r1			; negate num
-     143 004074 005100                  	com	r0			;
-     144 004076 062701  000001          	add	#1,r1			;
-     145 004102 005500                  	adc	r0			; 
+     142 004174 005101                  	com	r1			; negate num
+     143 004176 005100                  	com	r0			;
+     144 004200 062701  000001          	add	#1,r1			;
+     145 004204 005500                  	adc	r0			; 
      146                                
-     147 004104 005702                  10$:	tst	r2			; den sign
-     148 004106 002006                  	bge	20$			; br if pos
+     147 004206 005702                  10$:	tst	r2			; den sign
+     148 004210 002006                  	bge	20$			; br if pos
      149                                
-     150 004110 105104                  	comb	r4			; neg
+     150 004212 105104                  	comb	r4			; neg
      151                                
-     152 004112 005103                  	com	r3			; negate den
-     153 004114 005102                  	com	r2			;
-     154 004116 062703  000001          	add	#1,r3			;
-     155 004122 005502                  	adc	r2			; 
+     152 004214 005103                  	com	r3			; negate den
+     153 004216 005102                  	com	r2			;
+     154 004220 062703  000001          	add	#1,r3			;
+     155 004224 005502                  	adc	r2			; 
      156                                	
-     157 004124 010346                  20$:	mov	r3,-(sp)		; den.lo
-     158 004126 010246                  	mov	r2,-(sp)		; den.hi
-     159 004130 010146                  	mov	r1,-(sp)		; num.lo
-     160 004132 010046                  	mov	r0,-(sp)		; num.hi
-     161 004134                         	call	uldiv			;
-       1 004134 004737  003724'         	jsr	pc,uldiv
-     162 004140 062706  000010          	add	#8.,sp			; 
+     157 004226 010346                  20$:	mov	r3,-(sp)		; den.lo
+     158 004230 010246                  	mov	r2,-(sp)		; den.hi
+     159 004232 010146                  	mov	r1,-(sp)		; num.lo
+     160 004234 010046                  	mov	r0,-(sp)		; num.hi
+     161 004236                         	call	uldiv			;
+       1 004236 004737  004026'         	jsr	pc,uldiv
+     162 004242 062706  000010          	add	#8.,sp			; 
      163                                
-     164 004144 005704                  	tst	r4			; invert result
-     165 004146 002005                  	bge	30$			;
+     164 004246 005704                  	tst	r4			; invert result
+     165 004250 002005                  	bge	30$			;
      166                                
-     167 004150 005103                   	com	r3			; negate rem
-     168 004152 005102                  	com	r2			;
-     169 004154 062703  000001          	add	#1,r3			;
-     170 004160 005502                  	adc	r2			; 
+     167 004252 005103                   	com	r3			; negate rem
+     168 004254 005102                  	com	r2			;
+     169 004256 062703  000001          	add	#1,r3			;
+     170 004262 005502                  	adc	r2			; 
      171                                
-     172 004162 105704                  30$:	tstb	r4			; invert result
-     173 004164 002005                  	bge	40$			;
+     172 004264 105704                  30$:	tstb	r4			; invert result
+     173 004266 002005                  	bge	40$			;
      174                                
-     175 004166 005101                  	com	r1			; negate quo
-     176 004170 005100                  	com	r0			;
-     177 004172 062701  000001          	add	#1,r1			;
-     178 004176 005500                  	adc	r0			; 
+     175 004270 005101                  	com	r1			; negate quo
+     176 004272 005100                  	com	r0			;
+     177 004274 062701  000001          	add	#1,r1			;
+     178 004300 005500                  	adc	r0			; 
      179                                
-     180 004200 012604                  40$:	mov	(sp)+,r4		; restore
-     181 004202                         	return				; done
-       1 004202 000207                  	rts	pc
+     180 004302 012604                  40$:	mov	(sp)+,r4		; restore
+     181 004304                         	return				; done
+       1 004304 000207                  	rts	pc
      182                                
      183                                ;================================================================================
      184                                ; end of muldiv.mac
@@ -1821,74 +2510,94 @@
      539                                ; end of printf.mac
      540                                ;=================================================================================
      540                                
-     538                                
-     539                                ; --------------------------------------------------------------------------------
-     540                                
-     541                                .end
-     541                                
+     592                                
+     593                                ; --------------------------------------------------------------------------------
+     594                                
+     595                                .end
+     595                                
 
 
 Symbol table
 
-$$NUM   =000002           32$27    003324R  L   005 450$26   002656R  L   005 BUF3     000374R      003 N.ARGS  =000016           
-$ENDAD   001676R      005 32768$0  000020R  L   005 460$26   002672R  L   005 CONSOL  =165144 G         N.LAST  =000014           
-$SAV42   000000R      003 32768$1  000130R  L   005 470$26   002706R  L   005 CR      =000015           NOXXDP   001712R      005 
-.        ******R      005 32768$10 000112R  L   007 50$27    003330R  L   005 DATBEG   000000R      006 OPN      000012R      003 
-1$24     002000R  L   005 32768$11 000117R  L   007 50$28    003520R  L   005 DL$MSK  =000037           OPV      000010R      003 
-1$25     002060R  L   005 32768$12 000124R  L   007 51$27    003344R  L   005 DONE     001652RG     005 P.FIL   =177776           
-1$26     002106R  L   005 32768$13 000131R  L   007 52$27    003372R  L   005 DPYREG  =177570 G         P.FLG   =177777           
-1$27     003114R  L   005 32768$14 000136R  L   007 70$27    003400R  L   005 DT$NLO  =030000           P.LEN   =177770           
-1$28     003464R  L   005 32768$15 000143R  L   007 70$28    003534R  L   005 DT$NLS  =050000           P.OUT   =177766           
-1$29     003660R  L   005 32768$16 000150R  L   007 71$27    003402R  L   005 DT$NSZ  =000000           P.PRE   =177772           
-1$30     003750R  L   005 32768$17 000155R  L   007 71$28    003540R  L   005 DT$NTO  =020000           P.PTR   =177764           
-10$23    001714R  L   005 32768$18 000162R  L   007 80$27    003416R  L   005 DT$NTS  =040000           P.SR0   =000012           
-10$26    002200R  L   005 32768$19 000167R  L   007 80$28    003554R  L   005 DT$NUZ  =010000           P.SR1   =000010           
-10$27    003174R  L   005 32768$20 000175R  L   007 800$26   002722R  L   005 DT$PKS  =060000           P.SR2   =000006           
-10$31    004104R  L   005 32768$21 000204R  L   007 81$27    003432R  L   005 DT$PKU  =070000           P.SR3   =000004           
-100$28   003576R  L   005 32768$22 000212R  L   007 810$26   002742R  L   005 DV$FLD  =070000           P.SR4   =000002           
-1000$2   001642R  L   005 32768$3  000604R  L   004 820$26   002744R  L   005 DV$MSK  =000007           P.SR5   =000000           
-1000$26  003054R  L   005 32768$4  000000R  L   007 880$26   003006R  L   005 DV$NLO  =000003           P.WID   =177774           
-1001$2   001643R  L   005 32768$5  000014R  L   007 890$26   003014R  L   005 DV$NLS  =000005           PASSES   000002R      003 
-1002$2   001645R  L   005 32768$6  000044R  L   007 90$27    003450R  L   005 DV$NSZ  =000000           PF.ALT  =000004           
-1003$2   001647R  L   005 32768$7  000073R  L   007 90$28    003570R  L   005 DV$NTO  =000002           PF.LJU  =000001           
-101$1    000506R  L   005 32768$8  000100R  L   007 900$2    001570R  L   005 DV$NTS  =000004           PF.LON  =000010           
-101$28   003612R  L   005 32768$9  000105R  L   007 900$26   003016R  L   005 DV$NUZ  =000001           PF.NEG  =000020           
-102$28   003622R  L   005 32769$0  000026R  L   005 990$26   003034R  L   005 DV$PKS  =000006           PF.SEP  =000000           
-11$26    002226R  L   005 32769$10=000006   L       999$2    001624R  L   005 DV$PKU  =000007           PF.SIG  =000002           
-110$1    000636R  L   005 32769$11=000006   L       ACTOUT   000546R      004 DV$SHF  =010000           PLEN    =000005           
-111$1    000652R  L   005 32769$12=000006   L       ACTRES   000571R      004 ECC      000052R      003 PRINTF   001734RG     005 
-12$26    002260R  L   005 32769$13=000006   L       ASHN    =076056           ER0      000034R      003 PRT32U   003106R      005 
-120$1    000712R  L   005 32769$14=000006   L       ASHNI   =076156           ER1      000036R      003 PRTSTR   003456R      005 
-121$1    000726R  L   005 32769$15=000006   L       ASHP    =076076           ER2      000040R      003 PSW     =177776 G         
-13$26    002276R  L   005 32769$16=000006   L       ASHPI   =076176           ER3      000042R      003 RCC      000072R      003 
-130$1    000766R  L   005 32769$17=000006   L       BIT0    =000001           ER4      000044R      003 RR0      000054R      003 
-131$1    001002R  L   005 32769$18=000006   L       BIT00   =000001           ER5      000046R      003 RR1      000056R      003 
-140$1    001042R  L   005 32769$19=000006   L       BIT01   =000002           ER6      000050R      003 RR2      000060R      003 
-141$1    001056R  L   005 32769$20=000006   L       BIT02   =000004           ERRFLG   000006R      003 RR3      000062R      003 
-150$1    001116R  L   005 32769$21=000006   L       BIT03   =000010           EXPOUT   000536R      004 RR4      000064R      003 
-151$1    001132R  L   005 32769$22=000006   L       BIT04   =000020           EXPRES   000556R      004 RR5      000066R      003 
-160$1    001172R  L   005 32769$4 =000014   L       BIT05   =000040           FMT1     000422R      004 RR6      000070R      003 
-161$1    001206R  L   005 32769$5 =000030   L       BIT06   =000100           FMT2     000430R      004 SAVPTR   000534R      003 
-170$1    001246R  L   005 32769$6 =000030   L       BIT07   =000200           FMT3     000436R      004 SLDIV    004040RG     005 
-171$1    001262R  L   005 32769$7 =000006   L       BIT08   =000400           FMT4     000453R      004 SOURCE   000532R      004 
-180$1    001322R  L   005 32769$8 =000006   L       BIT09   =001000           FMT5     000456R      004 SPA1     000404R      004 
-181$1    001336R  L   005 32769$9 =000006   L       BIT1    =000002           FMT6     000510R      004 SPA2     000414R      004 
-190$1    001362R  L   005 32770$0  000044R  L   005 BIT10   =002000           HDR1     000053R      004 SPRINT   002014RG     005 
-2$26     002126R  L   005 32771$0  000056R  L   005 BIT11   =004000           HDR2     000272R      004 STACK    001776R      002 
-2$27     003156R  L   005 4$26     002172R  L   005 BIT12   =010000           HDR3     000364R      004 START    000000RG     005 
-2$29     003676R  L   005 40$26    002346R  L   005 BIT13   =020000           ICC      000032R      003 SWIREG  =177570 G         
-2$30     004006R  L   005 40$31    004200R  L   005 BIT14   =040000           INPUT    000524R      004 TESTNO   000004R      003 
-20$26    002314R  L   005 400$26   002416R  L   005 BIT15   =100000           IR0      000014R      003 TST$NO  =000001           
-20$27    003216R  L   005 401$26   002502R  L   005 BIT2    =000004           IR1      000016R      003 TTRBUF  =177562 G         
-20$28    003506R  L   005 405$26   002516R  L   005 BIT3    =000010           IR2      000020R      003 TTRCSR  =177560 G         
-20$31    004124R  L   005 41$26    002352R  L   005 BIT4    =000020           IR3      000022R      003 TTXBUF  =177566 G         
-21$27    003252R  L   005 410$26   002534R  L   005 BIT5    =000040           IR4      000024R      003 TTXCSR  =177564 G         
-22$27    003262R  L   005 42$26    002402R  L   005 BIT6    =000100           IR5      000026R      003 ULDIV    003724RG     005 
-3$26     002136R  L   005 420$26   002546R  L   005 BIT7    =000200           IR6      000030R      003 ULMUL    003624RG     005 
-3$30     004032R  L   005 430$26   002566R  L   005 BIT8    =000400           LF      =000012           XPRINT   002104R      005 
-30$27    003272R  L   005 431$26   002612R  L   005 BIT9    =001000           LOOP     000112R      005 ZONPRT   001550R      005 
-30$31    004162R  L   005 439$26   002632R  L   005 BUF1     000074R      003 MSG1     000000R      004 
-31$27    003310R  L   005 440$26   002642R  L   005 BUF2     000234R      003 MSG2     000037R      004 
+$$NUM   = 000002           32768$23  000302R  L   007 900$3     001672R  L   005 FMT4      000453R      004 
+$ENDAD    002000R      005 32768$24  000307R  L   007 900$35    003120R  L   005 FMT5      000456R      004 
+$SAV42    000000R      003 32768$25  000314R  L   007 990$35    003136R  L   005 FMT6      000510R      004 
+.         004306R      005 32768$26  000321R  L   007 999$2     001624R  L   005 HDR1      000053R      004 
+1$33      002102R  L   005 32768$27  000326R  L   007 999$3     001726R  L   005 HDR2      000272R      004 
+1$34      002162R  L   005 32768$28  000333R  L   007 ACTOUT    000546R      004 HDR3      000364R      004 
+1$35      002210R  L   005 32768$29  000341R  L   007 ACTRES    000571R      004 ICC       000032R      003 
+1$36      003216R  L   005 32768$30  000350R  L   007 ASHN    = 076056           INPUT     000524R      004 
+1$37      003566R  L   005 32768$31  000356R  L   007 ASHNI   = 076156           IR0       000014R      003 
+1$38      003762R  L   005 32768$4   000604R  L   004 ASHP    = 076076           IR1       000016R      003 
+1$39      004052R  L   005 32768$5   000000R  L   007 ASHPI   = 076176           IR2       000020R      003 
+10$32     002016R  L   005 32768$6   000014R  L   007 BIT0    = 000001           IR3       000022R      003 
+10$35     002302R  L   005 32768$7   000044R  L   007 BIT00   = 000001           IR4       000024R      003 
+10$36     003276R  L   005 32768$8   000611R  L   004 BIT01   = 000002           IR5       000026R      003 
+10$40     004206R  L   005 32768$9   000073R  L   007 BIT02   = 000004           IR6       000030R      003 
+100$37    003700R  L   005 32769$0   000026R  L   005 BIT03   = 000010           LF      = 000012           
+1000$2    001642R  L   005 32769$10= 000030   L       BIT04   = 000020           LOOP      000112R      005 
+1000$3    001744R  L   005 32769$11= 000030   L       BIT05   = 000040           MSG1      000000R      004 
+1000$35   003156R  L   005 32769$13= 000003   L       BIT06   = 000100           MSG2      000037R      004 
+1001$2    001643R  L   005 32769$14= 000030   L       BIT07   = 000200           N.ARGS  = 000016           
+1001$3    001745R  L   005 32769$15= 000017   L       BIT08   = 000400           N.LAST  = 000014           
+1002$2    001645R  L   005 32769$16= 000006   L       BIT09   = 001000           NOXXDP    002014R      005 
+1002$3    001747R  L   005 32769$17= 000006   L       BIT1    = 000002           OPN       000012R      003 
+1003$2    001647R  L   005 32769$18= 000006   L       BIT10   = 002000           OPV       000010R      003 
+1003$3    001751R  L   005 32769$19= 000006   L       BIT11   = 004000           P.FIL   = 177776           
+101$1     000506R  L   005 32769$20= 000006   L       BIT12   = 010000           P.FLG   = 177777           
+101$37    003714R  L   005 32769$21= 000006   L       BIT13   = 020000           P.LEN   = 177770           
+102$37    003724R  L   005 32769$22= 000006   L       BIT14   = 040000           P.OUT   = 177766           
+11$35     002330R  L   005 32769$23= 000006   L       BIT15   = 100000           P.PRE   = 177772           
+110$1     000636R  L   005 32769$24= 000006   L       BIT2    = 000004           P.PTR   = 177764           
+111$1     000652R  L   005 32769$25= 000006   L       BIT3    = 000010           P.SR0   = 000012           
+12$35     002362R  L   005 32769$26= 000006   L       BIT4    = 000020           P.SR1   = 000010           
+120$1     000712R  L   005 32769$27= 000006   L       BIT5    = 000040           P.SR2   = 000006           
+121$1     000726R  L   005 32769$28= 000006   L       BIT6    = 000100           P.SR3   = 000004           
+13$35     002400R  L   005 32769$29= 000006   L       BIT7    = 000200           P.SR4   = 000002           
+130$1     000766R  L   005 32769$30= 000006   L       BIT8    = 000400           P.SR5   = 000000           
+131$1     001002R  L   005 32769$31= 000006   L       BIT9    = 001000           P.WID   = 177774           
+140$1     001042R  L   005 32769$5 = 000014   L       BUF1      000074R      003 PAKPRT    001652R      005 
+141$1     001056R  L   005 32769$6 = 000030   L       BUF2      000234R      003 PASSES    000002R      003 
+150$1     001116R  L   005 32769$7 = 000030   L       BUF3      000374R      003 PF.ALT  = 000004           
+151$1     001132R  L   005 32769$9 = 000014   L       CONSOL  = 165144 G         PF.LJU  = 000001           
+160$1     001172R  L   005 32770$0   000044R  L   005 CR      = 000015           PF.LON  = 000010           
+161$1     001206R  L   005 32771$0   000056R  L   005 DATBEG    000000R      006 PF.NEG  = 000020           
+170$1     001246R  L   005 4$35      002274R  L   005 DL$MSK  = 000037           PF.SEP  = 000000           
+171$1     001262R  L   005 40$35     002450R  L   005 DONE      001754RG     005 PF.SIG  = 000002           
+180$1     001322R  L   005 40$40     004302R  L   005 DPYREG  = 177570 G         PLEN    = 000005           
+181$1     001336R  L   005 400$35    002520R  L   005 DT$NLO  = 030000           PRINTF    002036RG     005 
+190$1     001362R  L   005 401$35    002604R  L   005 DT$NLS  = 050000           PRT32U    003210R      005 
+2$35      002230R  L   005 405$35    002620R  L   005 DT$NSZ  = 000000           PRTSTR    003560R      005 
+2$36      003260R  L   005 41$35     002454R  L   005 DT$NTO  = 020000           PSW     = 177776 G         
+2$38      004000R  L   005 410$35    002636R  L   005 DT$NTS  = 040000           RCC       000072R      003 
+2$39      004110R  L   005 42$35     002504R  L   005 DT$NUZ  = 010000           RR0       000054R      003 
+20$35     002416R  L   005 420$35    002650R  L   005 DT$PKS  = 060000           RR1       000056R      003 
+20$36     003320R  L   005 430$35    002670R  L   005 DT$PKU  = 070000           RR2       000060R      003 
+20$37     003610R  L   005 431$35    002714R  L   005 DV$FLD  = 070000           RR3       000062R      003 
+20$40     004226R  L   005 439$35    002734R  L   005 DV$MSK  = 000007           RR4       000064R      003 
+21$36     003354R  L   005 440$35    002744R  L   005 DV$NLO  = 000003           RR5       000066R      003 
+22$36     003364R  L   005 450$35    002760R  L   005 DV$NLS  = 000005           RR6       000070R      003 
+3$35      002240R  L   005 460$35    002774R  L   005 DV$NSZ  = 000000           SAVPTR    000534R      003 
+3$39      004134R  L   005 470$35    003010R  L   005 DV$NTO  = 000002           SLDIV     004142RG     005 
+30$36     003374R  L   005 50$36     003432R  L   005 DV$NTS  = 000004           SOURCE    000532R      004 
+30$40     004264R  L   005 50$37     003622R  L   005 DV$NUZ  = 000001           SPA1      000404R      004 
+31$36     003412R  L   005 51$36     003446R  L   005 DV$PKS  = 000006           SPA2      000414R      004 
+32$36     003426R  L   005 52$36     003474R  L   005 DV$PKU  = 000007           SPRINT    002116RG     005 
+32768$0   000020R  L   005 70$36     003502R  L   005 DV$SHF  = 010000           STACK     001776R      002 
+32768$1   000130R  L   005 70$37     003636R  L   005 ECC       000052R      003 START     000000RG     005 
+32768$10  000107R  L   007 71$36     003504R  L   005 ER0       000034R      003 SWIREG  = 177570 G         
+32768$11  000137R  L   007 71$37     003642R  L   005 ER1       000036R      003 TESTNO    000004R      003 
+32768$12  000616R  L   004 80$36     003520R  L   005 ER2       000040R      003 TST$NO  = 000001           
+32768$13  000166R  L   007 80$37     003656R  L   005 ER3       000042R      003 TTRBUF  = 177562 G         
+32768$14  000171R  L   007 800$35    003024R  L   005 ER4       000044R      003 TTRCSR  = 177560 G         
+32768$15  000221R  L   007 81$36     003534R  L   005 ER5       000046R      003 TTXBUF  = 177566 G         
+32768$16  000237R  L   007 810$35    003044R  L   005 ER6       000050R      003 TTXCSR  = 177564 G         
+32768$17  000244R  L   007 820$35    003046R  L   005 ERRFLG    000006R      003 ULDIV     004026RG     005 
+32768$18  000251R  L   007 880$35    003110R  L   005 EXPOUT    000536R      004 ULMUL     003726RG     005 
+32768$19  000256R  L   007 890$35    003116R  L   005 EXPRES    000556R      004 XPRINT    002206R      005 
+32768$20  000263R  L   007 90$36     003552R  L   005 FMT1      000422R      004 ZONPRT    001550R      005 
+32768$21  000270R  L   007 90$37     003672R  L   005 FMT2      000430R      004 
+32768$22  000275R  L   007 900$2     001570R  L   005 FMT3      000436R      004 
 
 
 Program sections:
@@ -1897,7 +2606,7 @@ Program sections:
         000000    001   (RW,I,LCL,REL,CON,NOSAV)
 STK     002000    002   (RW,I,LCL,REL,CON,NOSAV)
 DAT     000536    003   (RW,I,LCL,REL,CON,NOSAV)
-STR     000611    004   (RW,I,LCL,REL,CON,NOSAV)
-PRG     004204    005   (RW,I,LCL,REL,CON,NOSAV)
-TST     000142    006   (RW,I,LCL,REL,CON,NOSAV)
-BUF     000217    007   (RW,I,LCL,REL,CON,NOSAV)
+STR     000623    004   (RW,I,LCL,REL,CON,NOSAV)
+PRG     004306    005   (RW,I,LCL,REL,CON,NOSAV)
+TST     000242    006   (RW,I,LCL,REL,CON,NOSAV)
+BUF     000363    007   (RW,I,LCL,REL,CON,NOSAV)

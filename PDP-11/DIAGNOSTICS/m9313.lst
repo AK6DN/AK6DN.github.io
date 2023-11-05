@@ -240,6 +240,7 @@
      141                                .sbttl	program start
      142                                
      143 002310                         	align	7			; pc alignment
+       9                                .list
      144                                
      145 002400 012706  002000          start:	mov	#stack,sp		; setup a stack
      146 002404 000005                  	reset				; reset the world
@@ -262,10 +263,13 @@
      150                                
      151 002460                         	printf	#msg1			; say hello
        1 002460                         	calls	printf #msg1               
+       8                                .list
        9 002460 012746  010010          	mov	#msg1,-(sp)
+       1                                .list
        2 002464                         	call	printf
        1 002464 004737  010512          	jsr	pc,printf
        3 002470 062706  000002          	add	#2,sp
+      18                                .list
      152                                
      153 002474 005037  002006          	clr	errors			; none yet
      154 002500 005037  002010          	clr	passes			; ditto
@@ -297,6 +301,7 @@
      177                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      178                                
      179 002560                         	test	<M9313 register access test>
+       1                                .list
        2                                
        3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
        4                                	.sbttl	Test1 - M9313 register access test
@@ -307,6 +312,7 @@
        9 002560 022737  000001  002020  	cmp	#1,testno		; check for sequence error
       10 002566 001401                  	beq	.+4			; OK, skip over halt
       11 002570 000000                  	halt				; FATAL - SEQUENCE ERROR
+      18                                .list
      180                                
      181 002572 012700  172140          	mov	#ue$adr,r0		; address register
      182 002576                         	call	adrchk			; check if responds
@@ -342,19 +348,28 @@
      204                                
      205 002664                         30$:	printf	#70$,testno		; header
        1 002664                         	calls	printf #70$ testno              
+       8                                .list
        9 002664 013746  002020          	mov	testno,-(sp)
+      14                                .list
       15 002670 012746  002734          	mov	#70$,-(sp)
+       1                                .list
        2 002674                         	call	printf
        1 002674 004737  010512          	jsr	pc,printf
        3 002700 062706  000004          	add	#4,sp
+      18                                .list
      206 002704                         	printf	#71$,testno,r0		; format, bad address
        1 002704                         	calls	printf #71$ testno r0             
+       8                                .list
        9 002704 010046                  	mov	r0,-(sp)
+      14                                .list
       15 002706 013746  002020          	mov	testno,-(sp)
+      20                                .list
       21 002712 012746  003003          	mov	#71$,-(sp)
+       1                                .list
        2 002716                         	call	printf
        1 002716 004737  010512          	jsr	pc,printf
        3 002722 062706  000006          	add	#6,sp
+      18                                .list
      207 002726 005237  002006          	inc	errors			; incre error count
      208 002732                         	return				; return
        1 002732 000207                  	rts	pc
@@ -393,6 +408,7 @@
      218                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      219                                
      220 003054                         	test	<M9313 addr/data register bit test>
+       1                                .list
        2                                
        3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
        4                                	.sbttl	Test2 - M9313 addr/data register bit test
@@ -403,6 +419,7 @@
        9 003054 022737  000002  002020  	cmp	#2,testno		; check for sequence error
       10 003062 001401                  	beq	.+4			; OK, skip over halt
       11 003064 000000                  	halt				; FATAL - SEQUENCE ERROR
+      18                                .list
      221                                
      222 003066 012705  003216          	mov	#60$,r5			; ptr to address table
      223                                	
@@ -422,21 +439,32 @@
      237                                	
      238 003124                         	printf	#70$,testno		; header message
        1 003124                         	calls	printf #70$ testno              
+       8                                .list
        9 003124 013746  002020          	mov	testno,-(sp)
+      14                                .list
       15 003130 012746  003222          	mov	#70$,-(sp)
+       1                                .list
        2 003134                         	call	printf
        1 003134 004737  010512          	jsr	pc,printf
        3 003140 062706  000004          	add	#4,sp
+      18                                .list
      239 003144                         	printf	#71$,testno,r4,r2,r1	; format, test, address, exp'ed, rcv'ed
        1 003144                         	calls	printf #71$ testno r4 r2 r1           
+       8                                .list
        9 003144 010146                  	mov	r1,-(sp)
+      14                                .list
       15 003146 010246                  	mov	r2,-(sp)
+      20                                .list
       21 003150 010446                  	mov	r4,-(sp)
+      26                                .list
       27 003152 013746  002020          	mov	testno,-(sp)
+      32                                .list
       33 003156 012746  003300          	mov	#71$,-(sp)
+       1                                .list
        2 003162                         	call	printf
        1 003162 004737  010512          	jsr	pc,printf
        3 003166 062706  000012          	add	#12,sp
+      18                                .list
      240 003172 005237  002006          	inc	errors			; count errors
      241                                	
      242 003176 022703  002156          30$:	cmp	#bitend,r3		; end of data table?
@@ -505,6 +533,7 @@
      264                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      265                                
      266 003430                         	test	<M9313 NPR read word test>
+       1                                .list
        2                                
        3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
        4                                	.sbttl	Test3 - M9313 NPR read word test
@@ -515,6 +544,7 @@
        9 003430 022737  000003  002020  	cmp	#3,testno		; check for sequence error
       10 003436 001401                  	beq	.+4			; OK, skip over halt
       11 003440 000000                  	halt				; FATAL - SEQUENCE ERROR
+      18                                .list
      267                                
      268 003442 012703  002024          	mov	#bitpat,r3		; ptr to data table
      269                                
@@ -530,21 +560,32 @@
      279                                	
      280 003502                         	printf	#70$,testno		; header message
        1 003502                         	calls	printf #70$ testno              
+       8                                .list
        9 003502 013746  002020          	mov	testno,-(sp)
+      14                                .list
       15 003506 012746  003570          	mov	#70$,-(sp)
+       1                                .list
        2 003512                         	call	printf
        1 003512 004737  010512          	jsr	pc,printf
        3 003516 062706  000004          	add	#4,sp
+      18                                .list
      281 003522                         	printf	#71$,testno,r3,r2,r1	; format, test, address, exp'ed, rcv'ed
        1 003522                         	calls	printf #71$ testno r3 r2 r1           
+       8                                .list
        9 003522 010146                  	mov	r1,-(sp)
+      14                                .list
       15 003524 010246                  	mov	r2,-(sp)
+      20                                .list
       21 003526 010346                  	mov	r3,-(sp)
+      26                                .list
       27 003530 013746  002020          	mov	testno,-(sp)
+      32                                .list
       33 003534 012746  003635          	mov	#71$,-(sp)
+       1                                .list
        2 003540                         	call	printf
        1 003540 004737  010512          	jsr	pc,printf
        3 003544 062706  000012          	add	#12,sp
+      18                                .list
      282 003550 005237  002006          	inc	errors			; count errors
      283                                	
      284 003554 005723                  20$:	tst	(r3)+			; bump pointer
@@ -602,6 +643,7 @@
      300                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      301                                
      302 003760                         	test	<M9313 NPR write word test>
+       1                                .list
        2                                
        3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
        4                                	.sbttl	Test4 - M9313 NPR write word test
@@ -612,6 +654,7 @@
        9 003760 022737  000004  002020  	cmp	#4,testno		; check for sequence error
       10 003766 001401                  	beq	.+4			; OK, skip over halt
       11 003770 000000                  	halt				; FATAL - SEQUENCE ERROR
+      18                                .list
      303                                
      304 003772 012705  002156          	mov	#buffer,r5		; ptr to results buffer
      305                                	
@@ -640,21 +683,32 @@
      328                                	
      329 004066                         	printf	#70$,testno		; header message
        1 004066                         	calls	printf #70$ testno              
+       8                                .list
        9 004066 013746  002020          	mov	testno,-(sp)
+      14                                .list
       15 004072 012746  004152          	mov	#70$,-(sp)
+       1                                .list
        2 004076                         	call	printf
        1 004076 004737  010512          	jsr	pc,printf
        3 004102 062706  000004          	add	#4,sp
+      18                                .list
      330 004106                         	printf	#71$,testno,r4,r2,r1	; format, test, address, exp'ed, rcv'ed
        1 004106                         	calls	printf #71$ testno r4 r2 r1           
+       8                                .list
        9 004106 010146                  	mov	r1,-(sp)
+      14                                .list
       15 004110 010246                  	mov	r2,-(sp)
+      20                                .list
       21 004112 010446                  	mov	r4,-(sp)
+      26                                .list
       27 004114 013746  002020          	mov	testno,-(sp)
+      32                                .list
       33 004120 012746  004220          	mov	#71$,-(sp)
+       1                                .list
        2 004124                         	call	printf
        1 004124 004737  010512          	jsr	pc,printf
        3 004130 062706  000012          	add	#12,sp
+      18                                .list
      331 004134 005237  002006          	inc	errors			; count errors
      332                                	
      333 004140 022703  002156          40$:	cmp	#bitend,r3		; end of data table?
@@ -711,6 +765,7 @@
      348                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      349                                
      350 004344                         	test	<M9313 NPR write byte test>
+       1                                .list
        2                                
        3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
        4                                	.sbttl	Test5 - M9313 NPR write byte test
@@ -721,6 +776,7 @@
        9 004344 022737  000005  002020  	cmp	#5,testno		; check for sequence error
       10 004352 001401                  	beq	.+4			; OK, skip over halt
       11 004354 000000                  	halt				; FATAL - SEQUENCE ERROR
+      18                                .list
      351                                
      352 004356 012705  002156          	mov	#buffer,r5		; ptr to results buffer
      353                                	
@@ -759,21 +815,32 @@
      386                                	
      387 004506                         	printf	#70$,testno		; header message
        1 004506                         	calls	printf #70$ testno              
+       8                                .list
        9 004506 013746  002020          	mov	testno,-(sp)
+      14                                .list
       15 004512 012746  004572          	mov	#70$,-(sp)
+       1                                .list
        2 004516                         	call	printf
        1 004516 004737  010512          	jsr	pc,printf
        3 004522 062706  000004          	add	#4,sp
+      18                                .list
      388 004526                         	printf	#71$,testno,r4,r2,r1	; format, test, address, exp'ed, rcv'ed
        1 004526                         	calls	printf #71$ testno r4 r2 r1           
+       8                                .list
        9 004526 010146                  	mov	r1,-(sp)
+      14                                .list
       15 004530 010246                  	mov	r2,-(sp)
+      20                                .list
       21 004532 010446                  	mov	r4,-(sp)
+      26                                .list
       27 004534 013746  002020          	mov	testno,-(sp)
+      32                                .list
       33 004540 012746  004640          	mov	#71$,-(sp)
+       1                                .list
        2 004544                         	call	printf
        1 004544 004737  010512          	jsr	pc,printf
        3 004550 062706  000012          	add	#12,sp
+      18                                .list
      389 004554 005237  002006          	inc	errors			; count errors
      390                                	
      391 004560 022703  002156          40$:	cmp	#bitend,r3		; end of data table?
@@ -832,6 +899,7 @@
      406                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      407                                
      408 004772                         	test	<M9313 BR4 interrupt test>
+       1                                .list
        2                                
        3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
        4                                	.sbttl	Test6 - M9313 BR4 interrupt test
@@ -842,6 +910,7 @@
        9 004772 022737  000006  002020  	cmp	#6,testno		; check for sequence error
       10 005000 001401                  	beq	.+4			; OK, skip over halt
       11 005002 000000                  	halt				; FATAL - SEQUENCE ERROR
+      18                                .list
      409                                
      410 005004 013737  000160  005334  	mov	@#ue$vec+0,60$+0	; save old vector
      411 005012 013737  000162  005336  	mov	@#ue$vec+2,60$+2	; 
@@ -903,22 +972,34 @@
      449                                	
      450 005234                         40$:	printf	#70$,testno		; header message
        1 005234                         	calls	printf #70$ testno              
+       8                                .list
        9 005234 013746  002020          	mov	testno,-(sp)
+      14                                .list
       15 005240 012746  005340          	mov	#70$,-(sp)
+       1                                .list
        2 005244                         	call	printf
        1 005244 004737  010512          	jsr	pc,printf
        3 005250 062706  000004          	add	#4,sp
+      18                                .list
      451 005254                         	printf	#71$,testno,r0,r1,r2,r3	; format, test, counts
        1 005254                         	calls	printf #71$ testno r0 r1 r2 r3          
+       8                                .list
        9 005254 010346                  	mov	r3,-(sp)
+      14                                .list
       15 005256 010246                  	mov	r2,-(sp)
+      20                                .list
       21 005260 010146                  	mov	r1,-(sp)
+      26                                .list
       27 005262 010046                  	mov	r0,-(sp)
+      32                                .list
       33 005264 013746  002020          	mov	testno,-(sp)
+      38                                .list
       39 005270 012746  005405          	mov	#71$,-(sp)
+       1                                .list
        2 005274                         	call	printf
        1 005274 004737  010512          	jsr	pc,printf
        3 005300 062706  000014          	add	#14,sp
+      18                                .list
      452 005304 005237  002006          	inc	errors			; count errors
      453                                
      454 005310 013737  005334  000160  45$:	mov	60$+0,@#ue$vec+0	; restore old vector
@@ -987,6 +1068,7 @@
      477                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      478                                
      479 005544                         	test	<M9313 BR5 interrupt test>
+       1                                .list
        2                                
        3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
        4                                	.sbttl	Test7 - M9313 BR5 interrupt test
@@ -997,6 +1079,7 @@
        9 005544 022737  000007  002020  	cmp	#7,testno		; check for sequence error
       10 005552 001401                  	beq	.+4			; OK, skip over halt
       11 005554 000000                  	halt				; FATAL - SEQUENCE ERROR
+      18                                .list
      480                                
      481 005556 013737  000160  006106  	mov	@#ue$vec+0,60$+0	; save old vector
      482 005564 013737  000162  006110  	mov	@#ue$vec+2,60$+2	; 
@@ -1058,22 +1141,34 @@
      520                                	
      521 006006                         40$:	printf	#70$,testno		; header message
        1 006006                         	calls	printf #70$ testno              
+       8                                .list
        9 006006 013746  002020          	mov	testno,-(sp)
+      14                                .list
       15 006012 012746  006112          	mov	#70$,-(sp)
+       1                                .list
        2 006016                         	call	printf
        1 006016 004737  010512          	jsr	pc,printf
        3 006022 062706  000004          	add	#4,sp
+      18                                .list
      522 006026                         	printf	#71$,testno,r0,r1,r2,r3	; format, test, counts
        1 006026                         	calls	printf #71$ testno r0 r1 r2 r3          
+       8                                .list
        9 006026 010346                  	mov	r3,-(sp)
+      14                                .list
       15 006030 010246                  	mov	r2,-(sp)
+      20                                .list
       21 006032 010146                  	mov	r1,-(sp)
+      26                                .list
       27 006034 010046                  	mov	r0,-(sp)
+      32                                .list
       33 006036 013746  002020          	mov	testno,-(sp)
+      38                                .list
       39 006042 012746  006157          	mov	#71$,-(sp)
+       1                                .list
        2 006046                         	call	printf
        1 006046 004737  010512          	jsr	pc,printf
        3 006052 062706  000014          	add	#14,sp
+      18                                .list
      523 006056 005237  002006          	inc	errors			; count errors
      524                                
      525 006062 013737  006106  000160  45$:	mov	60$+0,@#ue$vec+0	; restore old vector
@@ -1142,6 +1237,7 @@
      548                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      549                                
      550 006316                         	test	<M9313 BR6 interrupt test>
+       1                                .list
        2                                
        3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
        4                                	.sbttl	Test10 - M9313 BR6 interrupt test
@@ -1152,6 +1248,7 @@
        9 006316 022737  000010  002020  	cmp	#10,testno		; check for sequence error
       10 006324 001401                  	beq	.+4			; OK, skip over halt
       11 006326 000000                  	halt				; FATAL - SEQUENCE ERROR
+      18                                .list
      551                                
      552 006330 013737  000160  006660  	mov	@#ue$vec+0,60$+0	; save old vector
      553 006336 013737  000162  006662  	mov	@#ue$vec+2,60$+2	; 
@@ -1213,22 +1310,34 @@
      591                                	
      592 006560                         40$:	printf	#70$,testno		; header message
        1 006560                         	calls	printf #70$ testno              
+       8                                .list
        9 006560 013746  002020          	mov	testno,-(sp)
+      14                                .list
       15 006564 012746  006664          	mov	#70$,-(sp)
+       1                                .list
        2 006570                         	call	printf
        1 006570 004737  010512          	jsr	pc,printf
        3 006574 062706  000004          	add	#4,sp
+      18                                .list
      593 006600                         	printf	#71$,testno,r0,r1,r2,r3	; format, test, counts
        1 006600                         	calls	printf #71$ testno r0 r1 r2 r3          
+       8                                .list
        9 006600 010346                  	mov	r3,-(sp)
+      14                                .list
       15 006602 010246                  	mov	r2,-(sp)
+      20                                .list
       21 006604 010146                  	mov	r1,-(sp)
+      26                                .list
       27 006606 010046                  	mov	r0,-(sp)
+      32                                .list
       33 006610 013746  002020          	mov	testno,-(sp)
+      38                                .list
       39 006614 012746  006731          	mov	#71$,-(sp)
+       1                                .list
        2 006620                         	call	printf
        1 006620 004737  010512          	jsr	pc,printf
        3 006624 062706  000014          	add	#14,sp
+      18                                .list
      594 006630 005237  002006          	inc	errors			; count errors
      595                                
      596 006634 013737  006660  000160  45$:	mov	60$+0,@#ue$vec+0	; restore old vector
@@ -1297,6 +1406,7 @@
      619                                ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      620                                
      621 007070                         	test	<M9313 BR7 interrupt test>
+       1                                .list
        2                                
        3                                	;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
        4                                	.sbttl	Test11 - M9313 BR7 interrupt test
@@ -1307,6 +1417,7 @@
        9 007070 022737  000011  002020  	cmp	#11,testno		; check for sequence error
       10 007076 001401                  	beq	.+4			; OK, skip over halt
       11 007100 000000                  	halt				; FATAL - SEQUENCE ERROR
+      18                                .list
      622                                
      623 007102 013737  000160  007432  	mov	@#ue$vec+0,60$+0	; save old vector
      624 007110 013737  000162  007434  	mov	@#ue$vec+2,60$+2	; 
@@ -1368,22 +1479,34 @@
      662                                	
      663 007332                         40$:	printf	#70$,testno		; header message
        1 007332                         	calls	printf #70$ testno              
+       8                                .list
        9 007332 013746  002020          	mov	testno,-(sp)
+      14                                .list
       15 007336 012746  007436          	mov	#70$,-(sp)
+       1                                .list
        2 007342                         	call	printf
        1 007342 004737  010512          	jsr	pc,printf
        3 007346 062706  000004          	add	#4,sp
+      18                                .list
      664 007352                         	printf	#71$,testno,r0,r1,r2,r3	; format, test, counts
        1 007352                         	calls	printf #71$ testno r0 r1 r2 r3          
+       8                                .list
        9 007352 010346                  	mov	r3,-(sp)
+      14                                .list
       15 007354 010246                  	mov	r2,-(sp)
+      20                                .list
       21 007356 010146                  	mov	r1,-(sp)
+      26                                .list
       27 007360 010046                  	mov	r0,-(sp)
+      32                                .list
       33 007362 013746  002020          	mov	testno,-(sp)
+      38                                .list
       39 007366 012746  007503          	mov	#71$,-(sp)
+       1                                .list
        2 007372                         	call	printf
        1 007372 004737  010512          	jsr	pc,printf
        3 007376 062706  000014          	add	#14,sp
+      18                                .list
      665 007402 005237  002006          	inc	errors			; count errors
      666                                
      667 007406 013737  007432  000160  45$:	mov	60$+0,@#ue$vec+0	; restore old vector
@@ -1461,12 +1584,17 @@
      699 007664 001012                  	bne	20$			; br if not yet
      700 007666                         10$:	printf	#msg3,passes,errors	; output some status
        1 007666                         	calls	printf #msg3 passes errors             
+       8                                .list
        9 007666 013746  002006          	mov	errors,-(sp)
+      14                                .list
       15 007672 013746  002010          	mov	passes,-(sp)
+      20                                .list
       21 007676 012746  010064          	mov	#msg3,-(sp)
+       1                                .list
        2 007702                         	call	printf
        1 007702 004737  010512          	jsr	pc,printf
        3 007706 062706  000006          	add	#6,sp
+      18                                .list
      701 007712 023737  002004  002010  20$:	cmp	numpas,passes		; done
      702 007720 001402                  	beq	exit			; yes
      703 007722 000137  002550          	jmp	loop			; not yet
@@ -1482,10 +1610,13 @@
      713                                
      714 007752                         noxxdp:	printf	#msg2			; say goodbye
        1 007752                         	calls	printf #msg2               
+       8                                .list
        9 007752 012746  010050          	mov	#msg2,-(sp)
+       1                                .list
        2 007756                         	call	printf
        1 007756 004737  010512          	jsr	pc,printf
        3 007762 062706  000002          	add	#2,sp
+      18                                .list
      715 007766 005000                  	clr	r0			;
      716 007770 005300                  10$:	dec	r0			; 
      717 007772 001376                  	bne	10$			; some delay
@@ -1556,12 +1687,19 @@
      759                                ;		call	dumper
      760                                ;
      761 010172                         dumper:	savreg	r0,r1,r2,r3,r4,r5	; save registers
+       2                                .list
        3 010172 010046                  	mov	r0,-(sp)
+       7                                .list
        8 010174 010146                  	mov	r1,-(sp)
+      12                                .list
       13 010176 010246                  	mov	r2,-(sp)
+      17                                .list
       18 010200 010346                  	mov	r3,-(sp)
+      22                                .list
       23 010202 010446                  	mov	r4,-(sp)
+      27                                .list
       28 010204 010546                  	mov	r5,-(sp)
+       9                                .list
      762 010206 005001                  	clr	r1			; word counter
      763 010210 010503                  	mov	r5,r3			; ptr to start of line
      764 010212 032701  000007          1$:	bit	#^b111,r1		; at start of line
@@ -1569,28 +1707,39 @@
      766 010220 006301                  	asl	r1			; make byte offset
      767 010222                         	printf	#205$,r1		; print line offset
        1 010222                         	calls	printf #205$ r1              
+       8                                .list
        9 010222 010146                  	mov	r1,-(sp)
+      14                                .list
       15 010224 012746  010431          	mov	#205$,-(sp)
+       1                                .list
        2 010230                         	call	printf
        1 010230 004737  010512          	jsr	pc,printf
        3 010234 062706  000004          	add	#4,sp
+      18                                .list
      768 010240 006201                  	asr	r1			; back to word offset
      769 010242                         2$:	printf	#201$,(r5)+		; print a word
        1 010242                         	calls	printf #201$ (r5)+              
+       8                                .list
        9 010242 012546                  	mov	(r5)+,-(sp)
+      14                                .list
       15 010244 012746  010410          	mov	#201$,-(sp)
+       1                                .list
        2 010250                         	call	printf
        1 010250 004737  010512          	jsr	pc,printf
        3 010254 062706  000004          	add	#4,sp
+      18                                .list
      770 010260 005201                  	inc	r1			; count words
      771 010262 032701  000007          	bit	#^b111,r1		; multiple of 8 per line
      772 010266 001037                  	bne	8$			; br if not
      773 010270                         	printf	#204$			; some space
        1 010270                         	calls	printf #204$               
+       8                                .list
        9 010270 012746  010426          	mov	#204$,-(sp)
+       1                                .list
        2 010274                         	call	printf
        1 010274 004737  010512          	jsr	pc,printf
        3 010300 062706  000002          	add	#2,sp
+      18                                .list
      774 010304 005002                  3$:	clr	r2			; zap
      775 010306 152302                  	bisb	(r3)+,r2		; get next character
      776 010310 120227  000040          	cmpb	r2,#<' >		; check for low end
@@ -1600,28 +1749,42 @@
      780 010324 012702  000056          5$:	mov	#<'.>,r2		; CTRL prints as '.'
      781 010330                         6$:	printf	#203$,r2		; print a character
        1 010330                         	calls	printf #203$ r2              
+       8                                .list
        9 010330 010246                  	mov	r2,-(sp)
+      14                                .list
       15 010332 012746  010423          	mov	#203$,-(sp)
+       1                                .list
        2 010336                         	call	printf
        1 010336 004737  010512          	jsr	pc,printf
        3 010342 062706  000004          	add	#4,sp
+      18                                .list
      782 010346 020305                  	cmp	r3,r5			; at next line?
      783 010350 103755                  	blo	3$			; br if not yet
      784 010352                         	printf	#202$			; yes, end the line
        1 010352                         	calls	printf #202$               
+       8                                .list
        9 010352 012746  010416          	mov	#202$,-(sp)
+       1                                .list
        2 010356                         	call	printf
        1 010356 004737  010512          	jsr	pc,printf
        3 010362 062706  000002          	add	#2,sp
+      18                                .list
      785 010366 020104                  8$:	cmp	r1,r4			; hit end of block
      786 010370 001310                  	bne	1$			; br if not yet
      787 010372                         	resreg	r0,r1,r2,r3,r4,r5	; restore registers
+       7                                .list
        8 010372 012605                  	mov	(sp)+,r5
+      12                                .list
       13 010374 012604                  	mov	(sp)+,r4
+      17                                .list
       18 010376 012603                  	mov	(sp)+,r3
+      22                                .list
       23 010400 012602                  	mov	(sp)+,r2
+      27                                .list
       28 010402 012601                  	mov	(sp)+,r1
+      32                                .list
       33 010404 012600                  	mov	(sp)+,r0
+       9                                .list
      788 010406                         	return				; and done
        1 010406 000207                  	rts	pc
      789                                
@@ -2462,64 +2625,64 @@
 
 Symbol table
 
-$$NUM  =000002           3$14   =010304   L       70$1   =002734   L       BIT11  =004000           PF.LON =000010           
-$$POS  =000200           3$18   =010714   L       70$19  =012156   L       BIT12  =010000           PF.NEG =000020           
-$ENDAD =007736           3$22   =012610   L       70$2   =003222   L       BIT13  =020000           PF.SEP =000000           
-$SAV42 =002022           30$1   =002664   L       70$20  =012312   L       BIT14  =040000           PF.SIG =000002           
-.      =******           30$19  =012050   L       70$3   =003570   L       BIT15  =100000           PRINTF =010512 G         
-1$12   =010144   L       30$2   =003176   L       70$4   =004152   L       BIT2   =000004           PRT32U =011664           
-1$13   =010162   L       30$23  =012740   L       70$5   =004572   L       BIT3   =000010           PRTSTR =012234           
-1$14   =010212   L       30$4   =004054   L       70$6   =005340   L       BIT4   =000020           PSW    =177776 G         
-1$15   =010474   L       30$5   =004470   L       70$7   =006112   L       BIT5   =000040           SLDIV  =012616 G         
-1$16   =010556   L       31$19  =012066   L       70$8   =006664   L       BIT6   =000100           SPRINT =010572 G         
-1$17   =010636   L       32$19  =012102   L       70$9   =007436   L       BIT7   =000200           STACK  =002000           
-1$18   =010664   L       32768$0=002420   L       71$1   =003003   L       BIT8   =000400           START  =002400           
-1$19   =011672   L       32769$0=002426   L       71$19  =012160   L       BIT9   =001000           SWIREG =177570 G         
-1$20   =012242   L       32770$0=002444   L       71$2   =003300   L       BITEND =002156           TEST1  =002560           
-1$21   =012436   L       32771$0=002456   L       71$20  =012316   L       BITPAT =002024           TEST10 =006316           
-1$22   =012526   L       4$18   =010750   L       71$3   =003635   L       BUFEND =002310           TEST11 =007070           
-10$1   =002610   L       40$18  =011124   L       71$4   =004220   L       BUFFER =002156           TEST2  =003054           
-10$10  =007666   L       40$23  =012756   L       71$5   =004640   L       CONSOL =165144 G         TEST3  =003430           
-10$11  =007770   L       40$4   =004140   L       71$6   =005405   L       CR     =000015           TEST4  =003760           
-10$18  =010756   L       40$5   =004560   L       71$7   =006157   L       DELAY  =010154           TEST5  =004344           
-10$19  =011752   L       40$6   =005234   L       71$8   =006731   L       DLYCNT =002016           TEST6  =004772           
-10$2   =003072   L       40$7   =006006   L       71$9   =007503   L       DONE   =007642           TEST7  =005544           
-10$23  =012662   L       40$8   =006560   L       8$14   =010366   L       DPYREG =177570 G         TESTNO =002020           
-10$3   =003446   L       40$9   =007332   L       80$19  =012174   L       DUMPER =010172           TICKHI =002014           
-10$4   =003776   L       400$18 =011174   L       80$20  =012332   L       ERRORS =002006           TICKLO =002012           
-10$5   =004362   L       401$18 =011260   L       800$18 =011500   L       EXIT   =007726           TST$NO =000012           
-100$20 =012354   L       405$18 =011274   L       81$19  =012210   L       LF     =000012           TTRBUF =177562 G         
-1000$18=011632   L       41$18  =011130   L       810$18 =011520   L       LK$CSR =177546           TTRCSR =177560 G         
-101$20 =012370   L       410$18 =011312   L       820$18 =011522   L       LK$VEC =000100           TTXBUF =177566 G         
-102$20 =012400   L       42$18  =011160   L       880$18 =011564   L       LKINTR =010120           TTXCSR =177564 G         
-11$1   =002626   L       420$18 =011324   L       890$18 =011572   L       LK_IEN =000100           UDATI  =000001           
-11$18  =011004   L       430$18 =011344   L       90$19  =012226   L       LK_MON =000200           UDATIP =000003           
-12$1   =002644   L       431$18 =011370   L       90$20  =012346   L       LK_PRI =000006           UDATO  =000005           
-12$18  =011036   L       439$18 =011410   L       900$18 =011574   L       LOOP   =002550           UDATOB =000007           
-13$1   =002662   L       440$18 =011420   L       99$1   =003050   L       MSG1   =010010           UE$ADR =172140           
-13$18  =011054   L       45$6   =005310   L       99$2   =003424   L       MSG2   =010050           UE$CMD =172144           
-2$13   =010170   L       45$7   =006062   L       99$3   =003754   L       MSG3   =010064           UE$CSR =172140           
-2$14   =010242   L       45$8   =006634   L       99$4   =004340   L       N.ARGS =000016           UE$DAT =172142           
-2$18   =010704   L       45$9   =007406   L       99$5   =004766   L       N.LAST =000014           UE$ROM =172146           
-2$19   =011734   L       450$18 =011434   L       99$6   =005540   L       NOXXDP =007752           UE$VEC =000160           
-2$21   =012454   L       460$18 =011450   L       99$7   =006312   L       NUMPAS =002004           UE_A16 =000010           
-2$22   =012564   L       470$18 =011464   L       99$8   =007064   L       OPTSWI =002002           UE_A17 =000020           
-20$10  =007712   L       5$14   =010324   L       99$9   =007636   L       P.FIL  =177776           UE_BR4 =000400           
-20$18  =011072   L       50$19  =012106   L       990$18 =011612   L       P.FLG  =177777           UE_BR5 =001000           
-20$19  =011774   L       50$20  =012276   L       ADRCHK =010440 G         P.LEN  =177770           UE_BR6 =002000           
-20$2   =003100   L       50$6   =005326   L       BIT0   =000001           P.OUT  =177766           UE_BR7 =004000           
-20$20  =012264   L       50$7   =006100   L       BIT00  =000001           P.PRE  =177772           UE_C0  =000002           
-20$23  =012702   L       50$8   =006652   L       BIT01  =000002           P.PTR  =177764           UE_C1  =000004           
-20$3   =003554   L       50$9   =007424   L       BIT02  =000004           P.SR0  =000012           UE_INI =100000           
-20$4   =004016   L       51$19  =012122   L       BIT03  =000010           P.SR1  =000010           UE_NPR =000001           
-20$5   =004402   L       52$19  =012150   L       BIT04  =000020           P.SR2  =000006           UE_PB  =000040           
-201$14 =010410   L       6$14   =010330   L       BIT05  =000040           P.SR3  =000004           UE_PE  =000200           
-202$14 =010416   L       60$2   =003216   L       BIT06  =000100           P.SR4  =000002           UE_TO  =000100           
-203$14 =010423   L       60$6   =005334   L       BIT07  =000200           P.SR5  =000000           ULDIV  =012502 G         
-204$14 =010426   L       60$7   =006106   L       BIT08  =000400           P.WID  =177774           ULMUL  =012402 G         
-205$14 =010431   L       60$8   =006660   L       BIT09  =001000           PASSES =002010           XE$CSR =100000           
-21$19  =012030   L       60$9   =007432   L       BIT1   =000002           PF.ALT =000004           XPRINT =010662           
-22$19  =012040   L       61$2   =003222   L       BIT10  =002000           PF.LJU =000001           
+$$NUM  = 000002           3$14   = 010304   L       70$1   = 002734   L       BIT11  = 004000           PF.LON = 000010           
+$$POS  = 000200           3$18   = 010714   L       70$19  = 012156   L       BIT12  = 010000           PF.NEG = 000020           
+$ENDAD = 007736           3$22   = 012610   L       70$2   = 003222   L       BIT13  = 020000           PF.SEP = 000000           
+$SAV42 = 002022           30$1   = 002664   L       70$20  = 012312   L       BIT14  = 040000           PF.SIG = 000002           
+.      = 012762           30$19  = 012050   L       70$3   = 003570   L       BIT15  = 100000           PRINTF = 010512 G         
+1$12   = 010144   L       30$2   = 003176   L       70$4   = 004152   L       BIT2   = 000004           PRT32U = 011664           
+1$13   = 010162   L       30$23  = 012740   L       70$5   = 004572   L       BIT3   = 000010           PRTSTR = 012234           
+1$14   = 010212   L       30$4   = 004054   L       70$6   = 005340   L       BIT4   = 000020           PSW    = 177776 G         
+1$15   = 010474   L       30$5   = 004470   L       70$7   = 006112   L       BIT5   = 000040           SLDIV  = 012616 G         
+1$16   = 010556   L       31$19  = 012066   L       70$8   = 006664   L       BIT6   = 000100           SPRINT = 010572 G         
+1$17   = 010636   L       32$19  = 012102   L       70$9   = 007436   L       BIT7   = 000200           STACK  = 002000           
+1$18   = 010664   L       32768$0= 002420   L       71$1   = 003003   L       BIT8   = 000400           START  = 002400           
+1$19   = 011672   L       32769$0= 002426   L       71$19  = 012160   L       BIT9   = 001000           SWIREG = 177570 G         
+1$20   = 012242   L       32770$0= 002444   L       71$2   = 003300   L       BITEND = 002156           TEST1  = 002560           
+1$21   = 012436   L       32771$0= 002456   L       71$20  = 012316   L       BITPAT = 002024           TEST10 = 006316           
+1$22   = 012526   L       4$18   = 010750   L       71$3   = 003635   L       BUFEND = 002310           TEST11 = 007070           
+10$1   = 002610   L       40$18  = 011124   L       71$4   = 004220   L       BUFFER = 002156           TEST2  = 003054           
+10$10  = 007666   L       40$23  = 012756   L       71$5   = 004640   L       CONSOL = 165144 G         TEST3  = 003430           
+10$11  = 007770   L       40$4   = 004140   L       71$6   = 005405   L       CR     = 000015           TEST4  = 003760           
+10$18  = 010756   L       40$5   = 004560   L       71$7   = 006157   L       DELAY  = 010154           TEST5  = 004344           
+10$19  = 011752   L       40$6   = 005234   L       71$8   = 006731   L       DLYCNT = 002016           TEST6  = 004772           
+10$2   = 003072   L       40$7   = 006006   L       71$9   = 007503   L       DONE   = 007642           TEST7  = 005544           
+10$23  = 012662   L       40$8   = 006560   L       8$14   = 010366   L       DPYREG = 177570 G         TESTNO = 002020           
+10$3   = 003446   L       40$9   = 007332   L       80$19  = 012174   L       DUMPER = 010172           TICKHI = 002014           
+10$4   = 003776   L       400$18 = 011174   L       80$20  = 012332   L       ERRORS = 002006           TICKLO = 002012           
+10$5   = 004362   L       401$18 = 011260   L       800$18 = 011500   L       EXIT   = 007726           TST$NO = 000012           
+100$20 = 012354   L       405$18 = 011274   L       81$19  = 012210   L       LF     = 000012           TTRBUF = 177562 G         
+1000$18= 011632   L       41$18  = 011130   L       810$18 = 011520   L       LK$CSR = 177546           TTRCSR = 177560 G         
+101$20 = 012370   L       410$18 = 011312   L       820$18 = 011522   L       LK$VEC = 000100           TTXBUF = 177566 G         
+102$20 = 012400   L       42$18  = 011160   L       880$18 = 011564   L       LKINTR = 010120           TTXCSR = 177564 G         
+11$1   = 002626   L       420$18 = 011324   L       890$18 = 011572   L       LK_IEN = 000100           UDATI  = 000001           
+11$18  = 011004   L       430$18 = 011344   L       90$19  = 012226   L       LK_MON = 000200           UDATIP = 000003           
+12$1   = 002644   L       431$18 = 011370   L       90$20  = 012346   L       LK_PRI = 000006           UDATO  = 000005           
+12$18  = 011036   L       439$18 = 011410   L       900$18 = 011574   L       LOOP   = 002550           UDATOB = 000007           
+13$1   = 002662   L       440$18 = 011420   L       99$1   = 003050   L       MSG1   = 010010           UE$ADR = 172140           
+13$18  = 011054   L       45$6   = 005310   L       99$2   = 003424   L       MSG2   = 010050           UE$CMD = 172144           
+2$13   = 010170   L       45$7   = 006062   L       99$3   = 003754   L       MSG3   = 010064           UE$CSR = 172140           
+2$14   = 010242   L       45$8   = 006634   L       99$4   = 004340   L       N.ARGS = 000016           UE$DAT = 172142           
+2$18   = 010704   L       45$9   = 007406   L       99$5   = 004766   L       N.LAST = 000014           UE$ROM = 172146           
+2$19   = 011734   L       450$18 = 011434   L       99$6   = 005540   L       NOXXDP = 007752           UE$VEC = 000160           
+2$21   = 012454   L       460$18 = 011450   L       99$7   = 006312   L       NUMPAS = 002004           UE_A16 = 000010           
+2$22   = 012564   L       470$18 = 011464   L       99$8   = 007064   L       OPTSWI = 002002           UE_A17 = 000020           
+20$10  = 007712   L       5$14   = 010324   L       99$9   = 007636   L       P.FIL  = 177776           UE_BR4 = 000400           
+20$18  = 011072   L       50$19  = 012106   L       990$18 = 011612   L       P.FLG  = 177777           UE_BR5 = 001000           
+20$19  = 011774   L       50$20  = 012276   L       ADRCHK = 010440 G         P.LEN  = 177770           UE_BR6 = 002000           
+20$2   = 003100   L       50$6   = 005326   L       BIT0   = 000001           P.OUT  = 177766           UE_BR7 = 004000           
+20$20  = 012264   L       50$7   = 006100   L       BIT00  = 000001           P.PRE  = 177772           UE_C0  = 000002           
+20$23  = 012702   L       50$8   = 006652   L       BIT01  = 000002           P.PTR  = 177764           UE_C1  = 000004           
+20$3   = 003554   L       50$9   = 007424   L       BIT02  = 000004           P.SR0  = 000012           UE_INI = 100000           
+20$4   = 004016   L       51$19  = 012122   L       BIT03  = 000010           P.SR1  = 000010           UE_NPR = 000001           
+20$5   = 004402   L       52$19  = 012150   L       BIT04  = 000020           P.SR2  = 000006           UE_PB  = 000040           
+201$14 = 010410   L       6$14   = 010330   L       BIT05  = 000040           P.SR3  = 000004           UE_PE  = 000200           
+202$14 = 010416   L       60$2   = 003216   L       BIT06  = 000100           P.SR4  = 000002           UE_TO  = 000100           
+203$14 = 010423   L       60$6   = 005334   L       BIT07  = 000200           P.SR5  = 000000           ULDIV  = 012502 G         
+204$14 = 010426   L       60$7   = 006106   L       BIT08  = 000400           P.WID  = 177774           ULMUL  = 012402 G         
+205$14 = 010431   L       60$8   = 006660   L       BIT09  = 001000           PASSES = 002010           XE$CSR = 100000           
+21$19  = 012030   L       60$9   = 007432   L       BIT1   = 000002           PF.ALT = 000004           XPRINT = 010662           
+22$19  = 012040   L       61$2   = 003222   L       BIT10  = 002000           PF.LJU = 000001           
 
 
 Program sections:

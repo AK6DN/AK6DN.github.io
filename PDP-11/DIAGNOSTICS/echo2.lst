@@ -264,20 +264,20 @@
 
 Symbol table
 
-.     =******           2$4   =002720   L       DLRCSR=000500           DLTOPT=000522           TTRINT=002500           
-1$0   =002030   L       2$5   =002772   L       DLRDAT=004200           DLVECT=000300           TTRIPT=000410           
-1$2   =002530   L       20$1  =002374   L       DLRINT=002564           LOOP  =002272           TTRMAX=000416           
-1$3   =002614   L       21$1  =002426   L       DLRIPT=000510           OPTION=002006           TTRMIN=000414           
-1$4   =002712   L       22$1  =002434   L       DLRMAX=000516           RBUF  =000002           TTROPT=000412           
-1$5   =002764   L       23$1  =002460   L       DLRMIN=000514           RCSR  =000000           TTTBUF=000406           
-10$1  =002274   L       24$1  =002466   L       DLROPT=000512           STACK =002000           TTTCSR=000404           
-11$1  =002326   L       3$0   =002106   L       DLTBUF=000506           START =002010           TTTDAT=004100           
-12$1  =002334   L       30$1  =002474   L       DLTCSR=000504           TBUF  =000006           TTTINT=002650           
-13$1  =002360   L       4$0   =002152   L       DLTDAT=004300           TCSR  =000004           TTTIPT=000420           
-14$1  =002366   L       5$0   =002216   L       DLTINT=002722           TTBASE=177560           TTTMAX=000426           
-2$0   =002042   L       DATLEN=000100           DLTIPT=000520           TTRBUF=000402           TTTMIN=000424           
-2$2   =002562   L       DLBASE=176500           DLTMAX=000526           TTRCSR=000400           TTTOPT=000422           
-2$3   =002646   L       DLRBUF=000502           DLTMIN=000524           TTRDAT=004000           TTVECT=000060           
+.     = 004400           2$4   = 002720   L       DLRCSR= 000500           DLTOPT= 000522           TTRINT= 002500           
+1$0   = 002030   L       2$5   = 002772   L       DLRDAT= 004200           DLVECT= 000300           TTRIPT= 000410           
+1$2   = 002530   L       20$1  = 002374   L       DLRINT= 002564           LOOP  = 002272           TTRMAX= 000416           
+1$3   = 002614   L       21$1  = 002426   L       DLRIPT= 000510           OPTION= 002006           TTRMIN= 000414           
+1$4   = 002712   L       22$1  = 002434   L       DLRMAX= 000516           RBUF  = 000002           TTROPT= 000412           
+1$5   = 002764   L       23$1  = 002460   L       DLRMIN= 000514           RCSR  = 000000           TTTBUF= 000406           
+10$1  = 002274   L       24$1  = 002466   L       DLROPT= 000512           STACK = 002000           TTTCSR= 000404           
+11$1  = 002326   L       3$0   = 002106   L       DLTBUF= 000506           START = 002010           TTTDAT= 004100           
+12$1  = 002334   L       30$1  = 002474   L       DLTCSR= 000504           TBUF  = 000006           TTTINT= 002650           
+13$1  = 002360   L       4$0   = 002152   L       DLTDAT= 004300           TCSR  = 000004           TTTIPT= 000420           
+14$1  = 002366   L       5$0   = 002216   L       DLTINT= 002722           TTBASE= 177560           TTTMAX= 000426           
+2$0   = 002042   L       DATLEN= 000100           DLTIPT= 000520           TTRBUF= 000402           TTTMIN= 000424           
+2$2   = 002562   L       DLBASE= 176500           DLTMAX= 000526           TTRCSR= 000400           TTTOPT= 000422           
+2$3   = 002646   L       DLRBUF= 000502           DLTMIN= 000524           TTRDAT= 004000           TTVECT= 000060           
 
 
 Program sections:

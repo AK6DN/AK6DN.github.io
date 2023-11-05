@@ -212,6 +212,7 @@
       45                                .sbttl	global variables
       46                                
       47 000204                         	align	10.
+       9                                .list
       48                                
       49 002000 177777                  stack:	.word	-1			; top of stack
       50 002002 000000                  switch:	.word	0			; option switches:
@@ -229,6 +230,7 @@
       62 002026 002400                  errptr:	.word	errbuf			; a(errbuf)
       63                                
       64 002030                         	align	8.
+       9                                .list
       65                                
       66        002400                  errbuf:	.blkw	4			; error buffer
       67        002410                  buffer:	.blkw	rx_wps			; sector buffer
@@ -238,6 +240,7 @@
       71                                .sbttl	main program
       72                                	
       73 003010                         	align	11.
+       9                                .list
       74                                
       75 004000 012706  002000          start:	mov	#stack,sp		; setup stack
       76 004004 000005                  	reset				; reset the world
@@ -260,10 +263,13 @@
       80                                
       81 004060                         	printf	#msg1			; say hello
        1 004060                         	calls	printf #msg1               
+       8                                .list
        9 004060 012746  007434          	mov	#msg1,-(sp)
+       1                                .list
        2 004064                         	call	printf
        1 004064 004737  010176          	jsr	pc,printf
        3 004070 062706  000002          	add	#2,sp
+      18                                .list
       82                                
       83 004074 005037  002020          	clr	ticker			; init tick count
       84                                	
@@ -296,10 +302,13 @@
      110                                
      111 004166                         	printf	#205$			; message
        1 004166                         	calls	printf #205$               
+       8                                .list
        9 004166 012746  007057          	mov	#205$,-(sp)
+       1                                .list
        2 004172                         	call	printf
        1 004172 004737  010176          	jsr	pc,printf
        3 004176 062706  000002          	add	#2,sp
+      18                                .list
      112                                
      113                                	; unit 0
      114                                
@@ -310,43 +319,61 @@
        1 004216 004737  010054          	jsr	pc,rxsden
      119 004222                         	printf	#106$,r0,r1		; print rxcs and rxdb
        1 004222                         	calls	printf #106$ r0 r1             
+       8                                .list
        9 004222 010146                  	mov	r1,-(sp)
+      14                                .list
       15 004224 010046                  	mov	r0,-(sp)
+      20                                .list
       21 004226 012746  006566          	mov	#106$,-(sp)
+       1                                .list
        2 004232                         	call	printf
        1 004232 004737  010176          	jsr	pc,printf
        3 004236 062706  000006          	add	#6,sp
+      18                                .list
      120                                
      121 004242 012702  000000          	mov	#<0*rc_unit>+<0*rc_den>,r2 ; unit 0 SD
      122 004246                         	call	rxstat			; read status
        1 004246 004737  010124          	jsr	pc,rxstat
      123 004252                         	printf	#107$,r0,r1		; print rxcs and rxdb
        1 004252                         	calls	printf #107$ r0 r1             
+       8                                .list
        9 004252 010146                  	mov	r1,-(sp)
+      14                                .list
       15 004254 010046                  	mov	r0,-(sp)
+      20                                .list
       21 004256 012746  006625          	mov	#107$,-(sp)
+       1                                .list
        2 004262                         	call	printf
        1 004262 004737  010176          	jsr	pc,printf
        3 004266 062706  000006          	add	#6,sp
+      18                                .list
      124                                
      125 004272 012702  000400          	mov	#<0*rc_unit>+<1*rc_den>,r2 ; unit 0 DD
      126 004276                         	call	rxstat			; read status
        1 004276 004737  010124          	jsr	pc,rxstat
      127 004302                         	printf	#107$,r0,r1		; print rxcs and rxdb
        1 004302                         	calls	printf #107$ r0 r1             
+       8                                .list
        9 004302 010146                  	mov	r1,-(sp)
+      14                                .list
       15 004304 010046                  	mov	r0,-(sp)
+      20                                .list
       21 004306 012746  006625          	mov	#107$,-(sp)
+       1                                .list
        2 004312                         	call	printf
        1 004312 004737  010176          	jsr	pc,printf
        3 004316 062706  000006          	add	#6,sp
+      18                                .list
      128                                	
      129 004322                         	printf	#213$			; crlf
        1 004322                         	calls	printf #213$               
+       8                                .list
        9 004322 012746  007217          	mov	#213$,-(sp)
+       1                                .list
        2 004326                         	call	printf
        1 004326 004737  010176          	jsr	pc,printf
        3 004332 062706  000002          	add	#2,sp
+      18                                .list
      130                                
      131                                	; unit 1
      132                                
@@ -357,36 +384,51 @@
        1 004352 004737  010054          	jsr	pc,rxsden
      137 004356                         	printf	#106$,r0,r1		; print rxcs and rxdb
        1 004356                         	calls	printf #106$ r0 r1             
+       8                                .list
        9 004356 010146                  	mov	r1,-(sp)
+      14                                .list
       15 004360 010046                  	mov	r0,-(sp)
+      20                                .list
       21 004362 012746  006566          	mov	#106$,-(sp)
+       1                                .list
        2 004366                         	call	printf
        1 004366 004737  010176          	jsr	pc,printf
        3 004372 062706  000006          	add	#6,sp
+      18                                .list
      138                                
      139 004376 012702  000020          	mov	#<1*rc_unit>+<0*rc_den>,r2 ; unit 1 SD
      140 004402                         	call	rxstat			; read status
        1 004402 004737  010124          	jsr	pc,rxstat
      141 004406                         	printf	#107$,r0,r1		; print rxcs and rxdb
        1 004406                         	calls	printf #107$ r0 r1             
+       8                                .list
        9 004406 010146                  	mov	r1,-(sp)
+      14                                .list
       15 004410 010046                  	mov	r0,-(sp)
+      20                                .list
       21 004412 012746  006625          	mov	#107$,-(sp)
+       1                                .list
        2 004416                         	call	printf
        1 004416 004737  010176          	jsr	pc,printf
        3 004422 062706  000006          	add	#6,sp
+      18                                .list
      142                                
      143 004426 012702  000420          	mov	#<1*rc_unit>+<1*rc_den>,r2 ; unit 1 DD
      144 004432                         	call	rxstat			; read status
        1 004432 004737  010124          	jsr	pc,rxstat
      145 004436                         	printf	#107$,r0,r1		; print rxcs and rxdb
        1 004436                         	calls	printf #107$ r0 r1             
+       8                                .list
        9 004436 010146                  	mov	r1,-(sp)
+      14                                .list
       15 004440 010046                  	mov	r0,-(sp)
+      20                                .list
       21 004442 012746  006625          	mov	#107$,-(sp)
+       1                                .list
        2 004446                         	call	printf
        1 004446 004737  010176          	jsr	pc,printf
        3 004452 062706  000006          	add	#6,sp
+      18                                .list
      146                                
      147                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      148                                
@@ -394,10 +436,13 @@
      150                                
      151 004456                         	printf	#206$			; single density
        1 004456                         	calls	printf #206$               
+       8                                .list
        9 004456 012746  007111          	mov	#206$,-(sp)
+       1                                .list
        2 004462                         	call	printf
        1 004462 004737  010176          	jsr	pc,printf
        3 004466 062706  000002          	add	#2,sp
+      18                                .list
      152                                
      153                                	; unit 0
      154                                
@@ -408,43 +453,61 @@
        1 004506 004737  010054          	jsr	pc,rxsden
      159 004512                         	printf	#106$,r0,r1		; print rxcs and rxdb
        1 004512                         	calls	printf #106$ r0 r1             
+       8                                .list
        9 004512 010146                  	mov	r1,-(sp)
+      14                                .list
       15 004514 010046                  	mov	r0,-(sp)
+      20                                .list
       21 004516 012746  006566          	mov	#106$,-(sp)
+       1                                .list
        2 004522                         	call	printf
        1 004522 004737  010176          	jsr	pc,printf
        3 004526 062706  000006          	add	#6,sp
+      18                                .list
      160                                
      161 004532 012702  000400          	mov	#<0*rc_unit>+<1*rc_den>,r2 ; unit 0 DD
      162 004536                         	call	rxstat			; read status
        1 004536 004737  010124          	jsr	pc,rxstat
      163 004542                         	printf	#107$,r0,r1		; print rxcs and rxdb
        1 004542                         	calls	printf #107$ r0 r1             
+       8                                .list
        9 004542 010146                  	mov	r1,-(sp)
+      14                                .list
       15 004544 010046                  	mov	r0,-(sp)
+      20                                .list
       21 004546 012746  006625          	mov	#107$,-(sp)
+       1                                .list
        2 004552                         	call	printf
        1 004552 004737  010176          	jsr	pc,printf
        3 004556 062706  000006          	add	#6,sp
+      18                                .list
      164                                
      165 004562 012702  000000          	mov	#<0*rc_unit>+<0*rc_den>,r2 ; unit 0 SD
      166 004566                         	call	rxstat			; read status
        1 004566 004737  010124          	jsr	pc,rxstat
      167 004572                         	printf	#107$,r0,r1		; print rxcs and rxdb
        1 004572                         	calls	printf #107$ r0 r1             
+       8                                .list
        9 004572 010146                  	mov	r1,-(sp)
+      14                                .list
       15 004574 010046                  	mov	r0,-(sp)
+      20                                .list
       21 004576 012746  006625          	mov	#107$,-(sp)
+       1                                .list
        2 004602                         	call	printf
        1 004602 004737  010176          	jsr	pc,printf
        3 004606 062706  000006          	add	#6,sp
+      18                                .list
      168                                
      169 004612                         	printf	#213$			; crlf
        1 004612                         	calls	printf #213$               
+       8                                .list
        9 004612 012746  007217          	mov	#213$,-(sp)
+       1                                .list
        2 004616                         	call	printf
        1 004616 004737  010176          	jsr	pc,printf
        3 004622 062706  000002          	add	#2,sp
+      18                                .list
      170                                
      171                                	; unit 1
      172                                
@@ -455,36 +518,51 @@
        1 004642 004737  010054          	jsr	pc,rxsden
      177 004646                         	printf	#106$,r0,r1		; print rxcs and rxdb
        1 004646                         	calls	printf #106$ r0 r1             
+       8                                .list
        9 004646 010146                  	mov	r1,-(sp)
+      14                                .list
       15 004650 010046                  	mov	r0,-(sp)
+      20                                .list
       21 004652 012746  006566          	mov	#106$,-(sp)
+       1                                .list
        2 004656                         	call	printf
        1 004656 004737  010176          	jsr	pc,printf
        3 004662 062706  000006          	add	#6,sp
+      18                                .list
      178                                
      179 004666 012702  000420          	mov	#<1*rc_unit>+<1*rc_den>,r2 ; unit 1 DD
      180 004672                         	call	rxstat			; read status
        1 004672 004737  010124          	jsr	pc,rxstat
      181 004676                         	printf	#107$,r0,r1		; print rxcs and rxdb
        1 004676                         	calls	printf #107$ r0 r1             
+       8                                .list
        9 004676 010146                  	mov	r1,-(sp)
+      14                                .list
       15 004700 010046                  	mov	r0,-(sp)
+      20                                .list
       21 004702 012746  006625          	mov	#107$,-(sp)
+       1                                .list
        2 004706                         	call	printf
        1 004706 004737  010176          	jsr	pc,printf
        3 004712 062706  000006          	add	#6,sp
+      18                                .list
      182                                
      183 004716 012702  000020          	mov	#<1*rc_unit>+<0*rc_den>,r2 ; unit 1 SD
      184 004722                         	call	rxstat			; read status
        1 004722 004737  010124          	jsr	pc,rxstat
      185 004726                         	printf	#107$,r0,r1		; print rxcs and rxdb
        1 004726                         	calls	printf #107$ r0 r1             
+       8                                .list
        9 004726 010146                  	mov	r1,-(sp)
+      14                                .list
       15 004730 010046                  	mov	r0,-(sp)
+      20                                .list
       21 004732 012746  006625          	mov	#107$,-(sp)
+       1                                .list
        2 004736                         	call	printf
        1 004736 004737  010176          	jsr	pc,printf
        3 004742 062706  000006          	add	#6,sp
+      18                                .list
      186                                
      187                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      188                                
@@ -504,12 +582,17 @@
      202 005006 062701  000061          	add	#<'1>,r1		; make 1 or 2 for print
      203 005012                         	printf	#200$,unit,r1		; status
        1 005012                         	calls	printf #200$ unit r1             
+       8                                .list
        9 005012 010146                  	mov	r1,-(sp)
+      14                                .list
       15 005014 013746  002006          	mov	unit,-(sp)
+      20                                .list
       21 005020 012746  006664          	mov	#200$,-(sp)
+       1                                .list
        2 005024                         	call	printf
        1 005024 004737  010176          	jsr	pc,printf
        3 005030 062706  000006          	add	#6,sp
+      18                                .list
      204                                
      205                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      206                                
@@ -517,10 +600,13 @@
      208                                
      209 005034                         	printf	#213$			; crlf
        1 005034                         	calls	printf #213$               
+       8                                .list
        9 005034 012746  007217          	mov	#213$,-(sp)
+       1                                .list
        2 005040                         	call	printf
        1 005040 004737  010176          	jsr	pc,printf
        3 005044 062706  000002          	add	#2,sp
+      18                                .list
      210                                
      211 005050 012701  000111          	mov	#<'I>,r1		; unlock code
      212 005054 013702  002012          	mov	base,r2			; density and unit
@@ -528,12 +614,17 @@
        1 005060 004737  010054          	jsr	pc,rxsden
      214 005064                         	printf	#106$,r0,r1		; print rxcs and rxdb
        1 005064                         	calls	printf #106$ r0 r1             
+       8                                .list
        9 005064 010146                  	mov	r1,-(sp)
+      14                                .list
       15 005066 010046                  	mov	r0,-(sp)
+      20                                .list
       21 005070 012746  006566          	mov	#106$,-(sp)
+       1                                .list
        2 005074                         	call	printf
        1 005074 004737  010176          	jsr	pc,printf
        3 005100 062706  000006          	add	#6,sp
+      18                                .list
      215                                
      216                                	; check media density
      217                                
@@ -542,12 +633,17 @@
        1 005110 004737  010124          	jsr	pc,rxstat
      220 005114                         	printf	#102$,r0,r1		; print rxcs and rxdb
        1 005114                         	calls	printf #102$ r0 r1             
+       8                                .list
        9 005114 010146                  	mov	r1,-(sp)
+      14                                .list
       15 005116 010046                  	mov	r0,-(sp)
+      20                                .list
       21 005120 012746  006372          	mov	#102$,-(sp)
+       1                                .list
        2 005124                         	call	printf
        1 005124 004737  010176          	jsr	pc,printf
        3 005130 062706  000006          	add	#6,sp
+      18                                .list
      221                                
      222                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      223                                
@@ -555,10 +651,13 @@
      225                                
      226 005134                         	printf	#207$			; print header
        1 005134                         	calls	printf #207$               
+       8                                .list
        9 005134 012746  007143          	mov	#207$,-(sp)
+       1                                .list
        2 005140                         	call	printf
        1 005140 004737  010176          	jsr	pc,printf
        3 005144 062706  000002          	add	#2,sp
+      18                                .list
      227                                
      228 005150 005037  002020          	clr	ticker			; init tick count
      229                                
@@ -570,13 +669,19 @@
      235 005176 001414                  	beq	21$			; br if not
      236 005200                         	printf	#201$,unit,track,sector	; status
        1 005200                         	calls	printf #201$ unit track sector            
+       8                                .list
        9 005200 013746  002014          	mov	sector,-(sp)
+      14                                .list
       15 005204 013746  002016          	mov	track,-(sp)
+      20                                .list
       21 005210 013746  002006          	mov	unit,-(sp)
+      26                                .list
       27 005214 012746  006731          	mov	#201$,-(sp)
+       1                                .list
        2 005220                         	call	printf
        1 005220 004737  010176          	jsr	pc,printf
        3 005224 062706  000010          	add	#10,sp
+      18                                .list
      237 005230 000240                  21$:	nop				; 
      238                                
      239                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -585,13 +690,19 @@
      242                                
      243 005232                         	sprintf	bufptr,#100$,track,sector ; generate a pattern
        1 005232                         	calls	sprintf bufptr #100$ track sector            
+       8                                .list
        9 005232 013746  002014          	mov	sector,-(sp)
+      14                                .list
       15 005236 013746  002016          	mov	track,-(sp)
+      20                                .list
       21 005242 012746  005760          	mov	#100$,-(sp)
+      26                                .list
       27 005246 013746  002024          	mov	bufptr,-(sp)
+       1                                .list
        2 005252                         	call	sprintf
        1 005252 004737  010256          	jsr	pc,sprintf
        3 005256 062706  000010          	add	#10,sp
+      18                                .list
      244                                
      245                                	; compute and insert checksum
      246                                
@@ -605,12 +716,17 @@
      254 005304 164102                  	sub	-(r1),r2		; 
      255 005306                         	sprintf	r1,#101$,r2		; insert checksum
        1 005306                         	calls	sprintf r1 #101$ r2             
+       8                                .list
        9 005306 010246                  	mov	r2,-(sp)
+      14                                .list
       15 005310 012746  006365          	mov	#101$,-(sp)
+      20                                .list
       21 005314 010146                  	mov	r1,-(sp)
+       1                                .list
        2 005316                         	call	sprintf
        1 005316 004737  010256          	jsr	pc,sprintf
        3 005322 062706  000006          	add	#6,sp
+      18                                .list
      256                                
      257                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
      258                                
@@ -626,12 +742,17 @@
      267 005354 001410                  	beq	39$			; br if not
      268 005356                         	printf	#103$,r0,r1		; print rxcs and rxdb
        1 005356                         	calls	printf #103$ r0 r1             
+       8                                .list
        9 005356 010146                  	mov	r1,-(sp)
+      14                                .list
       15 005360 010046                  	mov	r0,-(sp)
+      20                                .list
       21 005362 012746  006431          	mov	#103$,-(sp)
+       1                                .list
        2 005366                         	call	printf
        1 005366 004737  010176          	jsr	pc,printf
        3 005372 062706  000006          	add	#6,sp
+      18                                .list
      269 005376 000240                  39$:	nop				; 
      270                                
      271                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -648,12 +769,17 @@
      281 005426 001410                  	beq	49$			; br if not
      282 005430                         	printf	#104$,r0,r1		; print rxcs and rxdb
        1 005430                         	calls	printf #104$ r0 r1             
+       8                                .list
        9 005430 010146                  	mov	r1,-(sp)
+      14                                .list
       15 005432 010046                  	mov	r0,-(sp)
+      20                                .list
       21 005434 012746  006470          	mov	#104$,-(sp)
+       1                                .list
        2 005440                         	call	printf
        1 005440 004737  010176          	jsr	pc,printf
        3 005444 062706  000006          	add	#6,sp
+      18                                .list
      283 005450 000240                  49$:	nop				; 
      284                                
      285                                	; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -671,12 +797,17 @@
      296                                
      297 005500                         	printf	#105$,r0,r1		; print rxcs and rxdb
        1 005500                         	calls	printf #105$ r0 r1             
+       8                                .list
        9 005500 010146                  	mov	r1,-(sp)
+      14                                .list
       15 005502 010046                  	mov	r0,-(sp)
+      20                                .list
       21 005504 012746  006527          	mov	#105$,-(sp)
+       1                                .list
        2 005510                         	call	printf
        1 005510 004737  010176          	jsr	pc,printf
        3 005514 062706  000006          	add	#6,sp
+      18                                .list
      298                                
      299 005520 012700  000001          	mov	#1,r0			; word counter
      300 005524 013701  002026          	mov	errptr,r1		; buffer pointer
@@ -686,17 +817,27 @@
      304 005536 152103                  	bisb	(r1)+,r3		; 
      305 005540                         	printf	#202$,r0,r3,r3,r3,r2,r2,r2 ; print
        1 005540                         	calls	printf #202$ r0 r3 r3 r3 r2 r2 r2        
+       8                                .list
        9 005540 010246                  	mov	r2,-(sp)
+      14                                .list
       15 005542 010246                  	mov	r2,-(sp)
+      20                                .list
       21 005544 010246                  	mov	r2,-(sp)
+      26                                .list
       27 005546 010346                  	mov	r3,-(sp)
+      32                                .list
       33 005550 010346                  	mov	r3,-(sp)
+      38                                .list
       39 005552 010346                  	mov	r3,-(sp)
+      44                                .list
       45 005554 010046                  	mov	r0,-(sp)
+      50                                .list
       51 005556 012746  007005          	mov	#202$,-(sp)
+       1                                .list
        2 005562                         	call	printf
        1 005562 004737  010176          	jsr	pc,printf
        3 005566 062706  000020          	add	#20,sp
+      18                                .list
      306 005572 005200                  	inc	r0			; count
      307 005574 020027  000004          	cmp	r0,#4			; loop end
      308 005600 003753                  	ble	50$			; br if more
@@ -712,10 +853,13 @@
      318 005612 001406                  	beq	82$			; br if not
      319 005614                         	printf	#216$			; '.'
        1 005614                         	calls	printf #216$               
+       8                                .list
        9 005614 012746  007243          	mov	#216$,-(sp)
+       1                                .list
        2 005620                         	call	printf
        1 005620 004737  010176          	jsr	pc,printf
        3 005624 062706  000002          	add	#2,sp
+      18                                .list
      320 005630 000240                  82$:	nop				;
      321                                
      322 005632 005237  002014          	inc	sector			; bump sector
@@ -729,10 +873,13 @@
      327 005660 001406                  	beq	84$			; br if not
      328 005662                         	printf	#213$			; crlf
        1 005662                         	calls	printf #213$               
+       8                                .list
        9 005662 012746  007217          	mov	#213$,-(sp)
+       1                                .list
        2 005666                         	call	printf
        1 005666 004737  010176          	jsr	pc,printf
        3 005672 062706  000002          	add	#2,sp
+      18                                .list
      329 005676 000240                  84$:	nop				;
      330                                
      331 005700 005237  002016          	inc	track			; bump track
@@ -748,18 +895,25 @@
      338                                
      339 005720                         90$:	printf	#217$,ticker		; print tick count
        1 005720                         	calls	printf #217$ ticker              
+       8                                .list
        9 005720 013746  002020          	mov	ticker,-(sp)
+      14                                .list
       15 005724 012746  007245          	mov	#217$,-(sp)
+       1                                .list
        2 005730                         	call	printf
        1 005730 004737  010176          	jsr	pc,printf
        3 005734 062706  000004          	add	#4,sp
+      18                                .list
      340                                	
      341 005740                         	printf	#400$			; status
        1 005740                         	calls	printf #400$               
+       8                                .list
        9 005740 012746  007422          	mov	#400$,-(sp)
+       1                                .list
        2 005744                         	call	printf
        1 005744 004737  010176          	jsr	pc,printf
        3 005750 062706  000002          	add	#2,sp
+      18                                .list
      342 005754 000137  007476          	jmp	done			; all done
      343                                
      344                                ; --------------------------------------------------------------------------------
@@ -1075,10 +1229,13 @@
      390                                
      391 007476                         done:	printf	#msg2			; say goodbye
        1 007476                         	calls	printf #msg2               
+       8                                .list
        9 007476 012746  007461          	mov	#msg2,-(sp)
+       1                                .list
        2 007502                         	call	printf
        1 007502 004737  010176          	jsr	pc,printf
        3 007506 062706  000002          	add	#2,sp
+      18                                .list
      392                                
      393 007512 013700  002004          exit:	mov	$sav42,r0		; check if loaded by XXDP
      394 007516 001407                  	beq	noxxdp			; br if not
@@ -2092,64 +2249,64 @@
 
 Symbol table
 
-$$NUM  =000002           21$0   =005230   L       80$10  =011660   L       LF     =000012           RC_WOE =170000           
-$$POS  =004000           21$10  =011514   L       80$11  =012016   L       LK$CSR =177546           RC_WR  =000004           
-$ENDAD =007522           213$0  =007217   L       800$9  =011164   L       LK$VEC =000100           RC_WRD =000014           
-$SAV42 =002004           214$0  =007222   L       81$10  =011674   L       LKINTR =007556           RE_ACL =000010           
-.      =******           215$0  =007225   L       810$9  =011204   L       LK_IEN =000100           RE_CER =000001           
-1$0    =004132   L       216$0  =007243   L       82$0   =005630   L       LK_MON =000200           RE_DDA =000100           
-1$1    =007574   L       217$0  =007245   L       820$9  =011206   L       LK_PRI =000006           RE_DDE =000040           
-1$10   =011356   L       22$10  =011524   L       84$0   =005676   L       MSG1   =007434           RE_DER =000020           
-1$11   =011726   L       3$13   =012274   L       880$9  =011250   L       MSG2   =007461           RE_DON =000004           
-1$12   =012122   L       3$9    =010400   L       890$9  =011256   L       N.ARGS =000016           RE_DRD =000200           
-1$13   =012212   L       30$0   =005274   L       9$2    =007704   L       N.LAST =000014           RE_NU9 =001000           
-1$2    =007640   L       30$10  =011534   L       9$3    =010002   L       NOXXDP =007536           RE_NXM =004000           
-1$3    =007736   L       30$14  =012424   L       9$4    =010052   L       P.FIL  =177776           RE_PER =000002           
-1$4    =010010   L       300$0  =007265   L       9$5    =010122   L       P.FLG  =177777           RE_UNI =000400           
-1$5    =010060   L       301$0  =007324   L       90$0   =005720   L       P.LEN  =177770           RE_WCO =002000           
-1$6    =010130   L       302$0  =007363   L       90$10  =011712   L       P.OUT  =177766           RX$CS  =177170           
-1$7    =010242   L       31$10  =011552   L       90$11  =012032   L       P.PRE  =177772           RX$DB  =177172           
-1$8    =010322   L       32$10  =011566   L       900$9  =011260   L       P.PTR  =177764           RXCS   =007604           
-1$9    =010350   L       32768$0=004020   L       990$9  =011276   L       P.SR0  =000012           RXDB   =007606           
-10$0   =005162   L       32769$0=004026   L       BASE   =002012           P.SR1  =000010           RXEMPT =007714           
-10$10  =011436   L       32770$0=004044   L       BIT0   =000001           P.SR2  =000006           RXFILL =007706           
-10$14  =012346   L       32771$0=004056   L       BIT00  =000001           P.SR3  =000004           RXFLEM =007722           
-10$9   =010442   L       32772$0=005652   L       BIT01  =000002           P.SR4  =000002           RXRD   =007616           
-100$0  =005760   L       32773$0=005720   L       BIT02  =000004           P.SR5  =000000           RXRDES =010004           
-100$11 =012040   L       39$0   =005376   L       BIT03  =000010           P.WID  =177774           RXRDWR =007624           
-1000$9 =011316   L       4$9    =010434   L       BIT04  =000020           PF.ALT =000004           RXRET  =010154           
-101$0  =006365   L       40$14  =012442   L       BIT05  =000040           PF.LJU =000001           RXSDEN =010054           
-101$11 =012054   L       40$9   =010610   L       BIT06  =000100           PF.LON =000010           RXSTAT =010124           
-102$0  =006372   L       400$0  =007422   L       BIT07  =000200           PF.NEG =000020           RXWR   =007610           
-102$11 =012064   L       400$9  =010660   L       BIT08  =000400           PF.SEP =000000           RX_BPS =000400           
-103$0  =006431   L       401$9  =010744   L       BIT09  =001000           PF.SIG =000002           RX_SAH =000032           
-104$0  =006470   L       405$9  =010760   L       BIT1   =000002           PRINTF =010176 G         RX_SAL =000001           
-105$0  =006527   L       41$9   =010614   L       BIT10  =002000           PRT32U =011350           RX_TAH =000114           
-106$0  =006566   L       410$9  =010776   L       BIT11  =004000           PRTSTR =011720           RX_TAL =000000           
-107$0  =006625   L       42$9   =010644   L       BIT12  =010000           PSW    =177776 G         RX_WPS =000200           
-11$9   =010470   L       420$9  =011010   L       BIT13  =020000           RC_A16 =010000           SECTOR =002014           
-12$9   =010522   L       430$9  =011030   L       BIT14  =040000           RC_A17 =020000           SLDIV  =012302 G         
-13$9   =010540   L       431$9  =011054   L       BIT15  =100000           RC_ANY =100240           SPRINT =010256 G         
-2$10   =011420   L       439$9  =011074   L       BIT2   =000004           RC_CMD =000016           STACK  =002000           
-2$12   =012140   L       440$9  =011104   L       BIT3   =000010           RC_DEN =000400           START  =004000           
-2$13   =012250   L       450$9  =011120   L       BIT4   =000020           RC_DON =000040           SWIREG =177570 G         
-2$2    =007656   L       460$9  =011134   L       BIT5   =000040           RC_EMP =000002           SWITCH =002002           
-2$3    =007754   L       470$9  =011150   L       BIT6   =000100           RC_ERR =100000           SW_DOT =000002           
-2$4    =010024   L       49$0   =005450   L       BIT7   =000200           RC_FIL =000000           SW_LST =000001           
-2$5    =010074   L       50$0   =005530   L       BIT8   =000400           RC_GO  =000001           TICKER =002020           
-2$6    =010144   L       50$10  =011572   L       BIT9   =001000           RC_HEA =001000           TRACK  =002016           
-2$9    =010370   L       50$11  =011762   L       BUFFER =002410           RC_IEN =000100           TST$NO =000001           
-20$0   =005170   L       51$10  =011606   L       BUFPTR =002024           RC_INI =040000           TTRBUF =177562 G         
-20$10  =011460   L       52$10  =011634   L       CONSOL =165144 G         RC_NU1 =002000           TTRCSR =177560 G         
-20$11  =011750   L       59$0   =005602   L       COUNT  =002022           RC_RD  =000006           TTXBUF =177566 G         
-20$14  =012366   L       70$10  =011642   L       CR     =000015           RC_RDE =000016           TTXCSR =177564 G         
-20$9   =010556   L       70$11  =011776   L       DELAY  =007572           RC_RDS =000012           ULDIV  =012166 G         
-200$0  =006664   L       71$10  =011644   L       DENSTY =002010           RC_RX0 =004000           ULMUL  =012066 G         
-201$0  =006731   L       71$11  =012002   L       DONE   =007476           RC_SDE =000010           UNIT   =002006           
-202$0  =007005   L       8$2    =007674   L       DPYREG =177570 G         RC_TRE =000200           XPRINT =010346           
-205$0  =007057   L       8$3    =007772   L       ERRBUF =002400           RC_UNI =000020           
-206$0  =007111   L       8$4    =010042   L       ERRPTR =002026           RC_WOC =072017           
-207$0  =007143   L       8$5    =010112   L       EXIT   =007512           RC_WOD =177400           
+$$NUM  = 000002           21$0   = 005230   L       80$10  = 011660   L       LF     = 000012           RC_WOE = 170000           
+$$POS  = 004000           21$10  = 011514   L       80$11  = 012016   L       LK$CSR = 177546           RC_WR  = 000004           
+$ENDAD = 007522           213$0  = 007217   L       800$9  = 011164   L       LK$VEC = 000100           RC_WRD = 000014           
+$SAV42 = 002004           214$0  = 007222   L       81$10  = 011674   L       LKINTR = 007556           RE_ACL = 000010           
+.      = 012446           215$0  = 007225   L       810$9  = 011204   L       LK_IEN = 000100           RE_CER = 000001           
+1$0    = 004132   L       216$0  = 007243   L       82$0   = 005630   L       LK_MON = 000200           RE_DDA = 000100           
+1$1    = 007574   L       217$0  = 007245   L       820$9  = 011206   L       LK_PRI = 000006           RE_DDE = 000040           
+1$10   = 011356   L       22$10  = 011524   L       84$0   = 005676   L       MSG1   = 007434           RE_DER = 000020           
+1$11   = 011726   L       3$13   = 012274   L       880$9  = 011250   L       MSG2   = 007461           RE_DON = 000004           
+1$12   = 012122   L       3$9    = 010400   L       890$9  = 011256   L       N.ARGS = 000016           RE_DRD = 000200           
+1$13   = 012212   L       30$0   = 005274   L       9$2    = 007704   L       N.LAST = 000014           RE_NU9 = 001000           
+1$2    = 007640   L       30$10  = 011534   L       9$3    = 010002   L       NOXXDP = 007536           RE_NXM = 004000           
+1$3    = 007736   L       30$14  = 012424   L       9$4    = 010052   L       P.FIL  = 177776           RE_PER = 000002           
+1$4    = 010010   L       300$0  = 007265   L       9$5    = 010122   L       P.FLG  = 177777           RE_UNI = 000400           
+1$5    = 010060   L       301$0  = 007324   L       90$0   = 005720   L       P.LEN  = 177770           RE_WCO = 002000           
+1$6    = 010130   L       302$0  = 007363   L       90$10  = 011712   L       P.OUT  = 177766           RX$CS  = 177170           
+1$7    = 010242   L       31$10  = 011552   L       90$11  = 012032   L       P.PRE  = 177772           RX$DB  = 177172           
+1$8    = 010322   L       32$10  = 011566   L       900$9  = 011260   L       P.PTR  = 177764           RXCS   = 007604           
+1$9    = 010350   L       32768$0= 004020   L       990$9  = 011276   L       P.SR0  = 000012           RXDB   = 007606           
+10$0   = 005162   L       32769$0= 004026   L       BASE   = 002012           P.SR1  = 000010           RXEMPT = 007714           
+10$10  = 011436   L       32770$0= 004044   L       BIT0   = 000001           P.SR2  = 000006           RXFILL = 007706           
+10$14  = 012346   L       32771$0= 004056   L       BIT00  = 000001           P.SR3  = 000004           RXFLEM = 007722           
+10$9   = 010442   L       32772$0= 005652   L       BIT01  = 000002           P.SR4  = 000002           RXRD   = 007616           
+100$0  = 005760   L       32773$0= 005720   L       BIT02  = 000004           P.SR5  = 000000           RXRDES = 010004           
+100$11 = 012040   L       39$0   = 005376   L       BIT03  = 000010           P.WID  = 177774           RXRDWR = 007624           
+1000$9 = 011316   L       4$9    = 010434   L       BIT04  = 000020           PF.ALT = 000004           RXRET  = 010154           
+101$0  = 006365   L       40$14  = 012442   L       BIT05  = 000040           PF.LJU = 000001           RXSDEN = 010054           
+101$11 = 012054   L       40$9   = 010610   L       BIT06  = 000100           PF.LON = 000010           RXSTAT = 010124           
+102$0  = 006372   L       400$0  = 007422   L       BIT07  = 000200           PF.NEG = 000020           RXWR   = 007610           
+102$11 = 012064   L       400$9  = 010660   L       BIT08  = 000400           PF.SEP = 000000           RX_BPS = 000400           
+103$0  = 006431   L       401$9  = 010744   L       BIT09  = 001000           PF.SIG = 000002           RX_SAH = 000032           
+104$0  = 006470   L       405$9  = 010760   L       BIT1   = 000002           PRINTF = 010176 G         RX_SAL = 000001           
+105$0  = 006527   L       41$9   = 010614   L       BIT10  = 002000           PRT32U = 011350           RX_TAH = 000114           
+106$0  = 006566   L       410$9  = 010776   L       BIT11  = 004000           PRTSTR = 011720           RX_TAL = 000000           
+107$0  = 006625   L       42$9   = 010644   L       BIT12  = 010000           PSW    = 177776 G         RX_WPS = 000200           
+11$9   = 010470   L       420$9  = 011010   L       BIT13  = 020000           RC_A16 = 010000           SECTOR = 002014           
+12$9   = 010522   L       430$9  = 011030   L       BIT14  = 040000           RC_A17 = 020000           SLDIV  = 012302 G         
+13$9   = 010540   L       431$9  = 011054   L       BIT15  = 100000           RC_ANY = 100240           SPRINT = 010256 G         
+2$10   = 011420   L       439$9  = 011074   L       BIT2   = 000004           RC_CMD = 000016           STACK  = 002000           
+2$12   = 012140   L       440$9  = 011104   L       BIT3   = 000010           RC_DEN = 000400           START  = 004000           
+2$13   = 012250   L       450$9  = 011120   L       BIT4   = 000020           RC_DON = 000040           SWIREG = 177570 G         
+2$2    = 007656   L       460$9  = 011134   L       BIT5   = 000040           RC_EMP = 000002           SWITCH = 002002           
+2$3    = 007754   L       470$9  = 011150   L       BIT6   = 000100           RC_ERR = 100000           SW_DOT = 000002           
+2$4    = 010024   L       49$0   = 005450   L       BIT7   = 000200           RC_FIL = 000000           SW_LST = 000001           
+2$5    = 010074   L       50$0   = 005530   L       BIT8   = 000400           RC_GO  = 000001           TICKER = 002020           
+2$6    = 010144   L       50$10  = 011572   L       BIT9   = 001000           RC_HEA = 001000           TRACK  = 002016           
+2$9    = 010370   L       50$11  = 011762   L       BUFFER = 002410           RC_IEN = 000100           TST$NO = 000001           
+20$0   = 005170   L       51$10  = 011606   L       BUFPTR = 002024           RC_INI = 040000           TTRBUF = 177562 G         
+20$10  = 011460   L       52$10  = 011634   L       CONSOL = 165144 G         RC_NU1 = 002000           TTRCSR = 177560 G         
+20$11  = 011750   L       59$0   = 005602   L       COUNT  = 002022           RC_RD  = 000006           TTXBUF = 177566 G         
+20$14  = 012366   L       70$10  = 011642   L       CR     = 000015           RC_RDE = 000016           TTXCSR = 177564 G         
+20$9   = 010556   L       70$11  = 011776   L       DELAY  = 007572           RC_RDS = 000012           ULDIV  = 012166 G         
+200$0  = 006664   L       71$10  = 011644   L       DENSTY = 002010           RC_RX0 = 004000           ULMUL  = 012066 G         
+201$0  = 006731   L       71$11  = 012002   L       DONE   = 007476           RC_SDE = 000010           UNIT   = 002006           
+202$0  = 007005   L       8$2    = 007674   L       DPYREG = 177570 G         RC_TRE = 000200           XPRINT = 010346           
+205$0  = 007057   L       8$3    = 007772   L       ERRBUF = 002400           RC_UNI = 000020           
+206$0  = 007111   L       8$4    = 010042   L       ERRPTR = 002026           RC_WOC = 072017           
+207$0  = 007143   L       8$5    = 010112   L       EXIT   = 007512           RC_WOD = 177400           
 
 
 Program sections:

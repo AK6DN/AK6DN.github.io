@@ -74,7 +74,11 @@ AddDescription "&#3;&#7;&#1;RX211/RX02 buffer read/write test" rx02xx.lst
 AddDescription "&#3;&#7;&#2;... executable" rx02xx.bi*
 AddDescription "&#3;&#7;&#3;... SIMH control file" rx02xx.ini
 
-AddDescription "&#3;&#8;&#1;TU58 device basic protocol and read/write test" tu58.lst
-AddDescription "&#3;&#8;&#2;... executable" tu58.bi*
-AddDescription "&#3;&#8;&#3;... SIMH control file" tu58.ini
+AddDescription "&#3;&#8;&#1;RX11/RX01 boot test" rx01bo.lst
+AddDescription "&#3;&#8;&#2;... executable" rx01bo.bi*
+AddDescription "&#3;&#8;&#3;... SIMH control file" rx01bo.ini
+
+AddDescription "&#3;&#9;&#1;TU58 device basic protocol and read/write test" tu58.lst
+AddDescription "&#3;&#9;&#2;... executable" tu58.bi*
+AddDescription "&#3;&#9;&#3;... SIMH control file" tu58.ini
 

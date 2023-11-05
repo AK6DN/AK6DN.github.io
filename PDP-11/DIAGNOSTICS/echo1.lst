@@ -72,9 +72,9 @@
 
 Symbol table
 
-.     =******           30$0  =002124   L       LOOP  =002054           RCSR  =000000           TBUF  =000006           
-10$0  =002070   L       40$0  =002144   L       OPTION=002006           STACK =002000           TCSR  =000004           
-20$0  =002104   L       DLBASE=176500           RBUF  =000002           START =002010           TTBASE=177560           
+.     = 002150           30$0  = 002124   L       LOOP  = 002054           RCSR  = 000000           TBUF  = 000006           
+10$0  = 002070   L       40$0  = 002144   L       OPTION= 002006           STACK = 002000           TCSR  = 000004           
+20$0  = 002104   L       DLBASE= 176500           RBUF  = 000002           START = 002010           TTBASE= 177560           
 
 
 Program sections:
