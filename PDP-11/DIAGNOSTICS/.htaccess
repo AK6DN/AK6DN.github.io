@@ -24,12 +24,12 @@ AddDescription "&#1;&#7;&#3;... SIMH control file" m9313.ini
 
 AddDescription "&#1;&#8;&#1;Enhanced Memory Test - Extended March C- Algorithm" memx.lst
 AddDescription "&#1;&#8;&#2;... executable" memx.bi*
-AddDescription "&#1;&#8;&#3;... SIMH control file for 11/24" memx24.ini
-AddDescription "&#1;&#8;&#4;... SIMH control file for 11/34" memx34.ini
-AddDescription "&#1;&#8;&#5;... SIMH control file for 11/44" memx44.ini
-AddDescription "&#1;&#8;&#6;... SIMH control file for 11/45" memx45.ini
-AddDescription "&#1;&#8;&#7;... SIMH control file for 11/70" memx70.ini
-AddDescription "&#1;&#8;&#8;... SIMH control file for 11/73" memx70.ini
+AddDescription "&#1;&#8;&#3;... SIMH control file for 11/24" memx24*.ini
+AddDescription "&#1;&#8;&#4;... SIMH control file for 11/34" memx34*.ini
+AddDescription "&#1;&#8;&#5;... SIMH control file for 11/44" memx44*.ini
+AddDescription "&#1;&#8;&#6;... SIMH control file for 11/45" memx45*.ini
+AddDescription "&#1;&#8;&#7;... SIMH control file for 11/70" memx70*.ini
+AddDescription "&#1;&#8;&#8;... SIMH control file for 11/73" memx73*.ini
 
 AddDescription "&#2;&#1;&#1;DIVIDE instruction test" divtst.lst
 AddDescription "&#2;&#1;&#2;... executable" divtst.bi*
@@ -51,35 +51,35 @@ AddDescription "&#2;&#5;&#1;PRINTF routine test" prftst.lst
 AddDescription "&#2;&#5;&#2;... executable" prftst.bi*
 AddDescription "&#2;&#5;&#3;... SIMH control file" prftst.ini
 
-AddDescription "&#3;&#2;&#1;TMSCP tape interface test (tuned for Emulex UC18)" tmscp.lst
-AddDescription "&#3;&#2;&#2;... executable" tmscp.bi*
-AddDescription "&#3;&#2;&#3;... SIMH control file" tmscp.ini
-
 AddDescription "&#3;&#1;&#1;MSCP disk interface test (tuned for Emulex UC18)" mscp.lst
 AddDescription "&#3;&#1;&#2;... executable" mscp.bi*
 AddDescription "&#3;&#1;&#3;... SIMH control file" mscp.ini
 
-AddDescription "&#3;&#4;&#1;RX211/RX02 boot test" rx02bo.lst
-AddDescription "&#3;&#4;&#2;... executable" rx02bo.bi*
-AddDescription "&#3;&#4;&#3;... SIMH control file" rx02bo.ini
+AddDescription "&#3;&#2;&#1;TMSCP tape interface test (tuned for Emulex UC18)" tmscp.lst
+AddDescription "&#3;&#2;&#2;... executable" tmscp.bi*
+AddDescription "&#3;&#2;&#3;... SIMH control file" tmscp.ini
 
-AddDescription "&#3;&#5;&#1;RX211/RX02 media read test" rx02rd.lst
-AddDescription "&#3;&#5;&#2;... executable" rx02rd.bi*
-AddDescription "&#3;&#5;&#3;... SIMH control file" rx02rd.ini
+AddDescription "&#3;&#4;&#1;RX11/RX01 boot test" rx01bo.lst
+AddDescription "&#3;&#4;&#2;... executable" rx01bo.bi*
+AddDescription "&#3;&#4;&#3;... SIMH control file" rx01bo.ini
 
-AddDescription "&#3;&#6;&#1;RX211/RX02 media write test" rx02wr.lst
-AddDescription "&#3;&#6;&#2;... executable" rx02wr.bi*
-AddDescription "&#3;&#6;&#3;... SIMH control file" rx02wr.ini
+AddDescription "&#3;&#5;&#1;RX211/RX02 boot test" rx02bo.lst
+AddDescription "&#3;&#5;&#2;... executable" rx02bo.bi*
+AddDescription "&#3;&#5;&#3;... SIMH control file" rx02bo.ini
 
-AddDescription "&#3;&#7;&#1;RX211/RX02 buffer read/write test" rx02xx.lst
-AddDescription "&#3;&#7;&#2;... executable" rx02xx.bi*
-AddDescription "&#3;&#7;&#3;... SIMH control file" rx02xx.ini
+AddDescription "&#3;&#6;&#1;RX211/RX02 media read test" rx02rd.lst
+AddDescription "&#3;&#6;&#2;... executable" rx02rd.bi*
+AddDescription "&#3;&#6;&#3;... SIMH control file" rx02rd.ini
 
-AddDescription "&#3;&#8;&#1;RX11/RX01 boot test" rx01bo.lst
-AddDescription "&#3;&#8;&#2;... executable" rx01bo.bi*
-AddDescription "&#3;&#8;&#3;... SIMH control file" rx01bo.ini
+AddDescription "&#3;&#7;&#1;RX211/RX02 media write test" rx02wr.lst
+AddDescription "&#3;&#7;&#2;... executable" rx02wr.bi*
+AddDescription "&#3;&#7;&#3;... SIMH control file" rx02wr.ini
 
-AddDescription "&#3;&#9;&#1;TU58 device basic protocol and read/write test" tu58.lst
-AddDescription "&#3;&#9;&#2;... executable" tu58.bi*
-AddDescription "&#3;&#9;&#3;... SIMH control file" tu58.ini
+AddDescription "&#3;&#8;&#1;RX211/RX02 buffer read/write test" rx02xx.lst
+AddDescription "&#3;&#8;&#2;... executable" rx02xx.bi*
+AddDescription "&#3;&#8;&#3;... SIMH control file" rx02xx.ini
+
+AddDescription "&#4;&#1;&#1;TU58 device basic protocol and read/write test" tu58.lst
+AddDescription "&#4;&#1;&#2;... executable" tu58.bi*
+AddDescription "&#4;&#1;&#3;... SIMH control file" tu58.ini
 
