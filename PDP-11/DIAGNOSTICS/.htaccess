@@ -29,6 +29,7 @@ AddDescription "&#1;&#8;&#4;... SIMH control file for 11/34" memx34.ini
 AddDescription "&#1;&#8;&#5;... SIMH control file for 11/44" memx44.ini
 AddDescription "&#1;&#8;&#6;... SIMH control file for 11/45" memx45.ini
 AddDescription "&#1;&#8;&#7;... SIMH control file for 11/70" memx70.ini
+AddDescription "&#1;&#8;&#8;... SIMH control file for 11/73" memx70.ini
 
 AddDescription "&#2;&#1;&#1;DIVIDE instruction test" divtst.lst
 AddDescription "&#2;&#1;&#2;... executable" divtst.bi*
