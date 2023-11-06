@@ -1,83 +1,146 @@
-       1                                	.title	rx211 boot sequence
+       1                                	.title	M9312 'DY' BOOT prom for RX211 compatible controller
        2                                
-       3                                	.enable	AMA
-       4 000000                         	.asect
-       5                                	
-       6        000200                  	.=200
-       7 000200 000137  010000          begin:	jmp	@#start			; go to begin
-       8                                
-       9        010000                  	.=10000
-      10                                
-      11 010000 000005                  start:	reset				; the world
-      12                                	
-      13 010002 012701  177170          	mov	#177170,r1		; a(RXCS)
-      14 010006 012700  100240          	mov	#100240,r0		; error | xfer | done
-      15 010012 005002                  	clr	r2			; zero
-      16 010014 012705  000200          	mov	#200,r5			; 128.
-      17 010020 012704  000401          	mov	#401,r4			; 001 / 001
-      18 010024 012703  177172          	mov	#177172,r3		; a(RXDB)
-      19                                	
-      20 010030 030011                  1$:	bit	r0,(r1)			; check error/xfer/done
-      21 010032 001776                  	beq	1$			; loop if none
-      22 010034 100440                  	bmi	error			; br if error
-      23                                	
-      24 010036 012711  000407          	mov	#407,(r1)		; double_density | read_sector | go
-      25                                	
-      26 010042 030011                  2$:	bit	r0,(r1)			; check error/xfer/done
-      27 010044 001776                  	beq	2$			; loop if none
-      28 010046 100433                  	bmi	error			; br if error
-      29                                	
-      30 010050 110413                  	movb	r4,(r3)			; set sector 1 + 2N
-      31 010052 000304                  	swab	r4			; 
-      32                                	
-      33 010054 030011                  3$:	bit	r0,(r1)			; check error/xfer/done
-      34 010056 001776                  	beq	3$			; loop if none
-      35                                	
-      36 010060 110413                  	movb	r4,(r3)			; set track 1
-      37 010062 000304                  	swab	r4			; 
-      38                                	
-      39 010064 030011                  4$:	bit	r0,(r1)			; check error/xfer/done
-      40 010066 001776                  	beq	4$			; loop if none
-      41 010070 100422                  	bmi	error			; br if error
-      42                                	
-      43 010072 012711  000403          	mov	#403,(r1)		; double_density | empty_buffer | go
-      44                                	
-      45 010076 030011                  5$:	bit	r0,(r1)			; check error/xfer/done
-      46 010100 001776                  	beq	5$			; loop if none
-      47 010102 100415                  	bmi	error			; br if error
-      48                                	
-      49 010104 010513                  	mov	r5,(r3)			; set word count 128.
-      50                                	
-      51 010106 030011                  6$:	bit	r0,(r1)			; check error/xfer/done
-      52 010110 001776                  	beq	6$			; loop if none
-      53 010112 100411                  	bmi	error			; br if error
-      54                                	
-      55 010114 010213                  	mov	r2,(r3)			; set bus address
-      56 010116 060502                  	add	r5,r2			; bump by 2x128. bytes
-      57 010120 060502                  	add	r5,r2			; 
-      58 010122 122424                  	cmpb	(r4)+,(r4)+		; add 2 to r4
-      59                                	
-      60 010124 120427  000005          	cmpb	r4,#5			; check for sector count
-      61 010130 003737                  	ble	1$			; loop if more
-      62                                	
-      63 010132 005000                  	clr	r0			; zap status
-      64 010134 005007                  	clr	pc			; go to bootstrap at zero
-      65                                	
-      66 010136 000000                  error:	halt				; die on error
-rx02bo.mac:67: ***ERROR Branch target out of range (distance=-7742)
-      67 010140 000400                  	br	begin			; and retry
+       3                                	; This source code is an exact copy of the DEC M9312 23-811A9 boot PROM.
+       4                                	;
+       5                                	; This boot PROM is for any RX211/RX02 compatible floppy controller.
+       6                                	;
+       7                                	; Multiple units and/or CSR addresses are supported via different entry points.
+       8                                	;
+       9                                	; Standard devices are 82S131, Am27S13, 74S571 or other compatible bipolar
+      10                                	; PROMs with a 512x4 TriState 16pin DIP architecture. This code resides in
+      11                                	; the low half of the device; the top half is blank and unused.
+      12                                	;
+      13                                	; Alternatively, 82S129 compatible 256x4 TriState 16pin DIP devices can be
+      14                                	; used, as the uppermost address line (hardwired low) is an active low chip
+      15                                	; select (and will be correctly asserted low).
+      16                                
+      17        177170                  rxcsr	=177170				; std RX211 csrbase
+      18                                
+      19        000000                  rxcs	=+0				; command/status
+      20        000002                  rxdb	=+2				; data buffer
+      21                                
+      22        165564                  diags	=165564				; console diags phase2 entry
+      23                                
+      24 000000                         	.asect
+      25        173000                  	.=173000
+      26                                
+      27                                ; VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+      28                                
+      29        000200                  	.=200				; standard entry point
+      30 000200 000137  003000          begin:	jmp	@#enter			;
+      31                                	
+      32        001776                  	.=1776				; top of stack
+      33 001776 177777                  stack:	.word	-1			;
+      34                                
+      35        003000                  	.=3000				; program base address
+      36 003000 000005                  enter:	reset				; init cpu
+      37 003002 005000                  	clr	r0			; zap registers
+      38 003004 005001                  	clr	r1			;
+      39 003006 005002                  	clr	r2			;
+      40 003010 005003                  	clr	r3			;
+      41 003012 005004                  	clr	r4			;
+      42 003014 005005                  	clr	r5			; 
+      43 003016 012706  001776          	mov	#stack,sp		; setup a stack
+      44 003022 000137  004004          	jmp	@#dy0n			; execute boot
+      45                                
+      46        004000                  	.=4000				; code base
+      47                                
+      48                                ; AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+      49                                
+      50                                	; --------------------------------------------------
+      51                                
+      52 004000    131     104          start:	.ascii	"YD"			; device code (reversed)
+      53                                
+      54 004002 000176                  	.word	last-.			; offset to next boot header
+      55                                
+      56 004004 000261                  dy0n:	sec				; boot std csr, unit zero, no diags
+      57 004006 012700  000000          dy0d:	mov	#0,r0			; boot std csr, unit zero, with diags
+      58 004012 012701  177170          dyNr:	mov	#rxcsr,r1		; boot std csr, unit <R0>
+      59 004016 010704                  dyNb:	mov	pc,r4			; boot csr <R1>, unit <R0>
+      60 004020 103064                  	bcc	diag			; br if diags requested
+      61 004022 000402                  	br	go			; return to (R4)+2 from diags
+      62                                					; then skip over pseudo reboot vector
+      63                                
+      64                                	; --------------------------------------------------
+      65                                
+      66 004024 173000                  	.word	173000			; prom start addess @ 24
+      67 004026 000340                  	.word	340			; and priority level @ 26
       68                                
-      69                                	.end
-      69                                
+      69                                	; --------------------------------------------------
+      70                                
+      71 004030 005103                  go:	com	r3			; complement density flag
+      72 004032 000005                  	reset				; clear all device registers
+      73 004034 012704  000401          	mov	#401,r4			; sector 1 and track 1
+      74 004040 005002                  	clr	r2			; init buffer address
+      75 004042 012705  000200          	mov	#200,r5			; assume double density
+      76 004046 042703  177377          	bic	#^c400,r3		; single density?
+      77 004052 001001                  	bne	2$			; br if not
+      78 004054 006205                  	asr	r5			; adjust for single density
+      79 004056 050700                  2$:	bis	pc,r0			; bis #173x60,r0 + r0=0/1 => r0=173x60/173x61
+      80 004060 156003  000036          	bisb	4$-.(r0),r3		; bis 007(unit0) or 027(unit1) into r3
+      81 004064 040700                  	bic	pc,r0			; bic #173x66,r0
+      82 004066 010706                  	mov	pc,sp			; mov #3$,sp: init state to step1
+      83 004070 000423                  3$:	br	7$			; step1
+      84 004072 000432                  	br	9$			; step2
+      85 004074 000416                  	br	6$			; step3
+      86 004076 000415                  	br	6$			; step4
+      87 004100 000425                  	br	8$			; step5
+      88 004102 000430                  	br	10$			; step6
+      89 004104 000407                  	br	5$			; step7
+      90 004106 060502                  	add	r5,r2			; address += 2
+      91 004110 060502                  	add	r5,r2			; 
+      92 004112 122424                  	cmpb	(r4)+,(r4)+		; sector += 2
+      93 004114 120427                  	cmpb	r4,(pc)+		; cmpb r4,#007; last sector read?
+      94 004116    007     027          4$:	.byte	007,027			; unit in <4>, read+go in <2:0>
+      95 004120 003756                  	ble	2$			; br if more to read
+      96                                
+      97 004122 005007                  	clr	pc			; jump to bootstrap at zero
+      98                                
+      99 004124 010261  000002          5$:	mov	r2,rxdb(r1)		; set bus address
+     100 004130 000403                  	br	7$			; more
+     101                                
+     102 004132 110461  000002          6$:	movb	r4,rxdb(r1)		; set sector or track
+     103 004136 000304                  	swab	r4			; swap sector/track
+     104                                
+     105 004140 032711  100240          7$:	bit	#100240,(r1)		; wait for error<15>, treq<7>, or done<5>
+     106 004144 001775                  	beq	7$			; keep looping, no bits set
+     107 004146 100730                  	bmi	go			; retry if error bit set
+     108 004150 005726                  	tst	(sp)+			; flush one word off list
+     109 004152 000116                  	jmp	(sp)			; go execute step1..step7
+     110                                
+     111 004154 042703  000004          8$:	bic	#4,r3			; change to empty+go
+     112 004160 010311                  9$:	mov	r3,(r1)			; set command
+     113 004162 000766                  	br	7$			; more
+     114                                
+     115 004164 110561  000002          10$:	movb	r5,rxdb(r1)		; set ? to 1
+     116 004170 000763                  	br	7$			; more
+     117                                
+     118                                	; --------------------------------------------------
+     119                                
+     120 004172 000137  165564          diag:	jmp	@#diags			; jump to console diags
+     121                                
+     122                                	; --------------------------------------------------
+     123                                
+     124        004176                  	.=start+176
+     125 004176 057141                  crc16:	.word	<057141>		; CRC-16 will go here
+     126                                
+     127                                last:	; next boot prom starts here
+     128                                
+     129                                	.end
+     129                                
 
 
 Symbol table
 
-.     = 010142           2$0   = 010042   L       4$0   = 010064   L       6$0   = 010106   L       ERROR = 010136           
-1$0   = 010030   L       3$0   = 010054   L       5$0   = 010076   L       BEGIN = 000200           START = 010000           
+.     = 004200           6$0   = 004132   L       DIAG  = 004172           ENTER = 003000           STACK = 001776           
+10$0  = 004164   L       7$0   = 004140   L       DIAGS = 165564           GO    = 004030           START = 004000           
+2$0   = 004056   L       8$0   = 004154   L       DY0D  = 004006           LAST  = 004200           
+3$0   = 004070   L       9$0   = 004160   L       DY0N  = 004004           RXCS  = 000000           
+4$0   = 004116   L       BEGIN = 000200           DYNB  = 004016           RXCSR = 177170           
+5$0   = 004124   L       CRC16 = 004176           DYNR  = 004012           RXDB  = 000002           
 
 
 Program sections:
 
-. ABS.  010142    000   (RW,I,GBL,ABS,OVR,NOSAV)
+. ABS.  173000    000   (RW,I,GBL,ABS,OVR,NOSAV)
         000000    001   (RW,I,LCL,REL,CON,NOSAV)
