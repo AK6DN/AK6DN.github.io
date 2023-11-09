@@ -1,0 +1,31 @@
+Options Indexes
+IndexOrderDefault Ascending Description
+IndexOptions FancyIndexing NameWidth=* DescriptionWidth=* SuppressHTMLPreamble HTMLTable
+IndexStyleSheet /css/PDP-8.css
+IndexIgnore . .htaccess .htaccess.pl
+
+AddIcon /icons/text.gif *.lst *.pal *.ini *.log
+AddIcon /icons/binary.gif *.bin *.rim
+
+AddDescription "&#1;&#1;Diagnostics SIMH control file, RIM format" diagnostics_rim.ini
+AddDescription "&#1;&#2;Diagnostics SIMH log file, RIM format" diagnostics_rim.log
+AddDescription "&#1;&#3;Diagnostics SIMH control file, BIN format" diagnostics_bin.ini
+AddDescription "&#1;&#4;Diagnostics SIMH log file, BIN format" diagnostics_bin.log
+
+AddDescription "&#2;&#1;&#1;<FONT COLOR=#008800>PDP-8 RX8E/RX01 RX28/RX02 Functional Test 1 rev C - DEC documentation (acrobat)</FONT>" *DIRXA-C*pdf
+AddDescription "&#2;&#1;&#2;<FONT COLOR=#008800>PDP-8 RX8E/RX01 RX28/RX02 Functional Test 1 rev C - program loader tape (BIN format)</FONT>" *DIRXA-C*bin
+AddDescription "&#2;&#1;&#3;<FONT COLOR=#008800>PDP-8 RX8E/RX01 RX28/RX02 Functional Test 1 rev C - program loader tape (RIM format)</FONT>" *DIRXA-C*rim
+AddDescription "&#2;&#1;&#4;<FONT COLOR=#008800>PDP-8 RX8E/RX01 RX28/RX02 Functional Test 1 rev C - disassembled PAL source (text)</FONT>" *DIRXA-C*pal
+AddDescription "&#2;&#1;&#5;<FONT COLOR=#008800>PDP-8 RX8E/RX01 RX28/RX02 Functional Test 1 rev C - assembled PAL listing (text)</FONT>" *DIRXA-C*lst
+
+AddDescription "&#2;&#2;&#1;<FONT COLOR=#880000>PDP-8 RX8E/RX01 RX28/RX02 Functional Test 1 rev D - DEC documentation (acrobat)</FONT>" *DIRXA-D*pdf
+AddDescription "&#2;&#2;&#2;<FONT COLOR=#880000>PDP-8 RX8E/RX01 RX28/RX02 Functional Test 1 rev D - program loader tape (BIN format)</FONT>" *DIRXA-D*bin
+AddDescription "&#2;&#2;&#3;<FONT COLOR=#880000>PDP-8 RX8E/RX01 RX28/RX02 Functional Test 1 rev D - program loader tape (RIM format)</FONT>" *DIRXA-D*rim
+AddDescription "&#2;&#2;&#4;<FONT COLOR=#880000>PDP-8 RX8E/RX01 RX28/RX02 Functional Test 1 rev D - disassembled PAL source (text)</FONT>" *DIRXA-D*pal
+AddDescription "&#2;&#2;&#5;<FONT COLOR=#880000>PDP-8 RX8E/RX01 RX28/RX02 Functional Test 1 rev D - assembled PAL listing (text)</FONT>" *DIRXA-D*lst
+
+AddDescription "&#2;&#3;&#1;<FONT COLOR=#008800>PDP-8 RX8E/RX01 RX28/RX02 Functional Test 2 - DEC documentation (acrobat)</FONT>" *DIRXB-D*pdf
+AddDescription "&#2;&#3;&#2;<FONT COLOR=#008800>PDP-8 RX8E/RX01 RX28/RX02 Functional Test 2 - program loader tape (BIN format)</FONT>" *DIRXB-D*bin
+AddDescription "&#2;&#3;&#3;<FONT COLOR=#008800>PDP-8 RX8E/RX01 RX28/RX02 Functional Test 2 - program loader tape (RIM format)</FONT>" *DIRXB-D*rim
+AddDescription "&#2;&#3;&#4;<FONT COLOR=#008800>PDP-8 RX8E/RX01 RX28/RX02 Functional Test 2 - disassembled PAL source (text)</FONT>" *DIRXB-D*pal
+AddDescription "&#2;&#3;&#5;<FONT COLOR=#008800>PDP-8 RX8E/RX01 RX28/RX02 Functional Test 2 - assembled PAL listing (text)</FONT>" *DIRXB-D*lst

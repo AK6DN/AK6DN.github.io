@@ -15,6 +15,7 @@ for file in \
     PDP-8/MAINDEC/KK8-E_pdp8e_cpu \
     PDP-8/MAINDEC/KM8-E_memory_extension \
     PDP-8/MAINDEC/MM8-EJ_memory \
+    PDP-8/MAINDEC/RX8-E_floppy_subsystem \
     ; \
     do
 

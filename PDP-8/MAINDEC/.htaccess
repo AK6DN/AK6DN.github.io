@@ -11,6 +11,7 @@ AddDescription "PDP-8e EAE Diagnostics" KE8-E*
 AddDescription "PDP-8e CPU Diagnostics" KK8-E*
 AddDescription "PDP-8e Memory Extension Diagnositcs" KM8-E*
 AddDescription "PDP-8e Memory Diagnostics" MM8-EJ*
+AddDescription "PDP-8e RX01/02 Floppy Subsystem Diagnostics" RX8-E*
 
 AddDescription "PDP-8 Binary Loaders (BIN,RIM)" Binary*
 
