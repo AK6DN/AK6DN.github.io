@@ -37,11 +37,17 @@ AddDescription "DEUNA, DELUA diagnostics (directory listing)" 11XX_2.TXT
 AddDescription "UDA50/KDA50 diagnostics (TU58 disk image)" 11XX_3.DSK
 AddDescription "UDA50/KDA50 diagnostics (directory listing)" 11XX_3.TXT
 
-AddDescription "RX01/RX02/RX11/RX211 diagnostics (TU58 disk image)" 11XX_4.DSK
-AddDescription "RX01/RX02/RX11/RX211 diagnostics (directory listing)" 11XX_4.TXT
+AddDescription "RX diagnostics (TU58 disk image)" 11XX_4.DSK
+AddDescription "RX diagnostics (directory listing)" 11XX_4.TXT
 
-AddDescription "RLV11/RLV12/RL11 RL01/RL02 diagnostics (TU58 disk image)" 11XX_5.DSK
-AddDescription "RLV11/RLV12/RL11 RL01/RL02 diagnostics (directory listing)" 11XX_5.TXT
+AddDescription "RL diagnostics (TU58 disk image)" 11XX_5.DSK
+AddDescription "RL diagnostics (directory listing)" 11XX_5.TXT
+
+AddDescription "RK diagnostics (TU58 disk image)" 11XX_6.DSK
+AddDescription "RK diagnostics (directory listing)" 11XX_6.TXT
+
+AddDescription "RQ diagnostics (TU58 disk image)" 11XX_7.DSK
+AddDescription "RQ diagnostics (directory listing)" 11XX_7.TXT
 
 AddDescription "AK6DN's home grown memory, MSCP, M9313, other diagnostics (TU58 disk image)" 11XX_9.DSK
 AddDescription "AK6DN's home grown memory, MSCP, M9313, other diagnostics (directory listing)" 11XX_9.TXT

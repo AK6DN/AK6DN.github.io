@@ -1,0 +1,32 @@
+DOS11 format, assume monitor starts at block 8
+Image supports 512 blocks
+4 directory blocks, block 3 thru 6
+1 bitmap block, block 7
+456 device blocks in use according to the bitmap
+
+ENTRY# FILNAM.EXT        DATE          LENGTH  START   VERSION
+
+    1  XXDPSM.SYS       1-MAR-89          29     40     E.0
+    2  XXDPXM.SYS       1-MAR-89          39     69     F.0
+    3  DRSSM .SYS       1-MAR-89          24    108     G.2
+    4  DRSXM .SYS       1-MAR-89          48    132     C.0
+    5  DATE  .SYS       1-MAR-89           2    180     B.0
+    6  DB    .SYS       1-MAR-89           2    182     C.0
+    7  DD    .SYS       1-MAR-89           3    184     D.0
+    8  DIR   .SYS       1-MAR-89           7    187     D.0
+    9  DL    .SYS       1-MAR-89           4    194     D.0
+   10  DM    .SYS       1-MAR-89           4    198     C.0
+   11  DR    .SYS       1-MAR-89           3    202     C.0
+   12  DU    .SYS       1-MAR-89           4    205     E.0
+   13  DUSZ  .SYS       1-MAR-89           2    209     C.0
+   14  DY    .SYS       1-MAR-89           3    211     D.0
+   15  LP    .SYS       1-MAR-89           1    214     B.0
+   16  MM    .SYS       1-MAR-89           3    215     C.0
+   17  MS    .SYS       1-MAR-89           4    218     C.0
+   18  MU    .SYS       1-MAR-89           4    222     E.0
+   19  ZRQAH0.BIN       1-MAR-89          67    226
+   20  ZRQBC1.BIN       1-MAR-89          20    293
+   21  ZRQCH0.BIN       1-MAR-89          72    313
+   22  ZRQDA0.BIN       1-MAR-89          71    385
+
+FREE BLOCKS:    56

@@ -37,11 +37,17 @@ AddDescription "DEUNA, DELUA diagnostics (directory listing)" 11XX_2.TXT
 AddDescription "UDA50/KDA50 diagnostics (RX02 disk image)" 11XX_3.RX2
 AddDescription "UDA50/KDA50 diagnostics (directory listing)" 11XX_3.TXT
 
-AddDescription "RX01/RX02/RX11/RX211 diagnostics (RX02 disk image)" 11XX_4.RX2
-AddDescription "RX01/RX02/RX11/RX211 diagnostics (directory listing)" 11XX_4.TXT
+AddDescription "RX diagnostics (RX02 disk image)" 11XX_4.RX2
+AddDescription "RX diagnostics (directory listing)" 11XX_4.TXT
 
-AddDescription "RLV11/RLV12/RL11 RL01/RL02 diagnostics (RX02 disk image)" 11XX_5.RX2
-AddDescription "RLV11/RLV12/RL11 RL01/RL02 diagnostics (directory listing)" 11XX_5.TXT
+AddDescription "RL diagnostics (RX02 disk image)" 11XX_5.RX2
+AddDescription "RL diagnostics (directory listing)" 11XX_5.TXT
+
+AddDescription "RK diagnostics (RX02 disk image)" 11XX_6.RX2
+AddDescription "RK diagnostics (directory listing)" 11XX_6.TXT
+
+AddDescription "RQ diagnostics (RX02 disk image)" 11XX_7.RX2
+AddDescription "RQ diagnostics (directory listing)" 11XX_7.TXT
 
 AddDescription "AK6DN's home grown memory, MSCP, M9313, other diagnostics (RX02 disk image)" 11XX_9.RX2
 AddDescription "AK6DN's home grown memory, MSCP, M9313, other diagnostics (directory listing)" 11XX_9.TXT
