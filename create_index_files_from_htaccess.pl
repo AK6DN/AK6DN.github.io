@@ -13,6 +13,7 @@ use File::stat;
 use File::Spec;
 use File::Copy;
 use Data::Dumper;
+use POSIX qw(strftime);
 
 # defaults
 my $VERSION = 'v1.0'; # version of code
@@ -271,7 +272,12 @@ if (1) {
 
     # file trailer
     if (exists $db{trailer} && -f $db{trailer} && open(TMP, '<'.$db{trailer})) {
-	while (my $line = scalar(<TMP>)) { $line =~ s/[\015\012]+$//g; push(@outfile, sprintf("%s\n", $line)); }
+	my $stamp = strftime('Last updated:  %Y-%m-%d %H:%M %Z', localtime);
+	while (my $line = scalar(<TMP>)) {
+	    $line =~ s/[\015\012]+$//g;
+	    $line =~ s/last\s+updated:\s+\d+-\d+-\d+\s+\d+:\d+(am|pm)?\s+[a-z]+/${stamp}/oig;
+	    push(@outfile, sprintf("%s\n", $line));
+	}
 	close(TMP);
     } else {
 	# default trailer
